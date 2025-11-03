@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Better default focus styles for a11y */
+:focus-visible {
+  outline: 2px solid theme('colors.brand.DEFAULT');
+  outline-offset: 2px;
+}
+
+/* Typography defaults for readability */
+html { scroll-behavior: smooth; }
+body { @apply bg-white text-gray-900; }
+
+

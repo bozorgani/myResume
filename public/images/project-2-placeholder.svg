@@ -1,0 +1,9 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title>Project Screenshot Placeholder</title>
+  <desc>Simple placeholder layout</desc>
+  <rect width="100%" height="100%" fill="#f8fafc"/>
+  <rect x="80" y="80" width="320" height="320" fill="#e2e8f0" rx="8"/>
+  <rect x="440" y="120" width="680" height="40" fill="#cbd5e1" rx="6"/>
+  <rect x="440" y="180" width="520" height="40" fill="#cbd5e1" rx="6"/>
+  <rect x="440" y="240" width="560" height="40" fill="#cbd5e1" rx="6"/>
+</svg>
