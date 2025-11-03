@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+
 import { SITE, createPageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = createPageMeta({
@@ -15,7 +15,7 @@ export default function ResumePage() {
         <h1 id="resume-title" className="text-3xl font-bold tracking-tight">Resume</h1>
         <p className="mt-2 text-gray-700">Download a PDF version or review the HTML version below.</p>
         <div className="mt-3">
-          <Link className="rounded bg-brand px-4 py-2 font-medium text-white hover:bg-brand-dark" href="/resume.pdf" target="_blank" rel="noopener noreferrer">Download PDF</Link>
+          <a className="rounded bg-brand px-4 py-2 font-medium text-white hover:bg-brand-dark" href="/resume.pdf" target="_blank" rel="noopener noreferrer">Download PDF</a>
         </div>
       </header>
 

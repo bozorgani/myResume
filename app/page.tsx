@@ -16,7 +16,7 @@ export default function HomePage() {
       <section aria-labelledby="hero-title" className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2 space-y-4">
           <h1 id="hero-title" className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Hi, I'm {SITE.name}. I build performant web applications.
+            Hi, I&apos;m {SITE.name}. I build performant web applications.
           </h1>
           <p className="text-lg text-gray-700">
             Expert in React, Next.js, and TypeScript. Focused on Core Web Vitals, a11y, and technical SEO.
@@ -106,7 +106,7 @@ export default function HomePage() {
       {/* CTA */}
       <section aria-labelledby="cta-title" className="rounded-lg border p-6">
         <h2 id="cta-title" className="text-xl font-semibold">Work with me</h2>
-        <p className="mt-2 text-gray-700">Have a project in mind or hiring for a role? I'd love to chat.</p>
+        <p className="mt-2 text-gray-700">Have a project in mind or hiring for a role? I&apos;d love to chat.</p>
         <div className="mt-3">
           <a className="text-brand hover:underline" href="mailto:hello@bozorgani.ir">hello@bozorgani.ir</a>
         </div>

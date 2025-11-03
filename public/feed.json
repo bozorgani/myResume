@@ -1,0 +1,22 @@
+{
+  "version": "https://jsonfeed.org/version/1",
+  "title": "Blog — Mohammad Amin Bozorgani",
+  "home_page_url": "https://bozorgani.ir/blog",
+  "feed_url": "https://bozorgani.ir/feed.json",
+  "items": [
+    {
+      "id": "https://bozorgani.ir/blog/optimize-core-web-vitals-nextjs",
+      "url": "https://bozorgani.ir/blog/optimize-core-web-vitals-nextjs",
+      "title": "Optimizing Core Web Vitals in Next.js",
+      "content_text": "Practical techniques to improve LCP, CLS, and INP in production Next.js apps.",
+      "date_published": "2025-01-15"
+    },
+    {
+      "id": "https://bozorgani.ir/blog/technical-seo-for-developers",
+      "url": "https://bozorgani.ir/blog/technical-seo-for-developers",
+      "title": "Technical SEO for Developers",
+      "content_text": "A developer-first guide to metadata, sitemaps, structured data, and canonical URLs.",
+      "date_published": "2025-02-10"
+    }
+  ]
+}

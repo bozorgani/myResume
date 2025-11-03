@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAllProjects, getProjectBySlug } from '@/lib/projects';
 import { SITE, createPageMeta } from '@/lib/seo';
@@ -58,10 +57,10 @@ export default function ProjectDetailPage({ params }: { params: Params }) {
         <p className="text-gray-700">{project.oneLiner}</p>
         <div className="flex flex-wrap gap-3 text-sm">
           {project.liveUrl && (
-            <Link className="rounded border px-3 py-1 hover:bg-gray-50" href={project.liveUrl} target="_blank" rel="noopener noreferrer">Live Demo</Link>
+            <a className="rounded border px-3 py-1 hover:bg-gray-50" href={project.liveUrl} target="_blank" rel="noopener noreferrer">Live Demo</a>
           )}
           {project.repoUrl && (
-            <Link className="rounded border px-3 py-1 hover:bg-gray-50" href={project.repoUrl} target="_blank" rel="noopener noreferrer">GitHub</Link>
+            <a className="rounded border px-3 py-1 hover:bg-gray-50" href={project.repoUrl} target="_blank" rel="noopener noreferrer">GitHub</a>
           )}
         </div>
       </header>
