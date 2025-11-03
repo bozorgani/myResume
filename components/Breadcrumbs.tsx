@@ -4,7 +4,7 @@ export type Crumb = { name: string; href?: string };
 
 export function Breadcrumbs({ items }: { items: Crumb[] }) {
   return (
-    <nav aria-label="Breadcrumb" className="text-sm text-gray-600">
+    <nav aria-label="مسیر ناوبری" className="text-sm text-gray-600">
       <ol className="flex flex-wrap items-center gap-2">
         {items.map((c, i) => (
           <li key={`${c.name}-${i}`} className="flex items-center gap-2">

@@ -10,21 +10,21 @@ export type Post = {
 export const posts: Post[] = [
   {
     slug: 'optimize-core-web-vitals-nextjs',
-    title: 'Optimizing Core Web Vitals in Next.js',
-    description: 'Practical techniques to improve LCP, CLS, and INP in production Next.js apps.',
+    title: 'بهینه‌سازی Core Web Vitals در Next.js',
+    description: 'تکنیک‌های عملی برای بهبود LCP، CLS و INP در اپ‌های Next.js تولیدی.',
     date: '2025-01-15',
     image: '/images/project-2-placeholder.svg',
     content:
-      'Focus on image optimization, critical CSS, and hydration strategies. Use next/image, preload fonts, and split third-party scripts.'
+      'روی بهینه‌سازی تصاویر، CSS بحرانی و راهبردهای هیدریشن تمرکز کنید. از next/image استفاده کنید، فونت‌ها را preload کنید و اسکریپت‌های ثالث را تقسیم کنید.'
   },
   {
     slug: 'technical-seo-for-developers',
-    title: 'Technical SEO for Developers',
-    description: 'A developer-first guide to metadata, sitemaps, structured data, and canonical URLs.',
+    title: 'سئوی فنی برای توسعه‌دهندگان',
+    description: 'راهنمایی عملی برای متادیتا، سایت‌مپ، داده ساختاریافته و URLهای canonical.',
     date: '2025-02-10',
     image: '/images/project-1-placeholder.svg',
     content:
-      'Leverage structured data with JSON-LD, generate sitemaps post-build, and ensure clean canonical URLs on every page.'
+      'از داده ساختاریافته با JSON-LD بهره بگیرید، پس از بیلد، سایت‌مپ بسازید و برای هر صفحه URL canonical تمیز داشته باشید.'
   }
 ];
 

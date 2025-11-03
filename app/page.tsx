@@ -16,14 +16,14 @@ export default function HomePage() {
       <section aria-labelledby="hero-title" className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2 space-y-4">
           <h1 id="hero-title" className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Hi, I&apos;m {SITE.name}. I build performant web applications.
+            من محمدامین بزرگانی — {SITE.role}
           </h1>
           <p className="text-lg text-gray-700">
-            Expert in React, Next.js, and TypeScript. Focused on Core Web Vitals, a11y, and technical SEO.
+            متخصص جاوااسکریپت با تجربه در ساخت و توسعه وب‌اپلیکیشن‌های مدرن و مقیاس‌پذیر.
           </p>
-          {/* Primary tech stack badges for quick scanning and SEO relevance */}
-          <ul className="flex flex-wrap gap-2" aria-label="Primary tech stack">
-            {['Node.js', 'Express.js', 'Next.js', 'React.js', 'Docker'].map((s) => (
+          {/* نشان‌های فناوری‌های اصلی برای اسکن سریع و سئو */}
+          <ul className="flex flex-wrap gap-2" aria-label="فناوری‌های اصلی">
+            {['Node.js', 'Express.js', 'React.js', 'Next.js', 'MongoDB'].map((s) => (
               <li key={s} className="rounded-md border px-2.5 py-1 text-sm text-gray-800">
                 {s}
               </li>
@@ -31,17 +31,17 @@ export default function HomePage() {
           </ul>
           <div className="flex flex-wrap gap-3">
             <Link href="#featured-projects" className="rounded bg-brand px-4 py-2 font-medium text-white hover:bg-brand-dark">
-              View Featured Projects
+              مشاهده پروژه‌های منتخب
             </Link>
             <Link href="/resume" className="rounded border px-4 py-2 font-medium hover:bg-gray-50">
-              View Resume
+              مشاهده رزومه
             </Link>
           </div>
         </div>
         <div className="flex items-center justify-center">
           <Image
-            src="/images/profile-placeholder.svg"
-            alt="Portrait illustration of Mohammad Amin Bozorgani"
+            src="/images/amin-bozorgani-portrait.webp"
+            alt="پرتره محمدامین بزرگانی"
             width={240}
             height={240}
             priority
@@ -53,28 +53,28 @@ export default function HomePage() {
 
       {/* Featured Projects */}
       <section id="featured-projects" aria-labelledby="featured-title" className="space-y-6">
-        <h2 id="featured-title" className="text-2xl font-semibold">Featured Projects</h2>
+        <h2 id="featured-title" className="text-۲xl font-semibold">پروژه‌های منتخب</h2>
         <div className="grid gap-6 sm:grid-cols-2">
           <article className="group rounded-lg border p-4 transition-colors hover:border-brand" aria-labelledby="proj1-title">
             <div className="aspect-video overflow-hidden rounded bg-gray-100">
               <Image
                 src="/images/project-1-placeholder.svg"
-                alt="Screenshot placeholder for Project One"
+                alt="تصویر نمونه برای پروژه اول"
                 width={800}
                 height={450}
                 sizes="(min-width: 640px) 50vw, 100vw"
                 className="h-full w-full object-cover"
               />
             </div>
-            <h3 id="proj1-title" className="mt-3 text-lg font-semibold">Full Stack Developer Case Study</h3>
-            <p className="text-gray-700">A scalable web application built with Next.js, Node.js, and MongoDB.</p>
-            <ul className="mt-2 flex flex-wrap gap-2 text-sm text-gray-600" aria-label="Technologies used">
+            <h3 id="proj1-title" className="mt-3 text-lg font-semibold">مطالعهٔ موردی توسعه‌دهنده فول‌استک</h3>
+            <p className="text-gray-700">یک اپلیکیشن وب مقیاس‌پذیر با Next.js، Node.js و MongoDB.</p>
+            <ul className="mt-2 flex flex-wrap gap-2 text-sm text-gray-600" aria-label="فناوری‌های استفاده‌شده">
               <li className="rounded bg-gray-100 px-2 py-0.5">Next.js</li>
               <li className="rounded bg-gray-100 px-2 py-0.5">TypeScript</li>
               <li className="rounded bg-gray-100 px-2 py-0.5">MongoDB</li>
             </ul>
             <div className="mt-3">
-              <Link className="text-brand hover:underline" href="/projects/full-stack-developer">Read the case study</Link>
+              <Link className="text-brand hover:underline" href="/projects/full-stack-developer">مطالعهٔ موردی را بخوانید</Link>
             </div>
           </article>
 
@@ -82,22 +82,22 @@ export default function HomePage() {
             <div className="aspect-video overflow-hidden rounded bg-gray-100">
               <Image
                 src="/images/project-2-placeholder.svg"
-                alt="Screenshot placeholder for Project Two"
+                alt="تصویر نمونه برای پروژه دوم"
                 width={800}
                 height={450}
                 sizes="(min-width: 640px) 50vw, 100vw"
                 className="h-full w-full object-cover"
               />
             </div>
-            <h3 id="proj2-title" className="mt-3 text-lg font-semibold">Performance Optimization Toolkit</h3>
-            <p className="text-gray-700">Improving Core Web Vitals with code-splitting and image optimization.</p>
-            <ul className="mt-2 flex flex-wrap gap-2 text-sm text-gray-600" aria-label="Technologies used">
+            <h3 id="proj2-title" className="mt-3 text-lg font-semibold">جعبه‌ابزار بهینه‌سازی عملکرد</h3>
+            <p className="text-gray-700">بهبود Core Web Vitals با تقسیم کد و بهینه‌سازی تصاویر.</p>
+            <ul className="mt-2 flex flex-wrap gap-2 text-sm text-gray-600" aria-label="فناوری‌های استفاده‌شده">
               <li className="rounded bg-gray-100 px-2 py-0.5">React</li>
               <li className="rounded bg-gray-100 px-2 py-0.5">Next/Image</li>
               <li className="rounded bg-gray-100 px-2 py-0.5">Lighthouse</li>
             </ul>
             <div className="mt-3">
-              <Link className="text-brand hover:underline" href="/projects/perf-optimization-toolkit">Read the case study</Link>
+              <Link className="text-brand hover:underline" href="/projects/perf-optimization-toolkit">مطالعهٔ موردی را بخوانید</Link>
             </div>
           </article>
         </div>
@@ -105,11 +105,23 @@ export default function HomePage() {
 
       {/* CTA */}
       <section aria-labelledby="cta-title" className="rounded-lg border p-6">
-        <h2 id="cta-title" className="text-xl font-semibold">Work with me</h2>
-        <p className="mt-2 text-gray-700">Have a project in mind or hiring for a role? I&apos;d love to chat.</p>
+        <h2 id="cta-title" className="text-xl font-semibold">همکاری با من</h2>
+        <p className="mt-2 text-gray-700">پروژه‌ای در ذهن دارید یا به دنبال جذب نیرو هستید؟ خوشحال می‌شوم گفتگو کنیم.</p>
         <div className="mt-3">
           <a className="text-brand hover:underline" href="mailto:hello@bozorgani.ir">hello@bozorgani.ir</a>
         </div>
+      </section>
+
+      {/* Services */}
+      <section aria-labelledby="services-title" className="rounded-lg border p-6">
+        <h2 id="services-title" className="text-xl font-semibold">خدمات برنامه‌نویسی</h2>
+        <ul className="mt-3 list-disc pr-6 text-gray-800">
+          <li>توسعه بک‌اند با Node.js و Express.js</li>
+          <li>طراحی فرانت‌اند با React.js و Next.js</li>
+          <li>طراحی و پیاده‌سازی پایگاه داده MongoDB</li>
+          <li>ساخت RESTful API و وب‌سرویس‌ها</li>
+          <li>توسعه SPA (Single Page Application)</li>
+        </ul>
       </section>
     </div>
   );

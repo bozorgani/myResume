@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { Inter } from 'next/font/google';
+import { Vazirmatn } from 'next/font/google';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SITE, personSchema } from '@/lib/seo';
 import { Schema } from '@/components/Schema';
 import { DevAxe } from '@/components/DevAxe';
 
-// Global metadata with title template ensures consistent branding across pages
+// متادیتای سراسری با الگوی عنوان برای برندسازی یکپارچه در تمام صفحات
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.domain),
   title: {
@@ -16,11 +16,23 @@ export const metadata: Metadata = {
   },
   description: SITE.description,
   alternates: { canonical: SITE.domain },
+  robots: { index: true, follow: true },
+  themeColor: '#0ea5e9',
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' }
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }]
+  },
+  manifest: '/site.webmanifest',
   openGraph: {
     title: `${SITE.name} - ${SITE.role}`,
     description: SITE.description,
     url: SITE.domain,
     siteName: SITE.name,
+    locale: 'fa_IR',
     type: 'website',
     images: [{ url: SITE.ogImage }]
   },
@@ -29,18 +41,31 @@ export const metadata: Metadata = {
     title: `${SITE.name} - ${SITE.role}`,
     description: SITE.description,
     images: [SITE.ogImage]
-  }
+  },
+  verification: {}
 };
 
-const inter = Inter({ subsets: ['latin'], display: 'swap' });
+const vazirmatn = Vazirmatn({ subsets: ['arabic'], display: 'swap' });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const webSiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE.name,
+    url: SITE.domain,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${SITE.domain}/search?q={search_term_string}`,
+      'query-input': 'required name=search_term_string'
+    }
+  } as const;
   return (
-    <html lang="en" className="scroll-smooth">
-      <body className={`antialiased ${inter.className}`}>
+    <html lang="fa" dir="rtl" className="scroll-smooth">
+      <body className={`antialiased ${vazirmatn.className}`}>
         <DevAxe />
-        {/* Person schema is placed globally so search engines understand the entity */}
+        {/* Schema برای شناسایی شخص توسط موتورهای جستجو */}
         <Schema json={personSchema} />
+        <Schema json={webSiteSchema} />
         <Header />
         <main id="main-content" className="mx-auto max-w-5xl px-4 py-10">
           {children}

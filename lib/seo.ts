@@ -1,14 +1,14 @@
 export const SITE = {
-  name: 'Mohammad Amin Bozorgani',
-  role: 'Full Stack Developer',
+  name: 'محمدامین بزرگانی',
+  role: 'برنامه‌نویس و توسعه‌دهنده ارشد وب',
   domain: 'https://bozorgani.ir',
   twitter: '@',
   description:
-    'A professional portfolio showcasing the projects and expertise of Mohammad Amin Bozorgani, a software developer specializing in Next.js, React, and Node.js.',
+    'نمونه‌کار حرفه‌ای محمدامین بزرگانی؛ توسعه‌دهنده نرم‌افزار با تخصص در Next.js، React و Node.js و تمرکز بر کارایی، دسترس‌پذیری و سئوی فنی.',
   ogImage: '/images/og-default.png'
 } as const;
 
-// Generates consistent metadata per page including Open Graph and Twitter cards
+// تولید متادیتای یکپارچه برای هر صفحه شامل Open Graph و Twitter cards
 export function createPageMeta({
   title,
   description,

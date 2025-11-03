@@ -12,10 +12,10 @@ export type Project = {
 export const projects: Project[] = [
   {
     slug: 'full-stack-developer',
-    title: 'Full Stack Developer Case Study',
-    oneLiner: 'A scalable web application built with Next.js, Node.js, and MongoDB.',
+    title: 'مطالعهٔ موردی توسعه‌دهنده فول‌استک',
+    oneLiner: 'یک اپلیکیشن وب مقیاس‌پذیر با Next.js، Node.js و MongoDB.',
     description:
-      'Designed and implemented a scalable web platform focusing on performance, accessibility, and SEO. Implemented SSR/SSG strategies, API design, and CI/CD.',
+      'طراحی و پیاده‌سازی یک پلتفرم وب مقیاس‌پذیر با تمرکز بر عملکرد، دسترس‌پذیری و سئو. به‌کارگیری راهبردهای SSR/SSG، طراحی API و استقرار CI/CD.',
     tech: ['Next.js', 'TypeScript', 'Node.js', 'MongoDB', 'TailwindCSS'],
     image: '/images/project-1-placeholder.svg',
     liveUrl: 'https://bozorgani.ir/demo/full-stack',
@@ -23,10 +23,10 @@ export const projects: Project[] = [
   },
   {
     slug: 'perf-optimization-toolkit',
-    title: 'Performance Optimization Toolkit',
-    oneLiner: 'Improving Core Web Vitals with code-splitting and image optimization.',
+    title: 'جعبه‌ابزار بهینه‌سازی عملکرد',
+    oneLiner: 'بهبود Core Web Vitals با تقسیم کد و بهینه‌سازی تصاویر.',
     description:
-      'A toolkit and methodology to systematically improve LCP, CLS, and INP in production apps using profiling, code-splitting, and optimized media delivery.',
+      'مجموعه ابزار و روش‌شناسی برای بهبود سیستماتیک LCP، CLS و INP در اپ‌های تولیدی با استفاده از پروفایلینگ، تقسیم کد و تحویل بهینه رسانه.',
     tech: ['React', 'Next/Image', 'Lighthouse', 'Web Vitals'],
     image: '/images/project-2-placeholder.svg',
     liveUrl: 'https://bozorgani.ir/demo/perf-toolkit',

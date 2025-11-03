@@ -8,7 +8,7 @@ export function ProjectCard({ project }: { project: Project }) {
       <div className="aspect-video overflow-hidden rounded bg-gray-100">
         <Image
           src={project.image}
-          alt={`Screenshot of ${project.title}`}
+          alt={`تصویر ${project.title}`}
           width={800}
           height={450}
           sizes="(min-width: 640px) 50vw, 100vw"
@@ -17,13 +17,13 @@ export function ProjectCard({ project }: { project: Project }) {
       </div>
       <h3 id={`${project.slug}-title`} className="mt-3 text-lg font-semibold">{project.title}</h3>
       <p className="text-gray-700">{project.oneLiner}</p>
-      <ul className="mt-2 flex flex-wrap gap-2 text-sm text-gray-600" aria-label="Technologies used">
+      <ul className="mt-2 flex flex-wrap gap-2 text-sm text-gray-600" aria-label="فناوری‌های استفاده‌شده">
         {project.tech.map((t) => (
           <li key={t} className="rounded bg-gray-100 px-2 py-0.5">{t}</li>
         ))}
       </ul>
       <div className="mt-3">
-        <Link className="text-brand hover:underline" href={`/projects/${project.slug}`}>Read the case study</Link>
+        <Link className="text-brand hover:underline" href={`/projects/${project.slug}`}>مطالعهٔ موردی را بخوانید</Link>
       </div>
     </article>
   );

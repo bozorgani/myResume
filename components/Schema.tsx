@@ -1,11 +1,11 @@
 import React from 'react';
 
-// Injects JSON-LD structured data into <head> for SEO
+// تزریق داده ساختاریافته JSON-LD به <head> برای سئو
 export function Schema({ json }: { json: Record<string, unknown> }) {
   return (
     <script
       type="application/ld+json"
-      // Using dangerouslySetInnerHTML is the recommended way to embed JSON-LD
+      // استفاده از dangerouslySetInnerHTML روش توصیه‌شده برای تعبیه JSON-LD است
       dangerouslySetInnerHTML={{ __html: JSON.stringify(json) }}
     />
   );
