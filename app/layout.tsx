@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Vazirmatn } from 'next/font/google';
 import { Header } from '@/components/Header';
@@ -17,7 +17,6 @@ export const metadata: Metadata = {
   description: SITE.description,
   alternates: { canonical: SITE.domain },
   robots: { index: true, follow: true },
-  themeColor: '#0ea5e9',
   icons: {
     icon: [
       { url: '/favicon.ico' },
@@ -43,6 +42,10 @@ export const metadata: Metadata = {
     images: [SITE.ogImage]
   },
   verification: {}
+};
+
+export const viewport: Viewport = {
+  themeColor: '#0ea5e9'
 };
 
 const vazirmatn = Vazirmatn({ subsets: ['arabic'], display: 'swap' });
