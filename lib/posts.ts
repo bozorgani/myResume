@@ -53,23 +53,42 @@ function renderContentToHtml(content: any): string {
       if (Array.isArray(node)) return node.map(walk).join('');
       const type = node.type;
       const text = node.text || '';
-      const marks = (node.marks || []).map((m: any) => m.type);
-      const openMarks = (s: string) => marks.reduce((acc: string, m: string) => {
-        if (m === 'bold' || m === 'strong') return `<strong>${acc}`;
-        if (m === 'italic' || m === 'em') return `<em>${acc}`;
-        if (m === 'code') return `<code>${acc}`;
-        return acc;
-      }, s);
-      const closeMarks = (s: string) => marks.reduceRight((acc: string, m: string) => {
-        if (m === 'bold' || m === 'strong') return `${acc}</strong>`;
-        if (m === 'italic' || m === 'em') return `${acc}</em>`;
-        if (m === 'code') return `${acc}</code>`;
-        return acc;
-      }, '');
+      const marks = (node.marks || []).map((m: any) => m);
+      const openMarks = (s: string) => {
+        let result = s;
+        for (const mark of marks) {
+          const type = mark.type;
+          if (type === 'bold' || type === 'strong') result = `<strong>${result}`;
+          else if (type === 'italic' || type === 'em') result = `<em>${result}`;
+          else if (type === 'code') result = `<code>${result}`;
+          else if (type === 'link') {
+            const href = mark.attrs?.href || '#';
+            const target = mark.attrs?.target || '_self';
+            const rel = target === '_blank' ? 'noopener noreferrer' : '';
+            result = `<a href="${href}"${target ? ` target="${target}"` : ''}${rel ? ` rel="${rel}"` : ''}>${result}`;
+          }
+        }
+        return result;
+      };
+      const closeMarks = (s: string) => {
+        let result = s;
+        // Close marks in reverse order
+        for (let i = marks.length - 1; i >= 0; i--) {
+          const mark = marks[i];
+          const type = mark.type;
+          if (type === 'bold' || type === 'strong') result = `${result}</strong>`;
+          else if (type === 'italic' || type === 'em') result = `${result}</em>`;
+          else if (type === 'code') result = `${result}</code>`;
+          else if (type === 'link') result = `${result}</a>`;
+        }
+        return result;
+      };
       const children = node.content ? walk(node.content) : '';
       switch (type) {
-        case 'text':
-          return `${openMarks(text)}${closeMarks('')}`;
+        case 'text': {
+          const markedText = openMarks(text);
+          return closeMarks(markedText);
+        }
         case 'paragraph':
           return `<p>${children}</p>`;
         case 'heading': {
@@ -88,6 +107,28 @@ function renderContentToHtml(content: any): string {
           return '<hr />';
         case 'hardBreak':
           return '<br />';
+        case 'codeBlock': {
+          const language = node.attrs?.language || '';
+          const langAttr = language ? ` class="language-${language}"` : '';
+          // For code blocks, extract plain text without mark processing
+          const extractCodeText = (contentNode: any): string => {
+            if (!contentNode) return '';
+            if (typeof contentNode === 'string') return contentNode;
+            if (Array.isArray(contentNode)) return contentNode.map(extractCodeText).join('');
+            if (contentNode.type === 'text') return contentNode.text || '';
+            if (contentNode.content) return extractCodeText(contentNode.content);
+            return '';
+          };
+          const codeText = extractCodeText(node.content || '');
+          // Escape HTML entities in code blocks
+          const escapedContent = codeText
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+          return `<pre><code${langAttr}>${escapedContent}</code></pre>`;
+        }
         case 'image': {
           const src = buildMediaUrl(node.attrs?.src) || '';
           const alt = node.attrs?.alt || '';

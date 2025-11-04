@@ -103,92 +103,136 @@ export default async function BlogPostPage({ params }: { params: Params }) {
       <Schema json={breadcrumbSchema} />
       <Breadcrumbs items={[{ name: 'صفحه اصلی', href: '/' }, { name: 'بلاگ', href: '/blog' }, { name: post.title }]} />
 
-      <header className="mt-4 rounded-2xl border bg-white p-4 sm:p-6 shadow-sm">
-        {post.image && (
-          <div className="relative mb-4 sm:mb-5 overflow-hidden rounded-xl">
-            <div className="relative aspect-[16/9] w-full">
-              <Image
-                src={post.image}
-                alt={`کاور ${post.title}`}
-                fill
-                sizes="(min-width: 1024px) 1000px, 100vw"
-                className="object-cover"
-                priority
-              />
-            </div>
-          </div>
-        )}
-        <h1 id="post-title" className="text-2xl sm:text-3xl font-bold tracking-tight">{post.title}</h1>
-        <div className="mt-3 flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
-          <time dateTime={new Date(post.date).toISOString()}>{new Date(post.date).toLocaleDateString('fa-IR')}</time>
-          <span>•</span>
-          {post.readingTime ? <span>{post.readingTime} دقیقه مطالعه</span> : <span>مطالعه سریع</span>}
-        </div>
-        {(post.category || (post.tags && post.tags.length > 0)) && (
-          <div className="mt-3 flex flex-wrap items-center gap-2 sm:gap-3">
-            {post.category && (
-              <Link 
-                href={`/blog?category=${post.category.slug}`}
-                className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-xs sm:text-sm text-gray-700 hover:bg-gray-200 transition-colors"
-              >
-                <span>📂</span>
-                <span>{post.category.name}</span>
-              </Link>
-            )}
-            {post.tags && post.tags.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2">
-                {post.tags.map((tag) => (
-                  <Link
-                    key={tag.slug}
-                    href={`/blog?tag=${tag.slug}`}
-                    className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-xs text-blue-700 hover:bg-blue-100 transition-colors"
-                  >
-                    <span>🏷️</span>
-                    <span>{tag.name}</span>
-                  </Link>
-                ))}
+      {/* Article Header */}
+      <header className="mt-6 mb-8">
+        <div className="rounded-2xl border bg-white p-6 sm:p-8 lg:p-10 shadow-sm">
+          {post.image && (
+            <div className="relative mb-6 sm:mb-8 overflow-hidden rounded-xl shadow-md">
+              <div className="relative aspect-[16/9] w-full">
+                <Image
+                  src={post.image}
+                  alt={`کاور ${post.title}`}
+                  fill
+                  sizes="(min-width: 1024px) 1200px, 100vw"
+                  className="object-cover"
+                  priority
+                />
               </div>
+            </div>
+          )}
+          
+          <h1 id="post-title" className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 leading-tight mb-4">
+            {post.title}
+          </h1>
+          
+          {post.description && (
+            <p className="text-lg sm:text-xl text-gray-600 mb-6 leading-relaxed">
+              {post.description}
+            </p>
+          )}
+
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm sm:text-base text-gray-600 mb-4">
+            <time dateTime={new Date(post.date).toISOString()} className="flex items-center gap-1">
+              <span>📅</span>
+              <span>{new Date(post.date).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            </time>
+            <span className="text-gray-400">•</span>
+            {post.readingTime ? (
+              <span className="flex items-center gap-1">
+                <span>⏱️</span>
+                <span>{post.readingTime} دقیقه مطالعه</span>
+              </span>
+            ) : (
+              <span>مطالعه سریع</span>
             )}
           </div>
-        )}
-        {post.description && <p className="mt-3 sm:mt-4 text-sm sm:text-base text-gray-700">{post.description}</p>}
+
+          {(post.category || (post.tags && post.tags.length > 0)) && (
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-4 border-t border-gray-200">
+              {post.category && (
+                <Link 
+                  href={`/blog?category=${post.category.slug}`}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors"
+                >
+                  <span>📂</span>
+                  <span>{post.category.name}</span>
+                </Link>
+              )}
+              {post.tags && post.tags.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2">
+                  {post.tags.map((tag) => (
+                    <Link
+                      key={tag.slug}
+                      href={`/blog?tag=${tag.slug}`}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-sm text-blue-700 hover:bg-blue-100 transition-colors"
+                    >
+                      <span>🏷️</span>
+                      <span>{tag.name}</span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </header>
 
-      <div className="mt-6 sm:mt-8 grid gap-6 sm:gap-8 lg:grid-cols-[1fr_280px]">
-        <div className="prose prose-sm sm:prose-base max-w-none prose-headings:scroll-mt-24">
-          <div className="text-sm sm:text-base text-gray-800" dangerouslySetInnerHTML={{ __html: contentWithIds }} />
+      {/* Article Content */}
+      <div className="grid gap-8 lg:grid-cols-[1fr_300px] lg:gap-12">
+        <div className="min-w-0">
+          <div 
+            className="blog-content"
+            dangerouslySetInnerHTML={{ __html: contentWithIds }} 
+          />
         </div>
+        
         {toc.length > 0 && (
-          <aside className="top-28 h-max rounded-xl border bg-white p-3 sm:p-4 text-xs sm:text-sm shadow-sm lg:sticky" aria-label="فهرست مطالب">
-            <h2 className="mb-2 sm:mb-3 text-sm sm:text-base font-semibold">فهرست مطالب</h2>
-            <nav>
-              <ul className="space-y-1.5 sm:space-y-2">
-                {toc.map((h) => (
-                  <li key={h.id} className={h.level === 3 ? 'pr-2 sm:pr-3' : ''}>
-                    <a href={`#${h.id}`} className="text-gray-700 hover:text-black">
-                      {h.text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+          <aside className="lg:sticky lg:top-24 h-max">
+            <div className="rounded-xl border bg-white p-4 sm:p-5 shadow-sm">
+              <h2 className="mb-4 text-base font-bold text-gray-900">فهرست مطالب</h2>
+              <nav>
+                <ul className="space-y-2">
+                  {toc.map((h) => (
+                    <li key={h.id} className={h.level === 3 ? 'pr-4' : ''}>
+                      <a 
+                        href={`#${h.id}`} 
+                        className="block text-sm text-gray-700 hover:text-brand dark:hover:text-brand-dark transition-colors leading-relaxed"
+                      >
+                        {h.text}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
           </aside>
         )}
       </div>
 
+      {/* Navigation */}
       {(prev || next) && (
-        <nav className="mt-8 sm:mt-10 grid gap-3 sm:gap-4 sm:grid-cols-2" aria-label="پیمایش مقاله‌ها">
+        <nav className="mt-12 sm:mt-16 grid gap-4 sm:grid-cols-2" aria-label="پیمایش مقاله‌ها">
           {prev && (
-            <a href={`/blog/${prev.slug}`} className="group rounded-xl border bg-white p-3 sm:p-4 shadow-sm hover:bg-gray-50">
-              <div className="mb-1 text-xs text-gray-500">مقاله قبلی</div>
-              <div className="line-clamp-2 text-sm sm:text-base font-medium group-hover:underline">{prev.title}</div>
-            </a>
+            <Link 
+              href={`/blog/${prev.slug}`} 
+              className="group rounded-xl border bg-white p-5 sm:p-6 shadow-sm hover:bg-gray-50 hover:shadow-md transition-all"
+            >
+              <div className="mb-2 text-xs font-medium text-gray-500 uppercase tracking-wide">مقاله قبلی</div>
+              <div className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-brand transition-colors line-clamp-2">
+                {prev.title}
+              </div>
+            </Link>
           )}
           {next && (
-            <a href={`/blog/${next.slug}`} className="group rounded-xl border bg-white p-3 sm:p-4 shadow-sm hover:bg-gray-50 sm:justify-self-end">
-              <div className="mb-1 text-xs text-gray-500">مقاله بعدی</div>
-              <div className="line-clamp-2 text-sm sm:text-base font-medium group-hover:underline">{next.title}</div>
-            </a>
+            <Link 
+              href={`/blog/${next.slug}`} 
+              className="group rounded-xl border bg-white p-5 sm:p-6 shadow-sm hover:bg-gray-50 hover:shadow-md transition-all sm:justify-self-end"
+            >
+              <div className="mb-2 text-xs font-medium text-gray-500 uppercase tracking-wide text-left sm:text-right">مقاله بعدی</div>
+              <div className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-brand transition-colors line-clamp-2">
+                {next.title}
+              </div>
+            </Link>
           )}
         </nav>
       )}
