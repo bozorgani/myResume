@@ -1,7 +1,7 @@
 export const SITE = {
   name: 'محمدامین بزرگانی',
   role: 'برنامه‌نویس و توسعه‌دهنده ارشد وب',
-  domain: 'https://bozorgani.ir',
+  domain: 'https://www.bozorgani.ir',
   twitter: '@',
   description:
     'نمونه‌کار حرفه‌ای محمدامین بزرگانی؛ توسعه‌دهنده نرم‌افزار با تخصص در Next.js، React و Node.js و تمرکز بر کارایی، دسترس‌پذیری و سئوی فنی.',
