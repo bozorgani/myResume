@@ -19,9 +19,11 @@ export type Post = {
 
 const CMS_API_BASE = process.env.NEXT_PUBLIC_CMS_API || 'http://localhost:4000';
 
-// Log API base URL in development for debugging
-if (typeof window === 'undefined' && process.env.NODE_ENV === 'development') {
+// Log API base URL for debugging (both dev and production)
+if (typeof window === 'undefined') {
   console.log(`[posts.ts] CMS_API_BASE: ${CMS_API_BASE}`);
+  console.log(`[posts.ts] NODE_ENV: ${process.env.NODE_ENV}`);
+  console.log(`[posts.ts] NEXT_PUBLIC_CMS_API from env: ${process.env.NEXT_PUBLIC_CMS_API || 'NOT SET'}`);
 }
 
 function buildMediaUrl(path?: string): string | undefined {
@@ -129,8 +131,10 @@ function mapCmsPostToSitePost(p: any): Post {
 export async function getAllPosts(): Promise<Post[]> {
   try {
     const url = `${CMS_API_BASE}/v1/posts?status=published&limit=100&t=${Date.now()}`;
+    console.log(`[getAllPosts] Attempting to fetch from: ${url}`);
+    
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
     
     try {
       const res = await fetch(url, { 
@@ -139,20 +143,37 @@ export async function getAllPosts(): Promise<Post[]> {
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
-          'Expires': '0'
+          'Expires': '0',
+          'Accept': 'application/json'
         }
       });
       clearTimeout(timeoutId);
       
+      console.log(`[getAllPosts] Response status: ${res.status} ${res.statusText}`);
+      
       if (!res.ok) {
+        const errorText = await res.text().catch(() => 'Could not read error response');
         console.error(`[getAllPosts] API returned ${res.status} ${res.statusText} for ${url}`);
+        console.error(`[getAllPosts] Error response: ${errorText}`);
         return [];
       }
       
       const data = await res.json();
+      console.log(`[getAllPosts] Received data:`, { 
+        hasItems: !!data?.items, 
+        itemsCount: Array.isArray(data?.items) ? data.items.length : 0,
+        total: data?.total 
+      });
+      
       const items = Array.isArray(data?.items) ? (data.items as unknown[]) : [];
+      if (items.length === 0) {
+        console.warn(`[getAllPosts] No items in response. Full response:`, JSON.stringify(data, null, 2));
+      }
+      
       const mapped = items.map(mapCmsPostToSitePost) as Post[];
-      return mapped.sort((a: Post, b: Post) => (a.date < b.date ? 1 : -1));
+      const sorted = mapped.sort((a: Post, b: Post) => (a.date < b.date ? 1 : -1));
+      console.log(`[getAllPosts] Returning ${sorted.length} posts`);
+      return sorted;
     } catch (fetchError) {
       clearTimeout(timeoutId);
       // If fetch fails (network error, timeout, etc.), return empty array
@@ -161,13 +182,21 @@ export async function getAllPosts(): Promise<Post[]> {
         return [];
       }
       console.error(`[getAllPosts] Fetch error for ${url}:`, fetchError);
+      if (fetchError instanceof Error) {
+        console.error(`[getAllPosts] Error details:`, {
+          name: fetchError.name,
+          message: fetchError.message,
+          stack: fetchError.stack
+        });
+      }
       throw fetchError; // Re-throw to be caught by outer catch
     }
   } catch (error) {
     // Log error but don't crash - return empty array if API is unavailable
     console.error(`[getAllPosts] Error fetching posts from ${CMS_API_BASE}:`, error);
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Make sure NEXT_PUBLIC_CMS_API is set correctly');
+    console.error(`[getAllPosts] Make sure NEXT_PUBLIC_CMS_API is set correctly. Current value: ${CMS_API_BASE}`);
+    if (error instanceof Error) {
+      console.error(`[getAllPosts] Error type: ${error.constructor.name}`);
     }
     return [];
   }
