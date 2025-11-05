@@ -1,8 +1,8 @@
 export const SITE = {
   name: 'محمدامین بزرگانی',
   role: 'برنامه‌نویس و توسعه‌دهنده ارشد وب',
-  domain: 'https://www.bozorgani.ir',
-  twitter: '@',
+  domain: 'https://bozorgani.ir',
+  twitter: '@bozorgani',
   description:
     'نمونه‌کار حرفه‌ای محمدامین بزرگانی؛ توسعه‌دهنده نرم‌افزار با تخصص در Next.js، React و Node.js و تمرکز بر کارایی، دسترس‌پذیری و سئوی فنی.',
   ogImage: '/images/og-default.png'
@@ -31,13 +31,21 @@ export function createPageMeta({
       url,
       siteName: SITE.name,
       type: 'website',
-      images: [{ url: ogImage }]
+      images: [{ url: ogImage, alt: `${SITE.name} - ${SITE.role}` }]
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [ogImage]
+      images: [ogImage],
+      site: SITE.twitter,
+      creator: SITE.twitter
+    },
+    // Extra meta for accessibility of previews
+    // @ts-expect-error additional meta
+    other: {
+      'twitter:image:alt': `${SITE.name} - ${SITE.role}`,
+      'og:image:alt': `${SITE.name} - ${SITE.role}`
     }
   } satisfies import('next').Metadata;
 }

@@ -6,6 +6,7 @@ import { Footer } from '@/components/Footer';
 import { SITE, personSchema } from '@/lib/seo';
 import { Schema } from '@/components/Schema';
 import { DevAxe } from '@/components/DevAxe';
+import { ThemeScript } from '@/components/ThemeScript';
 
 // متادیتای سراسری با الگوی عنوان برای برندسازی یکپارچه در تمام صفحات
 export const metadata: Metadata = {
@@ -33,18 +34,22 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     locale: 'fa_IR',
     type: 'website',
-    images: [{ url: SITE.ogImage }]
+    images: [{ url: SITE.ogImage, alt: `${SITE.name} - ${SITE.role}` }]
   },
   twitter: {
     card: 'summary_large_image',
     title: `${SITE.name} - ${SITE.role}`,
     description: SITE.description,
-    images: [SITE.ogImage]
+    images: [SITE.ogImage],
+    site: SITE.twitter,
+    creator: SITE.twitter
   },
   verification: {}
 };
 
 export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
   themeColor: '#0ea5e9'
 };
 
@@ -64,7 +69,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   } as const;
   return (
     <html lang="fa" dir="rtl" className="scroll-smooth">
-      <body className={`antialiased ${vazirmatn.className}`}>
+      <body className={`antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 ${vazirmatn.className}`}>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:shadow">پرش به محتوای اصلی</a>
+        <ThemeScript />
         <DevAxe />
         {/* Schema برای شناسایی شخص توسط موتورهای جستجو */}
         <Schema json={personSchema} />

@@ -4,6 +4,7 @@ import type { Config } from 'tailwindcss';
 // - 'content' paths ensure purging of unused styles for minimal CSS.
 // - Custom color tokens keep design consistent and accessible.
 const config: Config = {
+  darkMode: 'class',
   content: [
     './app/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
