@@ -20,11 +20,11 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
   icons: {
     icon: [
-      { url: '/favicon.ico' },
-      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' }
+      { url: '/images/og-default.png', type: 'image/png' }
     ],
-    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }]
+    apple: [
+      { url: '/images/og-default.png', type: 'image/png' }
+    ]
   },
   manifest: '/site.webmanifest',
   openGraph: {
@@ -69,9 +69,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   } as const;
   return (
     <html lang="fa" dir="rtl" className="scroll-smooth">
+      <head>
+        <ThemeScript />
+      </head>
       <body className={`antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 ${vazirmatn.className}`}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:shadow">پرش به محتوای اصلی</a>
-        <ThemeScript />
         <DevAxe />
         {/* Schema برای شناسایی شخص توسط موتورهای جستجو */}
         <Schema json={personSchema} />

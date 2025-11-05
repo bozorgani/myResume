@@ -17,13 +17,13 @@ export function CertificatesSection() {
   return (
     <section id="certificates" aria-labelledby="certificates-title" className="rounded-lg border p-6 space-y-6 dark:border-gray-800">
       <h2 id="certificates-title" className="text-xl font-semibold">گواهینامه‌ها</h2>
-      <ul className="grid gap-4 sm:grid-cols-2">
+      <ul className="grid gap-5 sm:grid-cols-2 md:grid-cols-3">
         {certificates.map((c, idx) => (
-          <li key={idx} className="rounded-md bg-gray-50 p-4 dark:bg-gray-900">
-            <div className="flex items-start gap-4">
-              <div className="h-16 w-16 shrink-0 overflow-hidden rounded bg-gray-100 dark:bg-gray-800">
+          <li key={idx} className="rounded-lg bg-gray-50 p-5 shadow-sm ring-1 ring-gray-100 transition-shadow hover:shadow-md dark:bg-gray-900 dark:ring-gray-800">
+            <div className="flex items-start gap-5">
+              <div className="h-24 w-24 shrink-0 overflow-hidden rounded-md bg-gray-100 dark:bg-gray-800">
                 {c.image ? (
-                  <Image src={c.image} alt={`لوگوی ${c.issuer}`} width={64} height={64} className="h-full w-full object-contain" />
+                  <Image src={c.image} alt={`لوگوی ${c.issuer}`} width={96} height={96} className="h-full w-full object-contain" />
                 ) : null}
               </div>
               <div className="min-w-0 flex-1">

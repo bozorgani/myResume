@@ -27,18 +27,17 @@ export function ExperienceSection() {
   return (
     <section id="experience" aria-labelledby="experience-title" className="rounded-lg border p-6 space-y-6 dark:border-gray-800">
       <h2 id="experience-title" className="text-xl font-semibold">تجربه و سوابق</h2>
-      <ol className="relative border-s dark:border-gray-800">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {experiences.map((exp, idx) => (
-          <li key={idx} className="ms-6 py-4">
-            <span className="absolute -start-2 mt-2 h-4 w-4 rounded-full border bg-white dark:bg-gray-900 dark:border-gray-700" />
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <h3 className="font-medium">{exp.role} • {exp.company}</h3>
-              <time className="text-sm text-gray-600 dark:text-gray-400">{exp.start} — {exp.end}</time>
+          <article key={idx} className="rounded-lg bg-gray-50 p-4 ring-1 ring-gray-100 transition-shadow hover:shadow-sm dark:bg-gray-900 dark:ring-gray-800">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="font-medium leading-6">{exp.role} • {exp.company}</h3>
+              <time className="shrink-0 text-xs text-gray-600 dark:text-gray-400">{exp.start} — {exp.end}</time>
             </div>
-            <p className="mt-1 text-gray-700 text-sm dark:text-gray-300">{exp.summary}</p>
-          </li>
+            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">{exp.summary}</p>
+          </article>
         ))}
-      </ol>
+      </div>
     </section>
   );
 }

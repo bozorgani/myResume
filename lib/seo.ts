@@ -3,6 +3,8 @@ export const SITE = {
   role: 'برنامه‌نویس و توسعه‌دهنده ارشد وب',
   domain: 'https://bozorgani.ir',
   twitter: '@bozorgani',
+  github: 'https://github.com/bozorgani',
+  linkedin: 'https://www.linkedin.com/in/bozorgani/',
   description:
     'نمونه‌کار حرفه‌ای محمدامین بزرگانی؛ توسعه‌دهنده نرم‌افزار با تخصص در Next.js، React و Node.js و تمرکز بر کارایی، دسترس‌پذیری و سئوی فنی.',
   ogImage: '/images/og-default.png'
@@ -55,7 +57,7 @@ export const personSchema = {
   name: SITE.name,
   jobTitle: SITE.role,
   url: SITE.domain,
-  sameAs: [SITE.domain]
+  sameAs: [SITE.domain, SITE.github, SITE.linkedin]
 };
 
 

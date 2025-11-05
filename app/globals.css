@@ -20,6 +20,38 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
   max-width: 100%;
 }
 
+/* Dark mode overrides for blog content */
+.dark .blog-content { color: #e5e7eb; }
+.dark .blog-content p { color: #e5e7eb; }
+.dark .blog-content h1,
+.dark .blog-content h2,
+.dark .blog-content h3,
+.dark .blog-content h4,
+.dark .blog-content h5,
+.dark .blog-content h6 { color: #f3f4f6; }
+.dark .blog-content h2 { border-bottom-color: #374151; }
+.dark .blog-content a { color: #93c5fd; }
+.dark .blog-content a:hover { color: #bfdbfe; }
+.dark .blog-content strong { color: #f9fafb; }
+.dark .blog-content blockquote {
+  color: #e5e7eb;
+  border-right-color: #374151;
+  background-color: #0b1220;
+}
+.dark .blog-content hr { border-top-color: #374151; }
+.dark .blog-content code {
+  background-color: #111827;
+  color: #fca5a5;
+}
+.dark .blog-content pre {
+  background-color: #0b1220;
+  color: #e5e7eb;
+}
+.dark .blog-content thead { border-bottom-color: #374151; }
+.dark .blog-content thead th { color: #e5e7eb; }
+.dark .blog-content tbody tr { border-bottom-color: #374151; }
+.dark .blog-content tbody tr:nth-child(even) { background-color: #0f172a; }
+
 /* Paragraphs */
 .blog-content p {
   margin-top: 1.25em;
