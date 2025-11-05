@@ -42,7 +42,6 @@ export function createPageMeta({
       creator: SITE.twitter
     },
     // Extra meta for accessibility of previews
-    // @ts-expect-error additional meta
     other: {
       'twitter:image:alt': `${SITE.name} - ${SITE.role}`,
       'og:image:alt': `${SITE.name} - ${SITE.role}`

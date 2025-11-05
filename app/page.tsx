@@ -85,11 +85,9 @@ export default function HomePage() {
       <SkillsSection />
 
       {/* Projects */}
-      {/* @ts-expect-error Async Server Component */}
       <HomeProjectsSection />
 
       {/* Blog */}
-      {/* @ts-expect-error Async Server Component */}
       <HomeBlogSection />
 
       {/* Experience */}
