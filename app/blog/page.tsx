@@ -15,7 +15,7 @@ export const metadata: Metadata = createPageMeta({
   url: `${SITE.domain}/blog`
 });
 
-export default async function BlogPage({ searchParams }: { searchParams?: { q?: string; page?: string } }) {
+export default async function BlogPage({ searchParams }: { searchParams?: { q?: string; page?: string; category?: string; tag?: string } }) {
   let posts: Awaited<ReturnType<typeof getAllPosts>>;
   try {
     posts = await getAllPosts();
@@ -25,13 +25,25 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
   }
   
   const query = (searchParams?.q || '').trim();
+  const categorySlug = searchParams?.category;
+  const tagSlug = searchParams?.tag;
 
-  const filtered = query
-    ? posts.filter((p) => {
-        const hay = `${p.title} ${p.description}`.toLowerCase();
-        return hay.includes(query.toLowerCase());
-      })
-    : posts;
+  let filtered = posts;
+  
+  if (categorySlug) {
+    filtered = filtered.filter((p) => p.category?.slug === categorySlug);
+  }
+  
+  if (tagSlug) {
+    filtered = filtered.filter((p) => p.tags?.some((tag) => tag.slug === tagSlug));
+  }
+
+  if (query) {
+    filtered = filtered.filter((p) => {
+      const hay = `${p.title} ${p.description}`.toLowerCase();
+      return hay.includes(query.toLowerCase());
+    });
+  }
 
   const pageSize = 9;
   const currentPage = Math.max(1, parseInt(searchParams?.page || '1', 10) || 1);
@@ -95,6 +107,17 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
                 <span>•</span>
                 {first.readingTime ? <span>{first.readingTime} دقیقه مطالعه</span> : <span>مطالعه سریع</span>}
               </div>
+              {first.category && (
+                <div className="mt-3 sm:mt-4">
+                  <Link 
+                    href={`/blog?category=${first.category.slug}`}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <span>📂</span>
+                    <span>{first.category.name}</span>
+                  </Link>
+                </div>
+              )}
               <Link href={`/blog/${first.slug}`} className="mt-4 sm:mt-6 inline-flex items-center gap-2 rounded-md bg-black px-3 py-2 text-sm sm:text-base sm:px-4 text-white hover:bg-gray-900">
                 مطالعه مقاله
               </Link>
@@ -118,8 +141,41 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
             <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden>
               🔎
             </span>
+            {categorySlug && <input type="hidden" name="category" value={categorySlug} />}
+            {tagSlug && <input type="hidden" name="tag" value={tagSlug} />}
           </form>
         </div>
+        {(categorySlug || tagSlug) && (
+          <div className="mb-4 sm:mb-6 flex flex-wrap items-center gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-400">فیلتر فعال:</span>
+            {categorySlug && (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <span>📂</span>
+                <span>{posts.find((p) => p.category?.slug === categorySlug)?.category?.name || categorySlug}</span>
+                <a 
+                  href={query || tagSlug ? `/blog?${new URLSearchParams({ ...(query ? { q: query } : {}), ...(tagSlug ? { tag: tagSlug } : {}) }).toString()}` : '/blog'}
+                  className="hover:text-red-600 dark:hover:text-red-400"
+                  aria-label="حذف فیلتر دسته‌بندی"
+                >
+                  ✕
+                </a>
+              </span>
+            )}
+            {tagSlug && (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 text-sm font-medium text-blue-700 dark:text-blue-300">
+                <span>🏷️</span>
+                <span>{posts.find((p) => p.tags?.some((tag) => tag.slug === tagSlug))?.tags?.find((tag) => tag.slug === tagSlug)?.name || tagSlug}</span>
+                <a 
+                  href={query || categorySlug ? `/blog?${new URLSearchParams({ ...(query ? { q: query } : {}), ...(categorySlug ? { category: categorySlug } : {}) }).toString()}` : '/blog'}
+                  className="hover:text-red-600 dark:hover:text-red-400"
+                  aria-label="حذف فیلتر تگ"
+                >
+                  ✕
+                </a>
+              </span>
+            )}
+          </div>
+        )}
         {paginatedRest.length === 0 ? (
           <div className="rounded-xl border bg-white p-8 text-center">
             <p className="text-gray-700 dark:text-gray-300">مقاله‌ای یافت نشد.</p>

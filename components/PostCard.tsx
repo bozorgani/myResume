@@ -19,6 +19,17 @@ export function PostCard({ post }: { post: Post }) {
         <span>•</span>
         {post.readingTime ? <span>{post.readingTime} دقیقه مطالعه</span> : <span>مطالعه سریع</span>}
       </div>
+      {post.category && (
+        <div className="mt-2 sm:mt-3">
+          <Link 
+            href={`/blog?category=${post.category.slug}`}
+            className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1.5 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+          >
+            <span>📂</span>
+            <span>{post.category.name}</span>
+          </Link>
+        </div>
+      )}
     </article>
   );
 }

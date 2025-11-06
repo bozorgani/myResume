@@ -14,7 +14,7 @@ const nextConfig = {
     remotePatterns: (() => {
       const patterns = [];
       try {
-        const api = process.env.NEXT_PUBLIC_CMS_API;
+        const api = "https://cms-api-pv3h.onrender.com";
         if (api) {
           const u = new URL(api);
           patterns.push({ protocol: u.protocol.replace(':', ''), hostname: u.hostname, port: u.port || undefined, pathname: '/**' });

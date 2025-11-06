@@ -65,7 +65,14 @@ function renderContentToHtml(content: any): string {
             const href = mark.attrs?.href || '#';
             const target = mark.attrs?.target || '_self';
             const rel = target === '_blank' ? 'noopener noreferrer' : '';
-            result = `<a href="${href}"${target ? ` target="${target}"` : ''}${rel ? ` rel="${rel}"` : ''}>${result}`;
+            // Escape href attribute value to prevent XSS (only quotes and ampersands)
+            const escapedHref = href
+              .replace(/&/g, '&amp;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#39;');
+            const targetAttr = target && target !== '_self' ? ` target="${target}"` : '';
+            const relAttr = rel ? ` rel="${rel}"` : '';
+            result = `<a href="${escapedHref}"${targetAttr}${relAttr}>${result}`;
           }
         }
         return result;
