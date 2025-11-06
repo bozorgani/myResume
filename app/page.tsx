@@ -46,7 +46,7 @@ export default function HomePage() {
       <section aria-labelledby="hero-title" className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2 space-y-4">
           <h1 id="hero-title" className="text-3xl font-bold tracking-tight sm:text-4xl">
-            من محمدامین بزرگانی — {SITE.role}
+            من محمد امین بزرگانی — {SITE.role}
           </h1>
           <p className="text-lg text-gray-700 dark:text-gray-300">
             توسعه‌دهنده Full-Stack با ۱۰+ سال تجربه در ساخت وب‌اپلیکیشن‌های مدرن و مقیاس‌پذیر. متخصص در Next.js، React، Node.js و بهینه‌سازی عملکرد و سئو فنی. مشاوره در زمینه معماری نرم‌افزار و راه‌اندازی پروژه‌های استارتاپی.
@@ -72,7 +72,7 @@ export default function HomePage() {
           <div className="relative h-40 w-40 md:h-60 md:w-60">
             <Image
               src="/images/amin-bozorgani-portrait.webp"
-              alt="پرتره محمدامین بزرگانی"
+              alt="پرتره محمد امین بزرگانی"
               width={480}
               height={480}
               quality={100}

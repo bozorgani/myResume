@@ -20,11 +20,13 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
   icons: {
     icon: [
-      { url: '/images/og-default.png', type: 'image/png' }
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/images/og-default.png', type: 'image/png', sizes: '512x512' }
     ],
     apple: [
-      { url: '/images/og-default.png', type: 'image/png' }
-    ]
+      { url: '/images/og-default.png', type: 'image/png', sizes: '512x512' }
+    ],
+    shortcut: '/favicon.ico'
   },
   manifest: '/site.webmanifest',
   openGraph: {
@@ -44,7 +46,9 @@ export const metadata: Metadata = {
     site: SITE.twitter,
     creator: SITE.twitter
   },
-  verification: {}
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SEARCH_CONSOLE || ''
+  }
 };
 
 export const viewport: Viewport = {

@@ -12,6 +12,15 @@
 html { scroll-behavior: smooth; }
 body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
 
+/* Improve contrast for better accessibility */
+.text-gray-700 {
+  color: #374151; /* Better contrast ratio (4.5:1 on white) */
+}
+
+.dark .text-gray-300 {
+  color: #d1d5db; /* Better contrast ratio (4.5:1 on dark) */
+}
+
 /* Blog Content Styles - Matching Editor Appearance */
 .blog-content {
   color: #374151;

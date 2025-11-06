@@ -5,7 +5,7 @@ import { ProjectCard } from '@/components/ProjectCard';
 
 export const metadata: Metadata = createPageMeta({
   title: `پروژه‌ها | ${SITE.name}`,
-  description: `مجموعه‌ای از پروژه‌های توسعه وب توسط ${SITE.name} با مهارت در Node.js، Express.js، React.js، Next.js، MongoDB و Docker`,
+  description: `مجموعه‌ای از پروژه‌های واقعی توسعه وب توسط ${SITE.name} شامل پلتفرم‌های تجارت الکترونیک، سیستم‌های مدیریت محتوا، و ابزارهای بهینه‌سازی عملکرد. هر پروژه با استفاده از تکنولوژی‌های مدرن مانند Next.js، React، Node.js، MongoDB و Docker توسعه داده شده و شامل بهینه‌سازی عملکرد و بهبود Core Web Vitals است.`,
   url: `${SITE.domain}/projects`
 });
 

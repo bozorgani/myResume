@@ -180,11 +180,8 @@ export async function getAllPosts(): Promise<Post[]> {
     try {
       const res = await fetch(url, { 
         signal: controller.signal,
-        cache: 'no-store',
+        next: { revalidate: 60 }, // Cache for 60 seconds to improve bfcache
         headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
           'Accept': 'application/json'
         }
       });
@@ -251,11 +248,9 @@ export async function getPostBySlug(slug: string): Promise<Post | undefined> {
   try {
     const url = `${CMS_API_BASE}/v1/posts/slug/${slug}?t=${Date.now()}`;
     const res = await fetch(url, { 
-      cache: 'no-store',
+      next: { revalidate: 60 }, // Cache for 60 seconds to improve bfcache
       headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
+        'Accept': 'application/json'
       }
     });
     if (!res.ok) {

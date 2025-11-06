@@ -3,7 +3,7 @@ import { SITE, createPageMeta } from '@/lib/seo';
 
 export const metadata: Metadata = createPageMeta({
   title: `تماس | ${SITE.name}`,
-  description: `برای همکاری، مشاوره یا فرصت‌های شغلی با ${SITE.name} تماس بگیرید.`,
+  description: `برای همکاری در پروژه‌های توسعه وب، مشاوره فنی، یا فرصت‌های شغلی با ${SITE.name} تماس بگیرید. من در زمینه توسعه Full-Stack با Next.js و React، بهینه‌سازی عملکرد وب‌سایت‌ها، و بهبود سئو فنی آماده همکاری هستم.`,
   url: `${SITE.domain}/contact`
 });
 
@@ -19,7 +19,7 @@ export default function ContactPage() {
       </header>
 
       <form action={mailto} method="post" className="max-w-xl space-y-4" aria-describedby="contact-help">
-        <p id="contact-help" className="text-sm text-gray-600">این فرم برنامه ایمیل شما را برای ارسال پیام باز می‌کند.</p>
+        <p id="contact-help" className="text-sm text-gray-700 dark:text-gray-300">این فرم برنامه ایمیل شما را برای ارسال پیام باز می‌کند.</p>
         <div>
           <label htmlFor="name" className="block text-sm font-medium">نام</label>
           <input id="name" name="name" required className="mt-1 w-full rounded border px-3 py-2" autoComplete="name" />

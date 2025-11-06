@@ -11,7 +11,7 @@ export const revalidate = 0;
 
 export const metadata: Metadata = createPageMeta({
   title: `بلاگ | ${SITE.name}`,
-  description: `مقالات ${SITE.name} درباره عملکرد، سئو و توسعه فول‌استک`,
+  description: `مجموعه مقالات تخصصی ${SITE.name} درباره توسعه Full-Stack با Next.js و React، بهینه‌سازی عملکرد وب‌سایت‌ها، بهبود Core Web Vitals، و بهترین شیوه‌های سئو فنی. تجربیات عملی، راهنماهای گام‌به‌گام، و نکات پیشرفته در زمینه توسعه وب.`,
   url: `${SITE.domain}/blog`
 });
 
@@ -89,8 +89,8 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
               <h2 className="text-xl font-bold tracking-tight sm:text-2xl lg:text-3xl">
                 <Link href={`/blog/${first.slug}`} className="hover:underline">{first.title}</Link>
               </h2>
-              <p className="mt-2 sm:mt-3 text-sm sm:text-base text-gray-700">{first.description}</p>
-              <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
+              <p className="mt-2 sm:mt-3 text-sm sm:text-base text-gray-800 dark:text-gray-200">{first.description}</p>
+              <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
                 <time dateTime={new Date(first.date).toISOString()}>{new Date(first.date).toLocaleDateString('fa-IR')}</time>
                 <span>•</span>
                 {first.readingTime ? <span>{first.readingTime} دقیقه مطالعه</span> : <span>مطالعه سریع</span>}
@@ -122,9 +122,9 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
         </div>
         {paginatedRest.length === 0 ? (
           <div className="rounded-xl border bg-white p-8 text-center">
-            <p className="text-gray-600">مقاله‌ای یافت نشد.</p>
+            <p className="text-gray-700 dark:text-gray-300">مقاله‌ای یافت نشد.</p>
             {posts.length === 0 && (
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                 در حال حاضر مقاله‌ای در دسترس نیست. لطفاً بعداً دوباره تلاش کنید.
               </p>
             )}

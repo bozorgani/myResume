@@ -14,10 +14,19 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: Params }): Metadata {
   const project = getProjectBySlug(params.slug);
-  if (!project) return {};
+  if (!project) {
+    return createPageMeta({
+      title: `پروژه پیدا نشد | ${SITE.name}`,
+      description: `پروژه مورد نظر یافت نشد. به صفحه پروژه‌ها بازگردید.`,
+      url: `${SITE.domain}/projects`
+    });
+  }
+  // Create comprehensive description for SEO
+  const description = `${project.oneLiner} ${project.description.substring(0, 120)}... این پروژه با استفاده از تکنولوژی‌های ${project.tech.join('، ')} توسعه داده شده است. ${SITE.name} - توسعه‌دهنده Full-Stack با تخصص در Next.js، React و Node.js.`;
+  
   return createPageMeta({
-    title: `مطالعهٔ موردی ${project.title} | ${SITE.name}`,
-    description: `مطالعهٔ موردی کامل ${project.title}، ساخته شده با Next.js توسط ${SITE.name}.`,
+    title: `${project.title} | ${SITE.name}`,
+    description: description,
     url: `${SITE.domain}/projects/${project.slug}`,
     image: project.image
   });

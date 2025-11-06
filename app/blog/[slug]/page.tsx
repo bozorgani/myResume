@@ -20,10 +20,21 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const post = await getPostBySlug(params.slug);
-  if (!post) return {};
+  if (!post) {
+    return createPageMeta({
+      title: `مقاله پیدا نشد | ${SITE.name}`,
+      description: `مقاله مورد نظر یافت نشد. به صفحه بلاگ بازگردید.`,
+      url: `${SITE.domain}/blog`
+    });
+  }
+  // Ensure description exists and is not empty
+  const description = post.description && post.description.trim() 
+    ? post.description 
+    : `مقاله ${post.title} از بلاگ ${SITE.name} درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
+  
   const base = createPageMeta({
     title: `${post.title} | ${SITE.name}`,
-    description: post.description,
+    description: description,
     url: post.canonicalUrl || `${SITE.domain}/blog/${post.slug}`,
     image: post.image
   });
@@ -126,12 +137,12 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           </h1>
           
           {post.description && (
-            <p className="text-lg sm:text-xl text-gray-600 mb-6 leading-relaxed">
+            <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
               {post.description}
             </p>
           )}
 
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm sm:text-base text-gray-600 mb-4">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-4">
             <time dateTime={new Date(post.date).toISOString()} className="flex items-center gap-1">
               <span>📅</span>
               <span>{new Date(post.date).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
@@ -217,7 +228,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
               href={`/blog/${prev.slug}`} 
               className="group rounded-xl border bg-white p-5 sm:p-6 shadow-sm hover:bg-gray-50 hover:shadow-md transition-all"
             >
-              <div className="mb-2 text-xs font-medium text-gray-500 uppercase tracking-wide">مقاله قبلی</div>
+              <div className="mb-2 text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">مقاله قبلی</div>
               <div className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-brand transition-colors line-clamp-2">
                 {prev.title}
               </div>
@@ -228,7 +239,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
               href={`/blog/${next.slug}`} 
               className="group rounded-xl border bg-white p-5 sm:p-6 shadow-sm hover:bg-gray-50 hover:shadow-md transition-all sm:justify-self-end"
             >
-              <div className="mb-2 text-xs font-medium text-gray-500 uppercase tracking-wide text-left sm:text-right">مقاله بعدی</div>
+              <div className="mb-2 text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide text-left sm:text-right">مقاله بعدی</div>
               <div className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-brand transition-colors line-clamp-2">
                 {next.title}
               </div>

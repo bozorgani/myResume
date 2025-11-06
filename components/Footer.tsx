@@ -7,7 +7,7 @@ export function Footer() {
       <div className="mx-auto max-w-5xl px-4 py-10">
         <div className="grid gap-8 sm:grid-cols-4">
           <div className="sm:col-span-2 space-y-3">
-            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">محمدامین بزرگانی</h3>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">محمد امین بزرگانی</h3>
             <p className="text-sm text-gray-600 dark:text-gray-300">توسعه‌دهنده ارشد وب با تمرکز بر Next.js، React و Node.js</p>
           </div>
           <div>

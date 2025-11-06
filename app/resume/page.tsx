@@ -6,6 +6,9 @@ import { EducationSection } from '@/components/EducationSection';
 import { CertificatesSection } from '@/components/CertificatesSection';
 import { SkillsSection } from '@/components/SkillsSection';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = createPageMeta({
   title: `رزومه | ${SITE.name}`,
   description: `رزومه کامل ${SITE.name} - توسعه‌دهنده Full-Stack با ۱۰+ سال تجربه. شامل سوابق کاری در توسعه وب‌اپلیکیشن‌های مقیاس‌پذیر، تحصیلات در مهندسی نرم‌افزار، مهارت‌های پیشرفته در Next.js، React، Node.js، و تخصص در بهینه‌سازی عملکرد و سئو فنی.`,
