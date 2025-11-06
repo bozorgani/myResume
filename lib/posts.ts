@@ -217,28 +217,32 @@ export async function getAllPosts(): Promise<Post[]> {
       return sorted;
     } catch (fetchError) {
       clearTimeout(timeoutId);
-      // If fetch fails (network error, timeout, etc.), return empty array
+      // If fetch fails (network error, timeout, etc.), return empty array instead of throwing
       if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-        console.error(`[getAllPosts] Request timeout for ${url}`);
+        console.warn(`[getAllPosts] Request timeout for ${url} - returning empty array`);
         return [];
       }
-      console.error(`[getAllPosts] Fetch error for ${url}:`, fetchError);
-      if (fetchError instanceof Error) {
-        console.error(`[getAllPosts] Error details:`, {
-          name: fetchError.name,
-          message: fetchError.message,
-          stack: fetchError.stack
-        });
+      // Handle connection errors gracefully
+      const isConnectionError = fetchError instanceof Error && (
+        fetchError.message.includes('ECONNREFUSED') || 
+        fetchError.message.includes('fetch failed') ||
+        (fetchError.cause && typeof fetchError.cause === 'object' && 'code' in fetchError.cause && fetchError.cause.code === 'ECONNREFUSED')
+      );
+      
+      if (isConnectionError) {
+        console.warn(`[getAllPosts] Connection refused for ${url} - API may not be running. Returning empty array.`);
+        console.warn(`[getAllPosts] Make sure CMS API is running or NEXT_PUBLIC_CMS_API is set correctly. Current value: ${CMS_API_BASE}`);
+        return [];
       }
-      throw fetchError; // Re-throw to be caught by outer catch
+      console.warn(`[getAllPosts] Fetch error for ${url}:`, fetchError instanceof Error ? fetchError.message : fetchError);
+      // Return empty array instead of throwing - this allows the app to continue working
+      return [];
     }
   } catch (error) {
-    // Log error but don't crash - return empty array if API is unavailable
-    console.error(`[getAllPosts] Error fetching posts from ${CMS_API_BASE}:`, error);
-    console.error(`[getAllPosts] Make sure NEXT_PUBLIC_CMS_API is set correctly. Current value: ${CMS_API_BASE}`);
-    if (error instanceof Error) {
-      console.error(`[getAllPosts] Error type: ${error.constructor.name}`);
-    }
+    // Catch any other unexpected errors and return empty array
+    console.warn(`[getAllPosts] Unexpected error fetching posts from ${CMS_API_BASE}:`, error instanceof Error ? error.message : error);
+    console.warn(`[getAllPosts] Make sure NEXT_PUBLIC_CMS_API is set correctly. Current value: ${CMS_API_BASE}`);
+    // Always return empty array instead of throwing - app should work even without API
     return [];
   }
 }
@@ -261,7 +265,18 @@ export async function getPostBySlug(slug: string): Promise<Post | undefined> {
     const data = await res.json();
     return mapCmsPostToSitePost(data);
   } catch (error) {
-    console.error(`[getPostBySlug] Error fetching post ${slug} from ${CMS_API_BASE}:`, error);
+    // Handle connection errors gracefully
+    const isConnectionError = error instanceof Error && (
+      error.message.includes('ECONNREFUSED') || 
+      error.message.includes('fetch failed') ||
+      (error.cause && typeof error.cause === 'object' && 'code' in error.cause && error.cause.code === 'ECONNREFUSED')
+    );
+    
+    if (isConnectionError) {
+      console.warn(`[getPostBySlug] Connection refused for ${slug} - API may not be running. Returning undefined.`);
+    } else {
+      console.warn(`[getPostBySlug] Error fetching post ${slug} from ${CMS_API_BASE}:`, error instanceof Error ? error.message : error);
+    }
     return undefined;
   }
 }

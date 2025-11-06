@@ -13,7 +13,9 @@ export default function ContactPage() {
     <article className="space-y-6" aria-labelledby="contact-title">
       <header>
         <h1 id="contact-title" className="text-3xl font-bold tracking-tight">تماس</h1>
-        <p className="mt-2 text-gray-700">از فرم زیر پیام بفرستید یا مستقیم ایمیل بزنید.</p>
+        <p className="mt-2 text-gray-700 dark:text-gray-300">
+          برای همکاری در پروژه‌های توسعه وب، مشاوره فنی، یا فرصت‌های شغلی می‌توانید از طریق فرم زیر با من تماس بگیرید یا مستقیماً به آدرس ایمیل من پیام بفرستید. من در زمینه توسعه Full-Stack، بهینه‌سازی عملکرد، و بهبود سئو فنی آماده همکاری هستم.
+        </p>
       </header>
 
       <form action={mailto} method="post" className="max-w-xl space-y-4" aria-describedby="contact-help">

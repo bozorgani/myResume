@@ -14,7 +14,9 @@ export default function ProjectsPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold tracking-tight">پروژه‌ها</h1>
-      <p className="text-gray-700">چند مطالعهٔ موردی برای نمایش تجربهٔ واقعی و اثرگذاری.</p>
+      <p className="text-gray-700 dark:text-gray-300">
+        مجموعه‌ای از پروژه‌های واقعی که با استفاده از تکنولوژی‌های مدرن مانند Next.js، React، Node.js و MongoDB توسعه داده‌ام. هر پروژه شامل بهینه‌سازی عملکرد، بهبود Core Web Vitals، و پیاده‌سازی بهترین شیوه‌های سئو فنی است. این پروژه‌ها نشان‌دهنده تجربه من در ساخت اپلیکیشن‌های مقیاس‌پذیر، سیستم‌های مدیریت محتوا، و پلتفرم‌های تجارت الکترونیک هستند.
+      </p>
       <div className="grid gap-6 sm:grid-cols-2">
         {projects.map((p) => (
           <ProjectCard key={p.slug} project={p} />)

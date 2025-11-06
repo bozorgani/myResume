@@ -1,12 +1,12 @@
 export const SITE = {
   name: 'محمدامین بزرگانی',
-  role: 'برنامه‌نویس و توسعه‌دهنده ارشد وب',
+  role: 'توسعه‌دهنده Full-Stack و متخصص سئو فنی',
   domain: 'https://bozorgani.ir',
   twitter: '@bozorgani',
   github: 'https://github.com/bozorgani',
   linkedin: 'https://www.linkedin.com/in/bozorgani/',
   description:
-    'نمونه‌کار حرفه‌ای محمدامین بزرگانی؛ توسعه‌دهنده نرم‌افزار با تخصص در Next.js، React و Node.js و تمرکز بر کارایی، دسترس‌پذیری و سئوی فنی.',
+    'محمدامین بزرگانی - توسعه‌دهنده Full-Stack با ۱۰+ سال تجربه در ساخت وب‌اپلیکیشن‌های مدرن با Next.js، React و Node.js. متخصص در بهینه‌سازی عملکرد، بهبود Core Web Vitals، و سئو فنی. مشاوره در زمینه معماری نرم‌افزار، توسعه CMS سفارشی، و راه‌اندازی پروژه‌های استارتاپی.',
   ogImage: '/images/og-default.png'
 } as const;
 

@@ -50,7 +50,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#0ea5e9'
+  themeColor: '#0369a1'
 };
 
 const vazirmatn = Vazirmatn({ subsets: ['arabic'], display: 'swap' });
@@ -70,6 +70,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fa" dir="rtl" className="scroll-smooth">
       <head>
+        {/* Preconnect to Google Fonts for faster font loading */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <ThemeScript />
       </head>
       <body className={`antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 ${vazirmatn.className}`}>

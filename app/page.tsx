@@ -12,6 +12,9 @@ import { HomeProjectsSection } from '@/components/HomeProjectsSection';
 import { HomeBlogSection } from '@/components/HomeBlogSection';
 import { ContactSection } from '@/components/ContactSection';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = createPageMeta({
   title: `${SITE.name} | ${SITE.role}`,
   description: SITE.description,
@@ -46,7 +49,7 @@ export default function HomePage() {
             من محمدامین بزرگانی — {SITE.role}
           </h1>
           <p className="text-lg text-gray-700 dark:text-gray-300">
-            متخصص جاوااسکریپت با تجربه در ساخت و توسعه وب‌اپلیکیشن‌های مدرن و مقیاس‌پذیر.
+            توسعه‌دهنده Full-Stack با ۱۰+ سال تجربه در ساخت وب‌اپلیکیشن‌های مدرن و مقیاس‌پذیر. متخصص در Next.js، React، Node.js و بهینه‌سازی عملکرد و سئو فنی. مشاوره در زمینه معماری نرم‌افزار و راه‌اندازی پروژه‌های استارتاپی.
           </p>
           {/* نشان‌های فناوری‌های اصلی برای اسکن سریع و سئو */}
           <ul className="flex flex-wrap gap-2" aria-label="فناوری‌های اصلی">
@@ -66,15 +69,19 @@ export default function HomePage() {
           </div>
         </div>
         <div className="flex items-center justify-center">
-          <Image
-            src="/images/amin-bozorgani-portrait.webp"
-            alt="پرتره محمدامین بزرگانی"
-            width={240}
-            height={240}
-            priority
-            sizes="(min-width: 768px) 240px, 160px"
-            className="h-40 w-40 rounded-full border object-cover md:h-60 md:w-60 dark:border-gray-700"
-          />
+          <div className="relative h-40 w-40 md:h-60 md:w-60">
+            <Image
+              src="/images/amin-bozorgani-portrait.webp"
+              alt="پرتره محمدامین بزرگانی"
+              width={480}
+              height={480}
+              quality={100}
+              priority
+              sizes="(min-width: 768px) 240px, 160px"
+              className="h-full w-full rounded-full border object-cover shadow-lg dark:border-gray-700"
+              unoptimized={false}
+            />
+          </div>
         </div>
       </section>
 

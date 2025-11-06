@@ -14,8 +14,8 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: '#0ea5e9', // sky-500
-          dark: '#0284c7'
+          DEFAULT: '#0369a1', // sky-700 - کنتراست بهتر با text-white (WCAG AA)
+          dark: '#075985' // sky-800
         }
       }
     }

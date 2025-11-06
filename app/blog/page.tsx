@@ -65,7 +65,9 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
       <header className="relative overflow-hidden rounded-3xl border bg-gradient-to-b from-gray-50 to-white p-6 sm:p-8 lg:p-10">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">بلاگ {SITE.name}</h1>
-          <p className="mx-auto mt-3 max-w-2xl text-sm sm:text-base text-gray-700">جدیدترین مقاله‌ها درباره عملکرد، سئو و توسعه فول‌استک با تمرکز بر تجربه کاربری و بهترین شیوه‌ها.</p>
+          <p className="mx-auto mt-3 max-w-2xl text-sm sm:text-base text-gray-700 dark:text-gray-300">
+            مجموعه مقالات تخصصی درباره توسعه Full-Stack با Next.js و React، بهینه‌سازی عملکرد وب‌سایت‌ها، بهبود Core Web Vitals، و بهترین شیوه‌های سئو فنی. در این بلاگ تجربیات عملی، راهنماهای گام‌به‌گام، و نکات پیشرفته در زمینه توسعه وب و بهبود رتبه‌بندی در موتورهای جستجو را به اشتراک می‌گذارم.
+          </p>
         </div>
       </header>
 

@@ -8,31 +8,71 @@ import { SkillsSection } from '@/components/SkillsSection';
 
 export const metadata: Metadata = createPageMeta({
   title: `رزومه | ${SITE.name}`,
-  description: `رزومه رسمی ${SITE.name} شامل سوابق کاری، تحصیلات و مهارت‌ها در فناوری‌های مدرن توسعه وب.`,
+  description: `رزومه کامل ${SITE.name} - توسعه‌دهنده Full-Stack با ۱۰+ سال تجربه. شامل سوابق کاری در توسعه وب‌اپلیکیشن‌های مقیاس‌پذیر، تحصیلات در مهندسی نرم‌افزار، مهارت‌های پیشرفته در Next.js، React، Node.js، و تخصص در بهینه‌سازی عملکرد و سئو فنی.`,
   url: `${SITE.domain}/resume`
 });
 
 export default function ResumePage() {
   return (
-    <article className="space-y-10" aria-labelledby="resume-title">
+    <article className="space-y-6 sm:space-y-8 md:space-y-10" aria-labelledby="resume-title">
       {/* Hero / Header */}
-      <header className="rounded-xl border p-5 sm:p-6 md:p-8 dark:border-gray-800">
-        <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex w-full items-center gap-4 sm:w-auto">
-            <div className="h-16 w-16 overflow-hidden rounded-full ring-2 ring-brand/20 sm:h-20 sm:w-20">
-              <Image src="/images/amin-bozorgani-portrait-512.webp" alt={SITE.name} width={80} height={80} className="h-full w-full object-cover" />
+      <header className="rounded-xl border bg-gradient-to-br from-white to-gray-50 p-4 sm:p-6 md:p-8 dark:from-gray-900 dark:to-gray-800 dark:border-gray-700 shadow-sm">
+        <div className="flex flex-col gap-4 sm:gap-5 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
+            <div className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-full ring-2 ring-brand/20 shadow-md">
+              <Image 
+                src="/images/amin-bozorgani-portrait-512.webp" 
+                alt={SITE.name} 
+                width={384} 
+                height={384} 
+                quality={100}
+                className="h-full w-full object-cover" 
+                priority
+                sizes="(min-width: 640px) 96px, 80px"
+                unoptimized={false}
+              />
             </div>
-            <div className="space-y-1 sm:space-y-2">
-            <h1 id="resume-title" className="text-3xl font-bold tracking-tight">{SITE.name}</h1>
-              <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base">{SITE.role} — تمرکز بر Next.js, React, Node.js و سئو فنی</p>
+            <div className="space-y-1 sm:space-y-2 min-w-0 flex-1">
+              <h1 id="resume-title" className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight leading-tight">
+                {SITE.name}
+              </h1>
+              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+                {SITE.role} — تمرکز بر Next.js, React, Node.js و سئو فنی
+              </p>
             </div>
           </div>
           <div className="w-full sm:w-auto">
-            <div className="flex flex-wrap gap-3">
-              <a className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark" href="/resume.pdf" target="_blank" rel="noopener noreferrer">دانلود PDF</a>
-              <a className="rounded-md border px-4 py-2 text-sm hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-900" href="/contact">تماس</a>
-              <a className="rounded-md border px-4 py-2 text-sm hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-900" href={SITE.github} target="_blank" rel="noopener noreferrer">GitHub</a>
-              <a className="rounded-md border px-4 py-2 text-sm hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-900" href={SITE.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <div className="flex flex-wrap gap-2 sm:gap-3">
+              <a 
+                className="flex-1 sm:flex-none rounded-md bg-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-dark transition-colors text-center shadow-sm" 
+                href="/resume.pdf" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                دانلود PDF
+              </a>
+              <a 
+                className="flex-1 sm:flex-none rounded-md border border-gray-300 px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 transition-colors text-center" 
+                href="/contact"
+              >
+                تماس
+              </a>
+              <a 
+                className="flex-1 sm:flex-none rounded-md border border-gray-300 px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 transition-colors text-center" 
+                href={SITE.github} 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                GitHub
+              </a>
+              <a 
+                className="flex-1 sm:flex-none rounded-md border border-gray-300 px-4 py-2.5 text-sm font-medium hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 transition-colors text-center" 
+                href={SITE.linkedin} 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                LinkedIn
+              </a>
             </div>
           </div>
         </div>
@@ -40,11 +80,14 @@ export default function ResumePage() {
 
       {/* Content grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Main Content */}
         <div className="space-y-6 lg:col-span-2">
           <ExperienceSection />
           <CertificatesSection />
         </div>
-        <div className="space-y-6 lg:sticky lg:top-24 self-start">
+        
+        {/* Sidebar */}
+        <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
           <SkillsSection />
           <EducationSection />
         </div>
