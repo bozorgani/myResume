@@ -4,7 +4,16 @@ import { SITE, createPageMeta } from '@/lib/seo';
 export const metadata: Metadata = createPageMeta({
   title: `تماس | ${SITE.name}`,
   description: `برای همکاری در پروژه‌های توسعه وب، مشاوره فنی، یا فرصت‌های شغلی با ${SITE.name} تماس بگیرید. من در زمینه توسعه Full-Stack با Next.js و React، بهینه‌سازی عملکرد وب‌سایت‌ها، و بهبود سئو فنی آماده همکاری هستم.`,
-  url: `${SITE.domain}/contact`
+  url: `${SITE.domain}/contact`,
+  keywords: [
+    'تماس با توسعه‌دهنده',
+    'همکاری در پروژه',
+    'مشاوره فنی',
+    'فرصت شغلی',
+    'استخدام توسعه‌دهنده',
+    'مشاوره Next.js',
+    'مشاوره React'
+  ]
 });
 
 export default function ContactPage() {

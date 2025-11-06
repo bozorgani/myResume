@@ -11,6 +11,10 @@ export type Post = {
     name: string;
     slug: string;
   };
+  categories?: Array<{
+    name: string;
+    slug: string;
+  }>;
   tags?: Array<{
     name: string;
     slug: string;
@@ -19,12 +23,6 @@ export type Post = {
 
 const CMS_API_BASE = process.env.NEXT_PUBLIC_CMS_API || 'http://localhost:4000';
 
-// Log API base URL for debugging (both dev and production)
-if (typeof window === 'undefined') {
-  console.log(`[posts.ts] CMS_API_BASE: ${CMS_API_BASE}`);
-  console.log(`[posts.ts] NODE_ENV: ${process.env.NODE_ENV}`);
-  console.log(`[posts.ts] NEXT_PUBLIC_CMS_API from env: ${process.env.NEXT_PUBLIC_CMS_API || 'NOT SET'}`);
-}
 
 function buildMediaUrl(path?: string): string | undefined {
   if (!path) return undefined;
@@ -56,17 +54,25 @@ function renderContentToHtml(content: any): string {
       const marks = (node.marks || []).map((m: any) => m);
       const openMarks = (s: string) => {
         let result = s;
-        for (const mark of marks) {
+        // Process marks in order - link should be processed first to wrap other marks
+        const sortedMarks = [...marks].sort((a, b) => {
+          // Link marks should be processed last (outermost)
+          if (a.type === 'link') return 1;
+          if (b.type === 'link') return -1;
+          return 0;
+        });
+        
+        for (const mark of sortedMarks) {
           const type = mark.type;
           if (type === 'bold' || type === 'strong') result = `<strong>${result}`;
           else if (type === 'italic' || type === 'em') result = `<em>${result}`;
           else if (type === 'code') result = `<code>${result}`;
           else if (type === 'link') {
-            const href = mark.attrs?.href || '#';
+            const href = mark.attrs?.href || mark.attrs?.url || '#';
             const target = mark.attrs?.target || '_self';
             const rel = target === '_blank' ? 'noopener noreferrer' : '';
             // Escape href attribute value to prevent XSS (only quotes and ampersands)
-            const escapedHref = href
+            const escapedHref = String(href)
               .replace(/&/g, '&amp;')
               .replace(/"/g, '&quot;')
               .replace(/'/g, '&#39;');
@@ -79,9 +85,16 @@ function renderContentToHtml(content: any): string {
       };
       const closeMarks = (s: string) => {
         let result = s;
-        // Close marks in reverse order
-        for (let i = marks.length - 1; i >= 0; i--) {
-          const mark = marks[i];
+        // Close marks in reverse order - link should be closed first (innermost)
+        const sortedMarks = [...marks].sort((a, b) => {
+          // Link marks should be closed first
+          if (a.type === 'link') return -1;
+          if (b.type === 'link') return 1;
+          return 0;
+        });
+        
+        for (let i = sortedMarks.length - 1; i >= 0; i--) {
+          const mark = sortedMarks[i];
           const type = mark.type;
           if (type === 'bold' || type === 'strong') result = `${result}</strong>`;
           else if (type === 'italic' || type === 'em') result = `${result}</em>`;
@@ -154,6 +167,29 @@ function renderContentToHtml(content: any): string {
 
 function mapCmsPostToSitePost(p: any): Post {
   const imagePath = p?.coverImageId?.path || p?.seo?.ogImageId?.path;
+  
+  // Handle multiple categories (categoryIds) - preserve order
+  let categories: Array<{ name: string; slug: string }> | undefined;
+  if (Array.isArray(p.categoryIds) && p.categoryIds.length > 0) {
+    const filtered = p.categoryIds.filter((cat: any) => cat && cat.name && cat.slug);
+    if (filtered.length > 0) {
+      categories = filtered.map((cat: any) => ({
+        name: cat.name || '',
+        slug: cat.slug || ''
+      }));
+    }
+  }
+  
+  // Handle single category (categoryId) - for backward compatibility
+  const singleCategory = p.categoryId ? {
+    name: p.categoryId.name || '',
+    slug: p.categoryId.slug || ''
+  } : undefined;
+  
+  // Use categories if available, otherwise use single category
+  const finalCategories = categories && categories.length > 0 ? categories : undefined;
+  const finalCategory = finalCategories ? finalCategories[0] : singleCategory;
+  
   return {
     slug: p.slug,
     title: p.title,
@@ -163,10 +199,8 @@ function mapCmsPostToSitePost(p: any): Post {
     content: renderContentToHtml(p.content),
     readingTime: p.readingTime || undefined,
     canonicalUrl: p.canonicalUrl || undefined,
-    category: p.categoryId ? {
-      name: p.categoryId.name || '',
-      slug: p.categoryId.slug || ''
-    } : undefined,
+    category: finalCategory,
+    categories: finalCategories,
     tags: Array.isArray(p.tags) && p.tags.length > 0
       ? p.tags.map((tag: any) => ({
           name: tag.name || '',
@@ -179,7 +213,6 @@ function mapCmsPostToSitePost(p: any): Post {
 export async function getAllPosts(): Promise<Post[]> {
   try {
     const url = `${CMS_API_BASE}/v1/posts?status=published&limit=100&t=${Date.now()}`;
-    console.log(`[getAllPosts] Attempting to fetch from: ${url}`);
     
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
@@ -194,36 +227,20 @@ export async function getAllPosts(): Promise<Post[]> {
       });
       clearTimeout(timeoutId);
       
-      console.log(`[getAllPosts] Response status: ${res.status} ${res.statusText}`);
-      
       if (!res.ok) {
-        const errorText = await res.text().catch(() => 'Could not read error response');
-        console.error(`[getAllPosts] API returned ${res.status} ${res.statusText} for ${url}`);
-        console.error(`[getAllPosts] Error response: ${errorText}`);
         return [];
       }
       
       const data = await res.json();
-      console.log(`[getAllPosts] Received data:`, { 
-        hasItems: !!data?.items, 
-        itemsCount: Array.isArray(data?.items) ? data.items.length : 0,
-        total: data?.total 
-      });
-      
       const items = Array.isArray(data?.items) ? (data.items as unknown[]) : [];
-      if (items.length === 0) {
-        console.warn(`[getAllPosts] No items in response. Full response:`, JSON.stringify(data, null, 2));
-      }
       
       const mapped = items.map(mapCmsPostToSitePost) as Post[];
       const sorted = mapped.sort((a: Post, b: Post) => (a.date < b.date ? 1 : -1));
-      console.log(`[getAllPosts] Returning ${sorted.length} posts`);
       return sorted;
     } catch (fetchError) {
       clearTimeout(timeoutId);
       // If fetch fails (network error, timeout, etc.), return empty array instead of throwing
       if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-        console.warn(`[getAllPosts] Request timeout for ${url} - returning empty array`);
         return [];
       }
       // Handle connection errors gracefully
@@ -234,18 +251,12 @@ export async function getAllPosts(): Promise<Post[]> {
       );
       
       if (isConnectionError) {
-        console.warn(`[getAllPosts] Connection refused for ${url} - API may not be running. Returning empty array.`);
-        console.warn(`[getAllPosts] Make sure CMS API is running or NEXT_PUBLIC_CMS_API is set correctly. Current value: ${CMS_API_BASE}`);
         return [];
       }
-      console.warn(`[getAllPosts] Fetch error for ${url}:`, fetchError instanceof Error ? fetchError.message : fetchError);
       // Return empty array instead of throwing - this allows the app to continue working
       return [];
     }
   } catch (error) {
-    // Catch any other unexpected errors and return empty array
-    console.warn(`[getAllPosts] Unexpected error fetching posts from ${CMS_API_BASE}:`, error instanceof Error ? error.message : error);
-    console.warn(`[getAllPosts] Make sure NEXT_PUBLIC_CMS_API is set correctly. Current value: ${CMS_API_BASE}`);
     // Always return empty array instead of throwing - app should work even without API
     return [];
   }
@@ -261,25 +272,44 @@ export async function getPostBySlug(slug: string): Promise<Post | undefined> {
       }
     });
     if (!res.ok) {
-      console.error(`[getPostBySlug] API returned ${res.status} ${res.statusText} for ${url}`);
       return undefined;
     }
     const data = await res.json();
     return mapCmsPostToSitePost(data);
   } catch (error) {
-    // Handle connection errors gracefully
-    const isConnectionError = error instanceof Error && (
-      error.message.includes('ECONNREFUSED') || 
-      error.message.includes('fetch failed') ||
-      (error.cause && typeof error.cause === 'object' && 'code' in error.cause && error.cause.code === 'ECONNREFUSED')
-    );
-    
-    if (isConnectionError) {
-      console.warn(`[getPostBySlug] Connection refused for ${slug} - API may not be running. Returning undefined.`);
-    } else {
-      console.warn(`[getPostBySlug] Error fetching post ${slug} from ${CMS_API_BASE}:`, error instanceof Error ? error.message : error);
-    }
     return undefined;
+  }
+}
+
+export type Category = {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+};
+
+export async function getAllCategories(): Promise<Category[]> {
+  try {
+    const url = `${CMS_API_BASE}/v1/categories?t=${Date.now()}`;
+    const res = await fetch(url, {
+      next: { revalidate: 300 }, // Cache for 5 minutes
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+    if (!res.ok) {
+      return [];
+    }
+    const data = await res.json();
+    const items = Array.isArray(data?.items) ? data.items : [];
+    return items.map((cat: any) => ({
+      _id: cat._id || '',
+      name: cat.name || '',
+      slug: cat.slug || '',
+      description: cat.description || undefined
+    }));
+  } catch (error) {
+    return [];
   }
 }
 

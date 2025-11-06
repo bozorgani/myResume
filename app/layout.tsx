@@ -3,7 +3,7 @@ import './globals.css';
 import { Vazirmatn } from 'next/font/google';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { SITE, personSchema } from '@/lib/seo';
+import { SITE, personSchema, organizationSchema } from '@/lib/seo';
 import { Schema } from '@/components/Schema';
 import { DevAxe } from '@/components/DevAxe';
 import { ThemeScript } from '@/components/ThemeScript';
@@ -48,7 +48,11 @@ export const metadata: Metadata = {
   },
   verification: {
     google: 'XeFvCtZt5MKDwcNWELRzeIOcAT5gCYPlR0gvO5Ys6EI'
-  }
+  },
+  keywords: SITE.keywords,
+  authors: [{ name: SITE.name, url: SITE.domain }],
+  creator: SITE.name,
+  publisher: SITE.name
 };
 
 export const viewport: Viewport = {
@@ -89,11 +93,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 ${vazirmatn.className}`}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:shadow">پرش به محتوای اصلی</a>
         <DevAxe />
-        {/* Schema برای شناسایی شخص توسط موتورهای جستجو */}
+        {/* Schema برای شناسایی شخص و سازمان توسط موتورهای جستجو */}
         <Schema json={personSchema} />
+        <Schema json={organizationSchema} />
         <Schema json={webSiteSchema} />
         <Header />
-        <main id="main-content" className="mx-auto max-w-5xl px-4 py-10">
+        <main id="main-content" className="mx-auto max-w-7xl px-4 py-10">
           {children}
         </main>
         <Footer />

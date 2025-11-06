@@ -27,6 +27,8 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
   font-size: 1rem;
   line-height: 1.75;
   max-width: 100%;
+  /* Optimal reading width for Persian text: 65-75 characters per line */
+  /* This ensures comfortable reading experience */
 }
 
 /* Dark mode overrides for blog content */
@@ -39,8 +41,45 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
 .dark .blog-content h5,
 .dark .blog-content h6 { color: #f3f4f6; }
 .dark .blog-content h2 { border-bottom-color: #374151; }
-.dark .blog-content a { color: #93c5fd; }
-.dark .blog-content a:hover { color: #bfdbfe; }
+.dark .blog-content a,
+.dark .blog-content p a,
+.dark .blog-content li a,
+.dark .blog-content blockquote a,
+.dark .blog-content h1 a,
+.dark .blog-content h2 a,
+.dark .blog-content h3 a,
+.dark .blog-content h4 a,
+.dark .blog-content h5 a,
+.dark .blog-content h6 a { 
+  color: #60a5fa !important; 
+  text-decoration: underline !important;
+  cursor: pointer;
+}
+.dark .blog-content a:hover,
+.dark .blog-content p a:hover,
+.dark .blog-content li a:hover,
+.dark .blog-content blockquote a:hover,
+.dark .blog-content h1 a:hover,
+.dark .blog-content h2 a:hover,
+.dark .blog-content h3 a:hover,
+.dark .blog-content h4 a:hover,
+.dark .blog-content h5 a:hover,
+.dark .blog-content h6 a:hover { 
+  color: #93c5fd !important; 
+  text-decoration-thickness: 2px;
+}
+.dark .blog-content a:visited,
+.dark .blog-content p a:visited,
+.dark .blog-content li a:visited,
+.dark .blog-content blockquote a:visited {
+  color: #a78bfa !important;
+}
+.dark .blog-content a:visited:hover,
+.dark .blog-content p a:visited:hover,
+.dark .blog-content li a:visited:hover,
+.dark .blog-content blockquote a:visited:hover {
+  color: #c4b5fd !important;
+}
 .dark .blog-content strong { color: #f9fafb; }
 .dark .blog-content blockquote {
   color: #e5e7eb;
@@ -129,19 +168,52 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
   color: #111827;
 }
 
-/* Links */
-.blog-content a {
-  color: #2563eb;
-  text-decoration: underline;
+/* Links - Ensure visibility with high specificity */
+.blog-content a,
+.blog-content p a,
+.blog-content li a,
+.blog-content blockquote a,
+.blog-content h1 a,
+.blog-content h2 a,
+.blog-content h3 a,
+.blog-content h4 a,
+.blog-content h5 a,
+.blog-content h6 a {
+  color: #2563eb !important;
+  text-decoration: underline !important;
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
   font-weight: 500;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, text-decoration-thickness 0.2s ease;
+  cursor: pointer;
 }
 
-.blog-content a:hover {
-  color: #1d4ed8;
+.blog-content a:hover,
+.blog-content p a:hover,
+.blog-content li a:hover,
+.blog-content blockquote a:hover,
+.blog-content h1 a:hover,
+.blog-content h2 a:hover,
+.blog-content h3 a:hover,
+.blog-content h4 a:hover,
+.blog-content h5 a:hover,
+.blog-content h6 a:hover {
+  color: #1d4ed8 !important;
   text-decoration-thickness: 2px;
+}
+
+.blog-content a:visited,
+.blog-content p a:visited,
+.blog-content li a:visited,
+.blog-content blockquote a:visited {
+  color: #7c3aed !important;
+}
+
+.blog-content a:visited:hover,
+.blog-content p a:visited:hover,
+.blog-content li a:visited:hover,
+.blog-content blockquote a:visited:hover {
+  color: #6d28d9 !important;
 }
 
 /* Strong/Bold */
@@ -365,6 +437,64 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
     font-size: 1.125rem;
     line-height: 1.8;
   }
+  
+  /* Wider content for better readability with larger text */
+  .blog-content > p,
+  .blog-content > ul > li,
+  .blog-content > ol > li,
+  .blog-content > blockquote {
+    max-width: 100ch; /* Much wider for better readability with larger text */
+  }
+  
+  .blog-content h1,
+  .blog-content h2,
+  .blog-content h3,
+  .blog-content h4,
+  .blog-content h5,
+  .blog-content h6 {
+    max-width: 105ch; /* Wider for headings */
+  }
+  
+  /* Allow code blocks, images, and tables to be full width of container */
+  .blog-content pre,
+  .blog-content code,
+  .blog-content img,
+  .blog-content table {
+    max-width: 100%;
+  }
+  
+  /* Nested paragraphs and lists should also respect max-width */
+  .blog-content blockquote p,
+  .blog-content li p {
+    max-width: 100%;
+  }
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #2563eb, #7c3aed);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #60a5fa, #a78bfa);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
 }
 
 

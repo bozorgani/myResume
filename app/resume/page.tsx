@@ -12,7 +12,17 @@ export const revalidate = 0;
 export const metadata: Metadata = createPageMeta({
   title: `رزومه | ${SITE.name}`,
   description: `رزومه کامل ${SITE.name} - توسعه‌دهنده Full-Stack با ۱۰+ سال تجربه. شامل سوابق کاری در توسعه وب‌اپلیکیشن‌های مقیاس‌پذیر، تحصیلات در مهندسی نرم‌افزار، مهارت‌های پیشرفته در Next.js، React، Node.js، و تخصص در بهینه‌سازی عملکرد و سئو فنی.`,
-  url: `${SITE.domain}/resume`
+  url: `${SITE.domain}/resume`,
+  keywords: [
+    'رزومه توسعه‌دهنده',
+    'رزومه Full-Stack',
+    'رزومه Next.js',
+    'رزومه React',
+    'توسعه‌دهنده وب',
+    'برنامه‌نویس Full-Stack',
+    'سوابق کاری',
+    'مهارت‌های برنامه‌نویسی'
+  ]
 });
 
 export default function ResumePage() {

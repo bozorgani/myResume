@@ -28,7 +28,16 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
     title: `${project.title} | ${SITE.name}`,
     description: description,
     url: `${SITE.domain}/projects/${project.slug}`,
-    image: project.image
+    image: project.image,
+    keywords: [
+      ...project.tech,
+      'پروژه Next.js',
+      'پروژه React',
+      'نمونه کار',
+      'پورتفولیو',
+      'توسعه وب',
+      'Full-Stack'
+    ]
   });
 }
 

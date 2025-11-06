@@ -18,7 +18,8 @@ export const revalidate = 0;
 export const metadata: Metadata = createPageMeta({
   title: `${SITE.name} | ${SITE.role}`,
   description: SITE.description,
-  url: SITE.domain
+  url: SITE.domain,
+  keywords: SITE.keywords
 });
 
 export default function HomePage() {
