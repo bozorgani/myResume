@@ -215,7 +215,8 @@ export async function getAllPosts(): Promise<Post[]> {
     const url = `${CMS_API_BASE}/v1/posts?status=published&limit=100&t=${Date.now()}`;
     
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+    // Very short timeout for build - fail fast if API is unavailable
+    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout for build
     
     try {
       const res = await fetch(url, { 
@@ -247,13 +248,13 @@ export async function getAllPosts(): Promise<Post[]> {
       const isConnectionError = fetchError instanceof Error && (
         fetchError.message.includes('ECONNREFUSED') || 
         fetchError.message.includes('fetch failed') ||
-        (fetchError.cause && typeof fetchError.cause === 'object' && 'code' in fetchError.cause && fetchError.cause.code === 'ECONNREFUSED')
+        (fetchError.cause && typeof fetchError.cause === 'object' && (
+          ('code' in fetchError.cause && fetchError.cause.code === 'ECONNREFUSED') ||
+          ('errors' in fetchError.cause && Array.isArray(fetchError.cause.errors))
+        ))
       );
       
-      if (isConnectionError) {
-        return [];
-      }
-      // Return empty array instead of throwing - this allows the app to continue working
+      // Always return empty array on any error - allows build to continue
       return [];
     }
   } catch (error) {
@@ -265,17 +266,31 @@ export async function getAllPosts(): Promise<Post[]> {
 export async function getPostBySlug(slug: string): Promise<Post | undefined> {
   try {
     const url = `${CMS_API_BASE}/v1/posts/slug/${slug}?t=${Date.now()}`;
-    const res = await fetch(url, { 
-      next: { revalidate: 60 }, // Cache for 60 seconds to improve bfcache
-      headers: {
-        'Accept': 'application/json'
+    
+    const controller = new AbortController();
+    // Very short timeout for build - fail fast if API is unavailable
+    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout for build
+    
+    try {
+      const res = await fetch(url, { 
+        signal: controller.signal,
+        next: { revalidate: 60 }, // Cache for 60 seconds to improve bfcache
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      clearTimeout(timeoutId);
+      
+      if (!res.ok) {
+        return undefined;
       }
-    });
-    if (!res.ok) {
+      const data = await res.json();
+      return mapCmsPostToSitePost(data);
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      // Handle connection errors gracefully - always return undefined on error
       return undefined;
     }
-    const data = await res.json();
-    return mapCmsPostToSitePost(data);
   } catch (error) {
     return undefined;
   }
@@ -291,23 +306,45 @@ export type Category = {
 export async function getAllCategories(): Promise<Category[]> {
   try {
     const url = `${CMS_API_BASE}/v1/categories?t=${Date.now()}`;
-    const res = await fetch(url, {
-      next: { revalidate: 300 }, // Cache for 5 minutes
-      headers: {
-        'Accept': 'application/json'
+    
+    const controller = new AbortController();
+    // Very short timeout for build - fail fast if API is unavailable
+    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout for build
+    
+    try {
+      const res = await fetch(url, {
+        signal: controller.signal,
+        next: { revalidate: 300 }, // Cache for 5 minutes
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      clearTimeout(timeoutId);
+      
+      if (!res.ok) {
+        return [];
       }
-    });
-    if (!res.ok) {
+      const data = await res.json();
+      const items = Array.isArray(data?.items) ? data.items : [];
+      return items.map((cat: any) => ({
+        _id: cat._id || '',
+        name: cat.name || '',
+        slug: cat.slug || '',
+        description: cat.description || undefined
+      }));
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      // Handle connection errors gracefully
+      if (fetchError instanceof Error && (
+        fetchError.name === 'AbortError' ||
+        fetchError.message.includes('ECONNREFUSED') ||
+        fetchError.message.includes('fetch failed') ||
+        (fetchError.cause && typeof fetchError.cause === 'object' && 'code' in fetchError.cause && fetchError.cause.code === 'ECONNREFUSED')
+      )) {
+        return [];
+      }
       return [];
     }
-    const data = await res.json();
-    const items = Array.isArray(data?.items) ? data.items : [];
-    return items.map((cat: any) => ({
-      _id: cat._id || '',
-      name: cat.name || '',
-      slug: cat.slug || '',
-      description: cat.description || undefined
-    }));
   } catch (error) {
     return [];
   }
