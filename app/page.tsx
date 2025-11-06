@@ -19,7 +19,7 @@ export const metadata: Metadata = createPageMeta({
   title: `${SITE.name} | ${SITE.role}`,
   description: SITE.description,
   url: SITE.domain,
-  keywords: SITE.keywords
+  keywords: [...SITE.keywords]
 });
 
 export default function HomePage() {

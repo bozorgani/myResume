@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   verification: {
     google: 'XeFvCtZt5MKDwcNWELRzeIOcAT5gCYPlR0gvO5Ys6EI'
   },
-  keywords: SITE.keywords,
+  keywords: [...SITE.keywords],
   authors: [{ name: SITE.name, url: SITE.domain }],
   creator: SITE.name,
   publisher: SITE.name
