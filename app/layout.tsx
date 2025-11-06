@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     creator: SITE.twitter
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SEARCH_CONSOLE || ''
+    google: 'XeFvCtZt5MKDwcNWELRzeIOcAT5gCYPlR0gvO5Ys6EI'
   }
 };
 
@@ -65,6 +65,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     '@type': 'WebSite',
     name: SITE.name,
     url: SITE.domain,
+    inLanguage: 'fa-IR',
+    description: SITE.description,
+    publisher: {
+      '@type': 'Person',
+      name: SITE.name,
+      url: SITE.domain
+    },
     potentialAction: {
       '@type': 'SearchAction',
       target: `${SITE.domain}/search?q={search_term_string}`,

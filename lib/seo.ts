@@ -56,8 +56,31 @@ export const personSchema = {
   '@type': 'Person',
   name: SITE.name,
   jobTitle: SITE.role,
+  description: SITE.description,
   url: SITE.domain,
-  sameAs: [SITE.domain, SITE.github, SITE.linkedin]
+  image: `${SITE.domain}/images/amin-bozorgani-portrait.webp`,
+  sameAs: [
+    SITE.domain,
+    SITE.github,
+    SITE.linkedin,
+    `https://twitter.com/${SITE.twitter.replace('@', '')}`
+  ],
+  knowsAbout: [
+    'Full-Stack Development',
+    'Next.js',
+    'React',
+    'Node.js',
+    'MongoDB',
+    'Technical SEO',
+    'Core Web Vitals',
+    'Web Performance Optimization',
+    'JavaScript',
+    'TypeScript'
+  ],
+  alumniOf: {
+    '@type': 'Organization',
+    name: 'Software Engineering'
+  }
 };
 
 
