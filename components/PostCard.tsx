@@ -20,23 +20,25 @@ export function PostCard({ post }: { post: Post }) {
         {post.readingTime ? <span className="whitespace-nowrap">{post.readingTime} دقیقه مطالعه</span> : <span className="whitespace-nowrap">مطالعه سریع</span>}
       </div>
       {(post.categories && post.categories.length > 0) && (
-        <div className="mt-3 sm:mt-4 overflow-x-auto scrollbar-hide -mx-3 sm:-mx-4 md:mx-0 px-3 sm:px-4 md:px-0 pb-2 sm:pb-0">
-          <div className="flex items-center gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
-            {post.categories.map((cat, index) => (
-              <Link 
-                key={cat.slug}
-                href={`/blog?category=${cat.slug}`}
-                className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-gray-800 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors whitespace-nowrap shrink-0"
-              >
-                <span className="text-xs sm:text-sm">📂</span>
-                <span>{cat.name}</span>
-              </Link>
-            ))}
+        <div className="hidden md:block mt-3 sm:mt-4 w-full">
+          <div className="overflow-x-auto scrollbar-hide sm:overflow-x-visible">
+            <div className="flex items-center gap-2 flex-nowrap sm:flex-wrap sm:w-full">
+              {post.categories.map((cat, index) => (
+                <Link 
+                  key={cat.slug}
+                  href={`/blog?category=${cat.slug}`}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-gray-800 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors whitespace-nowrap shrink-0"
+                >
+                  <span className="text-xs sm:text-sm">📂</span>
+                  <span>{cat.name}</span>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       )}
       {(!post.categories || post.categories.length === 0) && post.category && (
-        <div className="mt-3 sm:mt-4">
+        <div className="hidden md:block mt-3 sm:mt-4">
           <Link 
             href={`/blog?category=${post.category.slug}`}
             className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-gray-800 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"

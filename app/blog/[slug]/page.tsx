@@ -238,7 +238,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           </div>
 
           {((post.categories && post.categories.length > 0) || post.category) && (
-            <div className="relative z-10 pt-4 sm:pt-5 md:pt-6 border-t-2 border-gray-200/80 dark:border-gray-700/80">
+            <div className="hidden md:block relative z-10 pt-4 sm:pt-5 md:pt-6 border-t-2 border-gray-200/80 dark:border-gray-700/80">
               {(post.categories && post.categories.length > 0) && (
                 <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-3">
                   <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest whitespace-nowrap">دسته‌بندی‌ها</span>

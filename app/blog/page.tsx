@@ -5,6 +5,7 @@ import { Schema } from '@/components/Schema';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PostCard } from '@/components/PostCard';
+import { CategoriesDrawerButton } from '@/components/CategoriesDrawerButton';
 
 // بهینه‌سازی: استفاده از ISR برای بهتر شدن performance
 export const revalidate = 180; // 3 minutes
@@ -118,7 +119,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
   } as const;
 
   return (
-    <div className="space-y-8 sm:space-y-10 lg:space-y-12">
+    <div className="space-y-8 sm:space-y-10 lg:space-y-12 w-full">
       <Schema json={blogSchema} />
 
       <header className="relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white via-gray-50/50 to-white dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 shadow-xl dark:shadow-2xl backdrop-blur-sm">
@@ -180,23 +181,25 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
                 )}
               </div>
               {(first.categories && first.categories.length > 0) && (
-                <div className="mt-3 sm:mt-4 overflow-x-auto scrollbar-hide -mx-4 sm:-mx-6 md:mx-0 px-4 sm:px-6 md:px-0 pb-2 sm:pb-0">
-                  <div className="flex items-center gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
-                    {first.categories.map((cat) => (
-                      <Link 
-                        key={cat.slug}
-                        href={`/blog?category=${cat.slug}`}
-                        className="group inline-flex items-center gap-1.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 px-2 sm:px-2.5 md:px-3.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 whitespace-nowrap shrink-0"
-                      >
-                        <span className="text-xs sm:text-sm transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
-                        <span>{cat.name}</span>
-                      </Link>
-                    ))}
+                <div className="hidden md:block mt-3 sm:mt-4 w-full">
+                  <div className="overflow-x-auto scrollbar-hide sm:overflow-x-visible">
+                    <div className="flex items-center gap-2 flex-nowrap sm:flex-wrap sm:w-full">
+                      {first.categories.map((cat) => (
+                        <Link 
+                          key={cat.slug}
+                          href={`/blog?category=${cat.slug}`}
+                          className="group inline-flex items-center gap-1.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 px-2 sm:px-2.5 md:px-3.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 whitespace-nowrap shrink-0"
+                        >
+                          <span className="text-xs sm:text-sm transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
+                          <span>{cat.name}</span>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
               {(!first.categories || first.categories.length === 0) && first.category && (
-                <div className="mt-3 sm:mt-4">
+                <div className="hidden md:block mt-3 sm:mt-4">
                   <Link 
                     href={`/blog?category=${first.category.slug}`}
                     className="group inline-flex items-center gap-1.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 px-2 sm:px-2.5 md:px-3.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5"
@@ -220,36 +223,38 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
 
       {/* Categories Section */}
       {categories.length > 0 && (
-        <section className="rounded-2xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-sm p-4 sm:p-6 md:p-8 shadow-xl dark:shadow-2xl">
+        <section className="hidden md:block rounded-2xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-sm p-4 sm:p-6 md:p-8 shadow-xl dark:shadow-2xl">
           <h2 className="mb-3 sm:mb-4 md:mb-5 text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">دسته‌بندی‌ها</h2>
           {/* Mobile: Horizontal scroll, Desktop: Flex wrap */}
-          <div className="overflow-x-auto scrollbar-hide -mx-4 sm:mx-0 px-4 sm:px-0 pb-2 sm:pb-0">
-            <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 min-w-max sm:min-w-0 sm:flex-wrap">
-              <Link
-                href="/blog"
-                className={`group inline-flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 shrink-0 ${
-                  !categorySlug
-                    ? 'bg-gradient-to-r from-gray-900 to-gray-800 text-white dark:from-white dark:to-gray-100 dark:text-gray-900 shadow-lg'
-                    : 'bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600'
-                }`}
-              >
-                <span className="text-sm sm:text-base transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
-                <span>همه</span>
-              </Link>
-              {categories.map((cat) => (
+          <div className="w-full">
+            <div className="overflow-x-auto scrollbar-hide sm:overflow-x-visible">
+              <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 flex-nowrap sm:flex-wrap sm:w-full">
                 <Link
-                  key={cat.slug}
-                  href={`/blog?category=${cat.slug}`}
+                  href="/blog"
                   className={`group inline-flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 shrink-0 ${
-                    categorySlug === cat.slug
+                    !categorySlug
                       ? 'bg-gradient-to-r from-gray-900 to-gray-800 text-white dark:from-white dark:to-gray-100 dark:text-gray-900 shadow-lg'
                       : 'bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600'
                   }`}
                 >
                   <span className="text-sm sm:text-base transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
-                  <span>{cat.name}</span>
+                  <span>همه</span>
                 </Link>
-              ))}
+                {categories.map((cat) => (
+                  <Link
+                    key={cat.slug}
+                    href={`/blog?category=${cat.slug}`}
+                    className={`group inline-flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 shrink-0 ${
+                      categorySlug === cat.slug
+                        ? 'bg-gradient-to-r from-gray-900 to-gray-800 text-white dark:from-white dark:to-gray-100 dark:text-gray-900 shadow-lg'
+                        : 'bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600'
+                    }`}
+                  >
+                    <span className="text-sm sm:text-base transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
+                    <span>{cat.name}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -373,6 +378,9 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
           </nav>
         )}
       </section>
+
+      {/* Mobile Categories Drawer Button */}
+      <CategoriesDrawerButton categories={categories} activeCategory={categorySlug} />
     </div>
   );
 }

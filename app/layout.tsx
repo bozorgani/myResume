@@ -64,7 +64,16 @@ export const viewport: Viewport = {
   ]
 };
 
-const vazirmatn = Vazirmatn({ subsets: ['arabic'], display: 'swap' });
+// بهینه‌سازی فونت برای لود سریع‌تر
+const vazirmatn = Vazirmatn({ 
+  subsets: ['arabic', 'latin'],
+  display: 'swap', // نمایش فونت fallback تا زمان لود فونت اصلی
+  preload: true, // پیش‌لود فونت برای سریع‌تر شدن
+  weight: ['400', '500', '600', '700'], // فقط وزن‌های مورد استفاده
+  variable: '--font-vazirmatn', // برای استفاده به عنوان CSS variable
+  adjustFontFallback: true, // بهبود fallback font
+  fallback: ['system-ui', 'arial'], // فونت‌های fallback سریع
+});
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const webSiteSchema = {
@@ -88,20 +97,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fa" dir="rtl" className="scroll-smooth" suppressHydrationWarning>
       <head>
-        {/* Preconnect to Google Fonts for faster font loading */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Font optimization - Next.js automatically handles font loading */}
         <ThemeScript />
       </head>
       <body className={`antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 ${vazirmatn.className}`}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:shadow">پرش به محتوای اصلی</a>
-        <DevAxe />
+        {process.env.NODE_ENV === 'development' && <DevAxe />}
         {/* Schema برای شناسایی شخص و سازمان توسط موتورهای جستجو */}
         <Schema json={personSchema} />
         <Schema json={organizationSchema} />
         <Schema json={webSiteSchema} />
         <Header />
-        <main id="main-content" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
+        <main id="main-content" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10 w-full">
           {children}
         </main>
         <Footer />

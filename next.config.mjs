@@ -2,8 +2,20 @@
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    typedRoutes: true
+    typedRoutes: true,
+    // بهینه‌سازی برای بهتر شدن performance
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
+  // بهینه‌سازی compiler
+  compiler: {
+    // حذف console.log در production
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
+  // بهینه‌سازی compression
+  compress: true,
+  // بهینه‌سازی فونت‌ها (به صورت پیش‌فرض فعال است)
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
@@ -24,7 +36,21 @@ const nextConfig = {
       patterns.push({ protocol: 'http', hostname: 'localhost', port: '4000', pathname: '/**' });
       return patterns;
     })()
-  }
+  },
+  // بهینه‌سازی headers برای بهتر شدن caching
+  async headers() {
+    return [
+      {
+        source: '/fonts/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

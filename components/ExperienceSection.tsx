@@ -81,7 +81,7 @@ export function ExperienceSection() {
                   </time>
                 </div>
                 <p 
-                  className="text-base text-gray-700 dark:text-gray-300 leading-relaxed"
+                  className="text-base text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-4"
                   itemProp="description"
                 >
                   {exp.summary}
