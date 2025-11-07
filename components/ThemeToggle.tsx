@@ -142,7 +142,7 @@ export function ThemeToggle() {
             setTimeout(() => setIsMenuOpen(false), 200);
           }
         }}
-        className="flex items-center justify-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+        className="flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 dark:focus:ring-offset-gray-900"
         aria-label={`تغییر تم: ${currentThemeData.desc}`}
         aria-expanded={isMenuOpen}
         aria-haspopup="true"
@@ -159,7 +159,7 @@ export function ThemeToggle() {
         >
           {currentThemeData.icon}
         </span>
-        <span className="hidden sm:inline text-xs">{currentThemeData.label}</span>
+        <span className="hidden md:inline text-xs">{currentThemeData.label}</span>
         <svg 
           className="w-4 h-4 transition-transform duration-200" 
           style={{ transform: isMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}

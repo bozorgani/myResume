@@ -5,7 +5,7 @@ export function AboutSection() {
     <section 
       id="about" 
       aria-labelledby="about-title" 
-      className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-8 md:p-10 lg:p-12 shadow-lg"
+      className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 sm:p-8 md:p-10 lg:p-12 shadow-lg"
       itemScope
       itemType="https://schema.org/Person"
     >
@@ -32,28 +32,28 @@ export function AboutSection() {
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid gap-4 sm:grid-cols-3 pt-4">
-          <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 p-6 border border-blue-100 dark:border-blue-800/50 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-200/30 dark:bg-blue-800/20 rounded-full blur-2xl"></div>
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3 pt-4">
+          <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 p-4 sm:p-6 border border-blue-100 dark:border-blue-800/50 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
+            <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-blue-200/30 dark:bg-blue-800/20 rounded-full blur-2xl"></div>
             <div className="relative">
-              <div className="text-4xl font-bold text-brand dark:text-blue-400 mb-2">10+</div>
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">سال تجربه حرفه‌ای در توسعه وب</div>
+              <div className="text-3xl sm:text-4xl font-bold text-brand dark:text-blue-400 mb-1 sm:mb-2">10+</div>
+              <div className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">سال تجربه حرفه‌ای در توسعه وب</div>
             </div>
           </div>
           
-          <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 p-6 border border-purple-100 dark:border-purple-800/50 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-200/30 dark:bg-purple-800/20 rounded-full blur-2xl"></div>
+          <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 p-4 sm:p-6 border border-purple-100 dark:border-purple-800/50 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
+            <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-purple-200/30 dark:bg-purple-800/20 rounded-full blur-2xl"></div>
             <div className="relative">
-              <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">Full-Stack</div>
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">React, Next.js, Node.js, MongoDB</div>
+              <div className="text-2xl sm:text-4xl font-bold text-purple-600 dark:text-purple-400 mb-1 sm:mb-2">Full-Stack</div>
+              <div className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">React, Next.js, Node.js, MongoDB</div>
             </div>
           </div>
           
-          <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 p-6 border border-green-100 dark:border-green-800/50 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-green-200/30 dark:bg-green-800/20 rounded-full blur-2xl"></div>
+          <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 p-4 sm:p-6 border border-green-100 dark:border-green-800/50 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
+            <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-green-200/30 dark:bg-green-800/20 rounded-full blur-2xl"></div>
             <div className="relative">
-              <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">SEO Expert</div>
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">بهینه‌سازی فنی و Core Web Vitals</div>
+              <div className="text-2xl sm:text-4xl font-bold text-green-600 dark:text-green-400 mb-1 sm:mb-2">SEO Expert</div>
+              <div className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">بهینه‌سازی فنی و Core Web Vitals</div>
             </div>
           </div>
         </div>

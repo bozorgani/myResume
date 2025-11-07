@@ -19,16 +19,17 @@ export function Header() {
       <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/90 dark:bg-gray-900/95 dark:supports-[backdrop-filter]:bg-gray-900/90 shadow-sm">
         <div className="mx-auto max-w-7xl">
           {/* Logo and Theme Toggle Row */}
-          <nav className="flex items-center justify-between px-4 py-3" aria-label="ناوبری اصلی">
+          <nav className="flex items-center justify-between px-4 sm:px-6 py-3" aria-label="ناوبری اصلی">
             <Link 
               href="/" 
-              className="font-semibold text-gray-900 dark:text-gray-100 hover:text-brand transition-colors text-lg" 
+              className="font-semibold text-gray-900 dark:text-gray-100 hover:text-brand transition-colors text-base sm:text-lg" 
               aria-label="رفتن به صفحه اصلی"
             >
-              M.A. Bozorgani
+              <span className="hidden sm:inline">M.A. Bozorgani</span>
+              <span className="sm:hidden">M.A.B.</span>
             </Link>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               {/* Desktop Menu */}
               <ul className="hidden md:flex items-center gap-6">
                 <li>

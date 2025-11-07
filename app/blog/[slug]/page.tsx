@@ -8,8 +8,8 @@ import { Schema } from '@/components/Schema';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { ScrollToTop } from '@/components/ScrollToTop';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// بهینه‌سازی: استفاده از ISR برای بهتر شدن performance
+export const revalidate = 300; // 5 minutes
 
 type Params = { slug: string };
 
@@ -156,10 +156,19 @@ export default async function BlogPostPage({ params }: { params: Params }) {
   const contentWithIds = addIdsToHeadings(post.content);
   const toc = extractHeadings(contentWithIds);
 
-  const all = await getAllPosts();
-  const idx = all.findIndex((p) => p.slug === post.slug);
-  const prev = idx > 0 ? all[idx - 1] : undefined;
-  const next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : undefined;
+  // فقط پست‌های قبلی و بعدی را بگیر (نه همه پست‌ها) برای بهتر شدن performance
+  // برای سادگی، از getAllPosts استفاده می‌کنیم اما می‌توان در آینده بهینه کرد
+  let prev: Post | undefined;
+  let next: Post | undefined;
+  try {
+    const all = await getAllPosts();
+    const idx = all.findIndex((p) => p.slug === post.slug);
+    prev = idx > 0 ? all[idx - 1] : undefined;
+    next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : undefined;
+  } catch (error) {
+    console.error('[BlogPostPage] Error fetching all posts for navigation:', error);
+    // اگر خطا رخ داد، navigation را نمایش نده
+  }
 
   return (
     <article className="max-w-none">

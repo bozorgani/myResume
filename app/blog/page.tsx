@@ -6,8 +6,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { PostCard } from '@/components/PostCard';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// بهینه‌سازی: استفاده از ISR برای بهتر شدن performance
+export const revalidate = 180; // 3 minutes
 
 export const metadata: Metadata = createPageMeta({
   title: `بلاگ | ${SITE.name}`,
@@ -26,17 +26,25 @@ export const metadata: Metadata = createPageMeta({
 });
 
 export default async function BlogPage({ searchParams }: { searchParams?: { q?: string; page?: string; category?: string; tag?: string } }) {
+  // Parallel fetching برای سریع‌تر شدن
   let posts: Awaited<ReturnType<typeof getAllPosts>>;
   let categories: Awaited<ReturnType<typeof getAllCategories>>;
-  try {
-    posts = await getAllPosts();
-  } catch (error) {
-    posts = [];
-  }
   
   try {
-    categories = await getAllCategories();
+    // اجرای موازی برای سریع‌تر شدن
+    [posts, categories] = await Promise.all([
+      getAllPosts().catch((error) => {
+        console.error('[BlogPage] Error fetching posts:', error);
+        return [];
+      }),
+      getAllCategories().catch((error) => {
+        console.error('[BlogPage] Error fetching categories:', error);
+        return [];
+      })
+    ]);
   } catch (error) {
+    console.error('[BlogPage] Unexpected error:', error);
+    posts = [];
     categories = [];
   }
   
@@ -78,13 +86,21 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
 
   const pageSize = 9;
   const currentPage = Math.max(1, parseInt(searchParams?.page || '1', 10) || 1);
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  
+  // Only show featured post (first) on page 1 and when no category/tag filter is active
+  const showFeaturedPost = currentPage === 1 && !categorySlug && !tagSlug;
+  
+  // Calculate total pages based on whether we show featured post or not
+  const itemsToPaginate = showFeaturedPost ? filtered.length - 1 : filtered.length;
+  const totalPages = Math.max(1, Math.ceil(itemsToPaginate / pageSize));
 
-  const [first, ...restAll] = filtered;
-  const restSource = restAll.length ? restAll : filtered;
+  // Get featured post only on first page without filters
+  const first = showFeaturedPost && filtered.length > 0 ? filtered[0] : undefined;
+  const postsToPaginate = showFeaturedPost && filtered.length > 0 ? filtered.slice(1) : filtered;
+  
   const start = (currentPage - 1) * pageSize;
   const end = start + pageSize;
-  const paginatedRest = restSource.slice(start, end);
+  const paginatedRest = postsToPaginate.slice(start, end);
 
   const blogSchema = {
     '@context': 'https://schema.org',
@@ -163,26 +179,28 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
                 )}
               </div>
               {(first.categories && first.categories.length > 0) && (
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  {first.categories.map((cat) => (
-                    <Link 
-                      key={cat.slug}
-                      href={`/blog?category=${cat.slug}`}
-                      className="group inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 px-3.5 py-1.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5"
-                    >
-                      <span className="text-sm transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
-                      <span>{cat.name}</span>
-                    </Link>
-                  ))}
+                <div className="mt-4 overflow-x-auto scrollbar-hide -mx-6 sm:mx-0 px-6 sm:px-0 pb-2 sm:pb-0">
+                  <div className="flex items-center gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
+                    {first.categories.map((cat) => (
+                      <Link 
+                        key={cat.slug}
+                        href={`/blog?category=${cat.slug}`}
+                        className="group inline-flex items-center gap-1.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 whitespace-nowrap shrink-0"
+                      >
+                        <span className="text-xs sm:text-sm transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
+                        <span>{cat.name}</span>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
               {(!first.categories || first.categories.length === 0) && first.category && (
                 <div className="mt-4">
                   <Link 
                     href={`/blog?category=${first.category.slug}`}
-                    className="group inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 px-3.5 py-1.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                    className="group inline-flex items-center gap-1.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5"
                   >
-                    <span className="text-sm transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
+                    <span className="text-xs sm:text-sm transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
                     <span>{first.category.name}</span>
                   </Link>
                 </div>
@@ -201,34 +219,37 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
 
       {/* Categories Section */}
       {categories.length > 0 && (
-        <section className="rounded-2xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-sm p-6 sm:p-8 shadow-xl dark:shadow-2xl">
-          <h2 className="mb-5 text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">دسته‌بندی‌ها</h2>
-          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-            <Link
-              href="/blog"
-              className={`group inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 ${
-                !categorySlug
-                  ? 'bg-gradient-to-r from-gray-900 to-gray-800 text-white dark:from-white dark:to-gray-100 dark:text-gray-900 shadow-lg'
-                  : 'bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600'
-              }`}
-            >
-              <span className="text-base transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
-              <span>همه</span>
-            </Link>
-            {categories.map((cat) => (
+        <section className="rounded-2xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-sm p-4 sm:p-6 md:p-8 shadow-xl dark:shadow-2xl">
+          <h2 className="mb-3 sm:mb-4 md:mb-5 text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">دسته‌بندی‌ها</h2>
+          {/* Mobile: Horizontal scroll, Desktop: Flex wrap */}
+          <div className="overflow-x-auto scrollbar-hide -mx-4 sm:mx-0 px-4 sm:px-0 pb-2 sm:pb-0">
+            <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 min-w-max sm:min-w-0 sm:flex-wrap">
               <Link
-                key={cat.slug}
-                href={`/blog?category=${cat.slug}`}
-                className={`group inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 ${
-                  categorySlug === cat.slug
+                href="/blog"
+                className={`group inline-flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 shrink-0 ${
+                  !categorySlug
                     ? 'bg-gradient-to-r from-gray-900 to-gray-800 text-white dark:from-white dark:to-gray-100 dark:text-gray-900 shadow-lg'
                     : 'bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600'
                 }`}
               >
-                <span className="text-base transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
-                <span>{cat.name}</span>
+                <span className="text-sm sm:text-base transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
+                <span>همه</span>
               </Link>
-            ))}
+              {categories.map((cat) => (
+                <Link
+                  key={cat.slug}
+                  href={`/blog?category=${cat.slug}`}
+                  className={`group inline-flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 shrink-0 ${
+                    categorySlug === cat.slug
+                      ? 'bg-gradient-to-r from-gray-900 to-gray-800 text-white dark:from-white dark:to-gray-100 dark:text-gray-900 shadow-lg'
+                      : 'bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600'
+                  }`}
+                >
+                  <span className="text-sm sm:text-base transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
+                  <span>{cat.name}</span>
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
       )}

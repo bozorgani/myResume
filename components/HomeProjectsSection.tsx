@@ -8,7 +8,7 @@ export async function HomeProjectsSection() {
     <section 
       id="projects" 
       aria-labelledby="projects-title" 
-      className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-8 md:p-10 lg:p-12 shadow-lg"
+      className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 sm:p-8 md:p-10 lg:p-12 shadow-lg"
       itemScope
       itemType="https://schema.org/ItemList"
     >

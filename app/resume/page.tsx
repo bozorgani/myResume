@@ -6,8 +6,8 @@ import { EducationSection } from '@/components/EducationSection';
 import { CertificatesSection } from '@/components/CertificatesSection';
 import { SkillsSection } from '@/components/SkillsSection';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// بهینه‌سازی: استفاده از ISR برای بهتر شدن performance
+export const revalidate = 3600; // 1 hour (resume doesn't change often)
 
 export const metadata: Metadata = createPageMeta({
   title: `رزومه | ${SITE.name}`,

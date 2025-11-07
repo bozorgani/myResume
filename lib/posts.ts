@@ -219,9 +219,10 @@ function mapCmsPostToSitePost(p: any): Post {
 async function fetchWithRetry(
   url: string,
   options: RequestInit & { timeout?: number },
-  maxRetries = 2
+  maxRetries = 0 // کاهش retry برای سریع‌تر شدن
 ): Promise<Response> {
-  const timeout = options.timeout || (process.env.NODE_ENV === 'production' ? 15000 : 5000);
+  // افزایش timeout برای جلوگیری از timeout زودرس - اما نه خیلی زیاد
+  const timeout = options.timeout || (process.env.NODE_ENV === 'production' ? 15000 : 8000);
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
@@ -234,22 +235,24 @@ async function fetchWithRetry(
           signal: controller.signal,
         });
         clearTimeout(timeoutId);
-        return res;
+        return res; // هر نتیجه‌ای که باشد برگردان (حتی خطا) - error handling در caller
       } catch (fetchError) {
         clearTimeout(timeoutId);
+        
+        // فقط در آخرین attempt خطا را throw کن
         if (attempt === maxRetries) {
           throw fetchError;
         }
-        // Wait before retry (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+        
+        // Wait before retry (short delay)
+        await new Promise(resolve => setTimeout(resolve, 300));
         continue;
       }
     } catch (error) {
       if (attempt === maxRetries) {
         throw error;
       }
-      // Wait before retry
-      await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+      await new Promise(resolve => setTimeout(resolve, 300));
     }
   }
   
@@ -263,9 +266,9 @@ export async function getAllPosts(): Promise<Post[]> {
     
     try {
       const res = await fetchWithRetry(url, {
-        timeout: isProduction ? 15000 : 5000,
+        timeout: isProduction ? 15000 : 8000, // timeout متعادل
         next: { 
-          revalidate: isProduction ? 60 : 30, // Cache for 60 seconds in production, 30 in dev
+          revalidate: isProduction ? 180 : 30, // cache time متعادل
         },
         headers: {
           'Accept': 'application/json',
@@ -273,17 +276,16 @@ export async function getAllPosts(): Promise<Post[]> {
       });
       
       if (!res.ok) {
-        const errorText = await res.text().catch(() => 'Could not read error response');
-        console.error(`[getAllPosts] API returned ${res.status} ${res.statusText} for ${CMS_API_BASE}`);
-        if (isProduction) {
-          console.error(`[getAllPosts] Error response (first 200 chars): ${errorText.substring(0, 200)}`);
-        } else {
-          console.error(`[getAllPosts] Error response: ${errorText}`);
+        // فقط در dev mode خطا را log کن
+        if (!isProduction) {
+          const errorText = await res.text().catch(() => 'Could not read error response');
+          console.error(`[getAllPosts] API returned ${res.status} ${res.statusText} for ${CMS_API_BASE}`);
+          console.error(`[getAllPosts] Error response: ${errorText.substring(0, 200)}`);
         }
-        return [];
+        return []; // در صورت خطا، آرایه خالی برگردان
       }
       
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       const items = Array.isArray(data?.items) ? (data.items as unknown[]) : [];
       
       if (items.length === 0 && !isProduction) {
@@ -295,22 +297,25 @@ export async function getAllPosts(): Promise<Post[]> {
       
       return sorted;
     } catch (fetchError) {
-      const errorMessage = fetchError instanceof Error ? fetchError.message : String(fetchError);
-      console.error(`[getAllPosts] Fetch error after retries: ${errorMessage}`);
-      console.error(`[getAllPosts] API URL: ${CMS_API_BASE}`);
-      
-      // In production, log more details for debugging
-      if (process.env.NODE_ENV === 'production') {
-        console.error(`[getAllPosts] This might be a network issue or API is down`);
+      // فقط در dev mode خطا را log کن
+      if (!isProduction) {
+        const errorMessage = fetchError instanceof Error ? fetchError.message : String(fetchError);
+        console.error(`[getAllPosts] Fetch error: ${errorMessage}`);
+        console.error(`[getAllPosts] API URL: ${CMS_API_BASE}`);
       }
       
+      // در صورت خطا، آرایه خالی برگردان (نه crash)
       return [];
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`[getAllPosts] Unexpected error: ${errorMessage}`);
-    console.error(`[getAllPosts] API Base: ${CMS_API_BASE}`);
-    console.error(`[getAllPosts] Make sure NEXT_PUBLIC_CMS_API is set correctly`);
+    // فقط در dev mode خطا را log کن
+    if (process.env.NODE_ENV !== 'production') {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`[getAllPosts] Unexpected error: ${errorMessage}`);
+      console.error(`[getAllPosts] API Base: ${CMS_API_BASE}`);
+    }
+    
+    // در صورت خطا، آرایه خالی برگردان (نه crash)
     return [];
   }
 }
@@ -322,9 +327,9 @@ export async function getPostBySlug(slug: string): Promise<Post | undefined> {
     
     try {
       const res = await fetchWithRetry(url, {
-        timeout: isProduction ? 15000 : 5000,
+        timeout: isProduction ? 15000 : 8000, // timeout متعادل
         next: { 
-          revalidate: isProduction ? 60 : 30, // Cache for 60 seconds in production, 30 in dev
+          revalidate: isProduction ? 180 : 30, // cache time متعادل
         },
         headers: {
           'Accept': 'application/json',
@@ -368,7 +373,7 @@ export async function getAllCategories(): Promise<Category[]> {
     
     try {
       const res = await fetchWithRetry(url, {
-        timeout: isProduction ? 15000 : 5000,
+        timeout: isProduction ? 15000 : 8000, // timeout متعادل
         next: { revalidate: 300 }, // Cache for 5 minutes (categories don't change often)
         headers: {
           'Accept': 'application/json',

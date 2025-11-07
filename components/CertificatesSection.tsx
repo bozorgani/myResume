@@ -36,6 +36,14 @@ const certificates: Certificate[] = [
     image: '/images/mjs.jpeg', 
     url: '#',
     skills: ['JavaScript', 'ES6+', 'Async/Await', 'Promises', 'Modules', 'Destructuring', 'Arrow Functions', 'Classes']
+  },
+  { 
+    title: 'RESTful API Development', 
+    issuer: 'Backend Development', 
+    year: '۱۴۰۲', 
+    image: '/images/restfullapi.png', 
+    url: '#',
+    skills: ['REST APIs', 'Node.js', 'Express.js']
   }
 ];
 
@@ -123,7 +131,7 @@ export function CertificatesSection() {
     <section 
       id="certificates" 
       aria-labelledby="certificates-title" 
-      className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-8 md:p-10 lg:p-12 shadow-lg"
+      className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 sm:p-8 md:p-10 lg:p-12 shadow-lg"
       itemScope
       itemType="https://schema.org/ItemList"
     >
@@ -148,9 +156,10 @@ export function CertificatesSection() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-100/30 to-orange-100/30 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-full blur-2xl"></div>
               
               <div className="relative flex flex-col sm:flex-row items-start gap-4">
+                {/* Image - Full width on mobile, fixed width on desktop */}
                 <button
                   onClick={() => handleImageClick(c)}
-                  className="h-40 w-40 sm:h-48 sm:w-48 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center border border-gray-200 dark:border-gray-600 shadow-md group-hover:shadow-lg transition-all cursor-pointer hover:scale-105 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"
+                  className="w-full sm:w-auto sm:h-40 sm:shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center border border-gray-200 dark:border-gray-600 shadow-md group-hover:shadow-lg transition-all cursor-pointer hover:scale-105 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 h-48 sm:h-40 sm:aspect-square md:h-48"
                   aria-label={`مشاهده عکس بزرگ گواهینامه ${c.title}`}
                 >
                   {c.image ? (
@@ -170,21 +179,22 @@ export function CertificatesSection() {
                     </div>
                   )}
                 </button>
-                <div className="min-w-0 flex-1 space-y-2">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                <div className="min-w-0 flex-1 w-full sm:w-auto space-y-2">
+                  {/* Title and Year in one line on mobile */}
+                  <div className="flex flex-row items-center justify-between gap-3">
                     {c.url ? (
                       <a 
                         href={c.url} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="font-bold text-base text-gray-900 dark:text-white hover:text-brand dark:hover:text-blue-400 transition-colors leading-tight group-hover:underline"
+                        className="font-bold text-base text-gray-900 dark:text-white hover:text-brand dark:hover:text-blue-400 transition-colors leading-tight group-hover:underline flex-1 min-w-0"
                         itemProp="url"
                       >
                         {c.title}
                       </a>
                     ) : (
                       <h3 
-                        className="font-bold text-base text-gray-900 dark:text-white leading-tight"
+                        className="font-bold text-base text-gray-900 dark:text-white leading-tight flex-1 min-w-0"
                         itemProp="name"
                       >
                         {c.title}

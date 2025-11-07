@@ -86,7 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     }
   } as const;
   return (
-    <html lang="fa" dir="rtl" className="scroll-smooth">
+    <html lang="fa" dir="rtl" className="scroll-smooth" suppressHydrationWarning>
       <head>
         {/* Preconnect to Google Fonts for faster font loading */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -101,7 +101,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Schema json={organizationSchema} />
         <Schema json={webSiteSchema} />
         <Header />
-        <main id="main-content" className="mx-auto max-w-7xl px-4 py-10">
+        <main id="main-content" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
           {children}
         </main>
         <Footer />

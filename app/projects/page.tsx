@@ -21,15 +21,17 @@ export const metadata: Metadata = createPageMeta({
 export default function ProjectsPage() {
   const projects = getAllProjects();
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">پروژه‌ها</h1>
-      <p className="text-gray-700 dark:text-gray-300">
-        مجموعه‌ای از پروژه‌های واقعی که با استفاده از تکنولوژی‌های مدرن مانند Next.js، React، Node.js و MongoDB توسعه داده‌ام. هر پروژه شامل بهینه‌سازی عملکرد، بهبود Core Web Vitals، و پیاده‌سازی بهترین شیوه‌های سئو فنی است. این پروژه‌ها نشان‌دهنده تجربه من در ساخت اپلیکیشن‌های مقیاس‌پذیر، سیستم‌های مدیریت محتوا، و پلتفرم‌های تجارت الکترونیک هستند.
-      </p>
-      <div className="grid gap-6 sm:grid-cols-2">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="space-y-3 sm:space-y-4">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">پروژه‌ها</h1>
+        <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+          مجموعه‌ای از پروژه‌های واقعی که با استفاده از تکنولوژی‌های مدرن مانند Next.js، React، Node.js و MongoDB توسعه داده‌ام. هر پروژه شامل بهینه‌سازی عملکرد، بهبود Core Web Vitals، و پیاده‌سازی بهترین شیوه‌های سئو فنی است. این پروژه‌ها نشان‌دهنده تجربه من در ساخت اپلیکیشن‌های مقیاس‌پذیر، سیستم‌های مدیریت محتوا، و پلتفرم‌های تجارت الکترونیک هستند.
+        </p>
+      </div>
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
         {projects.map((p) => (
-          <ProjectCard key={p.slug} project={p} />)
-        )}
+          <ProjectCard key={p.slug} project={p} />
+        ))}
       </div>
     </div>
   );
