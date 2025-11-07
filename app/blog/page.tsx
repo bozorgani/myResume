@@ -62,15 +62,23 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
   }
 
   if (query) {
+    const queryLower = query.toLowerCase();
     filtered = filtered.filter((p) => {
-      const hay = `${p.title} ${p.description}`.toLowerCase();
-      return hay.includes(query.toLowerCase());
+      // Search in title and description
+      const titleMatch = p.title.toLowerCase().includes(queryLower);
+      const descMatch = p.description.toLowerCase().includes(queryLower);
+      
+      // Also search in content (strip HTML tags for search)
+      const contentText = p.content ? p.content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').toLowerCase() : '';
+      const contentMatch = contentText.includes(queryLower);
+      
+      return titleMatch || descMatch || contentMatch;
     });
   }
 
   const pageSize = 9;
   const currentPage = Math.max(1, parseInt(searchParams?.page || '1', 10) || 1);
-  const totalPages = Math.max(1, Math.ceil(Math.max(0, filtered.length - 1) / pageSize));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
 
   const [first, ...restAll] = filtered;
   const restSource = restAll.length ? restAll : filtered;
@@ -228,18 +236,27 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
       <section>
         <div className="mb-6 sm:mb-8 flex flex-col items-stretch justify-between gap-4 sm:gap-5 sm:flex-row sm:items-center">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">جدیدترین مقالات</h2>
-          <form method="get" action="/blog" className="relative w-full sm:w-auto">
-            <input
-              type="search"
-              name="q"
-              placeholder="جستجوی عنوان و خلاصه..."
-              defaultValue={query}
-              className="w-full rounded-xl border-2 border-gray-200/80 dark:border-gray-700/80 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm px-4 py-3 pr-11 text-sm outline-none focus:border-blue-400 dark:focus:border-blue-600 focus:ring-4 focus:ring-blue-500/20 dark:focus:ring-blue-500/30 transition-all duration-200 sm:min-w-[300px] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
-              aria-label="جستجو در مقالات"
-            />
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-lg" aria-hidden>
-              🔎
-            </span>
+          <form method="get" action="/blog" className="relative w-full sm:w-auto flex items-center gap-2">
+            <div className="relative flex-1 sm:flex-initial">
+              <input
+                type="search"
+                name="q"
+                placeholder="جستجوی عنوان و خلاصه..."
+                defaultValue={query}
+                className="w-full rounded-xl border-2 border-gray-200/80 dark:border-gray-700/80 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm px-4 py-3 pr-11 text-sm outline-none focus:border-blue-400 dark:focus:border-blue-600 focus:ring-4 focus:ring-blue-500/20 dark:focus:ring-blue-500/30 transition-all duration-200 sm:min-w-[300px] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                aria-label="جستجو در مقالات"
+              />
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-lg" aria-hidden>
+                🔎
+              </span>
+            </div>
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-5 py-3 text-sm font-semibold text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 whitespace-nowrap"
+              aria-label="جستجو"
+            >
+              <span>جستجو</span>
+            </button>
             {categorySlug && <input type="hidden" name="category" value={categorySlug} />}
             {tagSlug && <input type="hidden" name="tag" value={tagSlug} />}
           </form>

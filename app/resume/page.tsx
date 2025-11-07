@@ -32,7 +32,7 @@ export default function ResumePage() {
       <header className="rounded-xl border bg-gradient-to-br from-white to-gray-50 p-4 sm:p-6 md:p-8 dark:from-gray-900 dark:to-gray-800 dark:border-gray-700 shadow-sm">
         <div className="flex flex-col gap-4 sm:gap-5 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
-            <div className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-full ring-2 ring-brand/20 shadow-md">
+            <div className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-lg md:rounded-full ring-2 ring-brand/20 shadow-md">
               <Image 
                 src="/images/amin-bozorgani-portrait-512.webp" 
                 alt={SITE.name} 
@@ -91,19 +91,12 @@ export default function ResumePage() {
         </div>
       </header>
 
-      {/* Content grid */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Main Content */}
-        <div className="space-y-6 lg:col-span-2">
-          <ExperienceSection />
-          <CertificatesSection />
-        </div>
-        
-        {/* Sidebar */}
-        <div className="space-y-6 lg:sticky lg:top-6 lg:self-start">
-          <SkillsSection />
-          <EducationSection />
-        </div>
+      {/* Content - All sections in one column */}
+      <div className="space-y-6">
+        <ExperienceSection />
+        <SkillsSection />
+        <EducationSection />
+        <CertificatesSection />
       </div>
     </article>
   );

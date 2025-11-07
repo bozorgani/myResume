@@ -228,7 +228,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
             </div>
           </div>
 
-          {((post.categories && post.categories.length > 0) || post.category || (post.tags && post.tags.length > 0)) && (
+          {((post.categories && post.categories.length > 0) || post.category) && (
             <div className="relative z-10 flex flex-wrap items-start gap-4 sm:gap-5 pt-6 border-t-2 border-gray-200/80 dark:border-gray-700/80">
               {(post.categories && post.categories.length > 0) && (
                 <div className="flex flex-wrap items-center gap-3">
@@ -259,24 +259,6 @@ export default async function BlogPostPage({ params }: { params: Params }) {
                     <span className="relative z-10">{post.category.name}</span>
                     <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/10 group-hover:to-purple-500/10 transition-all duration-300"></span>
                   </Link>
-                </div>
-              )}
-              {post.tags && post.tags.length > 0 && (
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">تگ‌ها</span>
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    {post.tags.map((tag) => (
-                      <Link
-                        key={tag.slug}
-                        href={`/blog?tag=${tag.slug}`}
-                        className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/30 px-3.5 py-2 text-sm font-medium text-blue-700 dark:text-blue-300 hover:from-blue-100 hover:to-blue-200 dark:hover:from-blue-800/40 dark:hover:to-blue-700/40 transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-0.5 backdrop-blur-sm"
-                      >
-                        <span className="text-base transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">🏷️</span>
-                        <span className="relative z-10">{tag.name}</span>
-                        <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/0 to-cyan-500/0 group-hover:from-blue-500/10 group-hover:to-cyan-500/10 transition-all duration-300"></span>
-                      </Link>
-                    ))}
-                  </div>
                 </div>
               )}
             </div>

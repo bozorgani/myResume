@@ -8,6 +8,62 @@
   outline-offset: 2px;
 }
 
+/* Smooth theme transitions for theme-aware elements */
+html {
+  color-scheme: light dark;
+}
+
+/* Apply smooth transitions only to theme-related properties */
+body,
+button,
+a,
+input,
+textarea,
+select {
+  transition-property: background-color, border-color, color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Faster transitions for interactive elements */
+button,
+a {
+  transition-duration: 150ms;
+}
+
+/* Theme menu animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-from-top {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.slide-in-from-top-2 {
+  animation: slide-in-from-top 0.2s ease-out;
+}
+
 /* Typography defaults for readability */
 html { scroll-behavior: smooth; }
 body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
@@ -495,6 +551,22 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+}
+
+/* Hide scrollbar for mobile menu */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Smooth scrolling for mobile menu */
+.scrollbar-hide {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 

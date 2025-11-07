@@ -174,11 +174,6 @@ function renderContentToHtml(content: any): string {
 function mapCmsPostToSitePost(p: any): Post {
   const imagePath = p?.coverImageId?.path || p?.seo?.ogImageId?.path;
   
-  // Debug: Log raw category data
-  if (p.categoryIds || p.categoryId) {
-    console.log(`[mapCmsPostToSitePost] Post "${p.title}": categoryId=`, p.categoryId, 'categoryIds=', p.categoryIds);
-  }
-  
   // Handle multiple categories (categoryIds) - preserve order
   let categories: Array<{ name: string; slug: string }> | undefined;
   if (Array.isArray(p.categoryIds) && p.categoryIds.length > 0) {
@@ -188,9 +183,6 @@ function mapCmsPostToSitePost(p: any): Post {
         name: cat.name || '',
         slug: cat.slug || ''
       }));
-      if (categories) {
-        console.log(`[mapCmsPostToSitePost] Mapped ${categories.length} categories for "${p.title}"`);
-      }
     }
   }
   
@@ -224,65 +216,101 @@ function mapCmsPostToSitePost(p: any): Post {
   };
 }
 
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit & { timeout?: number },
+  maxRetries = 2
+): Promise<Response> {
+  const timeout = options.timeout || (process.env.NODE_ENV === 'production' ? 15000 : 5000);
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      
+      try {
+        const res = await fetch(url, {
+          ...options,
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        return res;
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        if (attempt === maxRetries) {
+          throw fetchError;
+        }
+        // Wait before retry (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+        continue;
+      }
+    } catch (error) {
+      if (attempt === maxRetries) {
+        throw error;
+      }
+      // Wait before retry
+      await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+    }
+  }
+  
+  throw new Error('Max retries exceeded');
+}
+
 export async function getAllPosts(): Promise<Post[]> {
   try {
     const url = `${CMS_API_BASE}/v1/posts?status=published&limit=100&t=${Date.now()}`;
-    console.log(`[getAllPosts] Attempting to fetch from: ${url}`);
-    
-    const controller = new AbortController();
-    // Very short timeout for build - fail fast if API is unavailable
-    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout for build
+    const isProduction = process.env.NODE_ENV === 'production';
     
     try {
-      const res = await fetch(url, { 
-        signal: controller.signal,
-        next: { revalidate: 60 }, // Cache for 60 seconds to improve bfcache
+      const res = await fetchWithRetry(url, {
+        timeout: isProduction ? 15000 : 5000,
+        next: { 
+          revalidate: isProduction ? 60 : 30, // Cache for 60 seconds in production, 30 in dev
+        },
         headers: {
-          'Accept': 'application/json'
-        }
+          'Accept': 'application/json',
+        },
       });
-      clearTimeout(timeoutId);
-      
-      console.log(`[getAllPosts] Response status: ${res.status} ${res.statusText}`);
       
       if (!res.ok) {
         const errorText = await res.text().catch(() => 'Could not read error response');
-        console.error(`[getAllPosts] API returned ${res.status} ${res.statusText} for ${url}`);
-        console.error(`[getAllPosts] Error response: ${errorText}`);
+        console.error(`[getAllPosts] API returned ${res.status} ${res.statusText} for ${CMS_API_BASE}`);
+        if (isProduction) {
+          console.error(`[getAllPosts] Error response (first 200 chars): ${errorText.substring(0, 200)}`);
+        } else {
+          console.error(`[getAllPosts] Error response: ${errorText}`);
+        }
         return [];
       }
       
       const data = await res.json();
-      console.log(`[getAllPosts] Received data:`, { 
-        hasItems: !!data?.items, 
-        itemsCount: Array.isArray(data?.items) ? data.items.length : 0,
-        total: data?.total 
-      });
-      
       const items = Array.isArray(data?.items) ? (data.items as unknown[]) : [];
-      if (items.length === 0) {
-        console.warn(`[getAllPosts] No items in response. Full response:`, JSON.stringify(data, null, 2));
+      
+      if (items.length === 0 && !isProduction) {
+        console.warn(`[getAllPosts] No items in response. Total in response: ${data?.total || 0}`);
       }
       
       const mapped = items.map(mapCmsPostToSitePost) as Post[];
       const sorted = mapped.sort((a: Post, b: Post) => (a.date < b.date ? 1 : -1));
-      console.log(`[getAllPosts] Returning ${sorted.length} posts`);
-      // Debug: Log first post's categories if available
-      if (sorted.length > 0 && sorted[0].categories) {
-        console.log(`[getAllPosts] First post categories:`, sorted[0].categories);
-      }
+      
       return sorted;
     } catch (fetchError) {
-      clearTimeout(timeoutId);
-      // Always return empty array on any error - allows build to continue
-      // Silently handle connection errors during build
+      const errorMessage = fetchError instanceof Error ? fetchError.message : String(fetchError);
+      console.error(`[getAllPosts] Fetch error after retries: ${errorMessage}`);
+      console.error(`[getAllPosts] API URL: ${CMS_API_BASE}`);
+      
+      // In production, log more details for debugging
+      if (process.env.NODE_ENV === 'production') {
+        console.error(`[getAllPosts] This might be a network issue or API is down`);
+      }
+      
       return [];
     }
   } catch (error) {
-    // Catch any other unexpected errors and return empty array
-    console.warn(`[getAllPosts] Unexpected error fetching posts from ${CMS_API_BASE}:`, error instanceof Error ? error.message : error);
-    console.warn(`[getAllPosts] Make sure NEXT_PUBLIC_CMS_API is set correctly. Current value: ${CMS_API_BASE}`);
-    // Always return empty array instead of throwing - app should work even without API
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`[getAllPosts] Unexpected error: ${errorMessage}`);
+    console.error(`[getAllPosts] API Base: ${CMS_API_BASE}`);
+    console.error(`[getAllPosts] Make sure NEXT_PUBLIC_CMS_API is set correctly`);
     return [];
   }
 }
@@ -290,34 +318,38 @@ export async function getAllPosts(): Promise<Post[]> {
 export async function getPostBySlug(slug: string): Promise<Post | undefined> {
   try {
     const url = `${CMS_API_BASE}/v1/posts/slug/${slug}?t=${Date.now()}`;
-    
-    const controller = new AbortController();
-    // Very short timeout for build - fail fast if API is unavailable
-    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout for build
+    const isProduction = process.env.NODE_ENV === 'production';
     
     try {
-      const res = await fetch(url, { 
-        signal: controller.signal,
-        next: { revalidate: 60 }, // Cache for 60 seconds to improve bfcache
+      const res = await fetchWithRetry(url, {
+        timeout: isProduction ? 15000 : 5000,
+        next: { 
+          revalidate: isProduction ? 60 : 30, // Cache for 60 seconds in production, 30 in dev
+        },
         headers: {
-          'Accept': 'application/json'
-        }
+          'Accept': 'application/json',
+        },
       });
-      clearTimeout(timeoutId);
       
       if (!res.ok) {
-        console.error(`[getPostBySlug] API returned ${res.status} ${res.statusText} for ${url}`);
+        if (res.status === 404) {
+          console.warn(`[getPostBySlug] Post not found: ${slug}`);
+        } else {
+          console.error(`[getPostBySlug] API returned ${res.status} ${res.statusText} for slug: ${slug}`);
+        }
         return undefined;
       }
+      
       const data = await res.json();
       return mapCmsPostToSitePost(data);
     } catch (fetchError) {
-      clearTimeout(timeoutId);
-      // Handle connection errors gracefully - always return undefined on error
+      const errorMessage = fetchError instanceof Error ? fetchError.message : String(fetchError);
+      console.error(`[getPostBySlug] Fetch error for slug "${slug}": ${errorMessage}`);
       return undefined;
     }
   } catch (error) {
-    // Always return undefined on any error
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`[getPostBySlug] Unexpected error for slug "${slug}": ${errorMessage}`);
     return undefined;
   }
 }
@@ -332,25 +364,22 @@ export type Category = {
 export async function getAllCategories(): Promise<Category[]> {
   try {
     const url = `${CMS_API_BASE}/v1/categories?t=${Date.now()}`;
-    
-    const controller = new AbortController();
-    // Very short timeout for build - fail fast if API is unavailable
-    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout for build
+    const isProduction = process.env.NODE_ENV === 'production';
     
     try {
-      const res = await fetch(url, {
-        signal: controller.signal,
-        next: { revalidate: 300 }, // Cache for 5 minutes
+      const res = await fetchWithRetry(url, {
+        timeout: isProduction ? 15000 : 5000,
+        next: { revalidate: 300 }, // Cache for 5 minutes (categories don't change often)
         headers: {
-          'Accept': 'application/json'
-        }
+          'Accept': 'application/json',
+        },
       });
-      clearTimeout(timeoutId);
       
       if (!res.ok) {
-        console.error(`[getAllCategories] API returned ${res.status} ${res.statusText} for ${url}`);
+        console.error(`[getAllCategories] API returned ${res.status} ${res.statusText}`);
         return [];
       }
+      
       const data = await res.json();
       const items = Array.isArray(data?.items) ? data.items : [];
       return items.map((cat: any) => ({
@@ -360,12 +389,13 @@ export async function getAllCategories(): Promise<Category[]> {
         description: cat.description || undefined
       }));
     } catch (fetchError) {
-      clearTimeout(timeoutId);
-      // Always return empty array on any error - allows build to continue
+      const errorMessage = fetchError instanceof Error ? fetchError.message : String(fetchError);
+      console.error(`[getAllCategories] Fetch error: ${errorMessage}`);
       return [];
     }
   } catch (error) {
-    // Always return empty array instead of throwing
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`[getAllCategories] Unexpected error: ${errorMessage}`);
     return [];
   }
 }

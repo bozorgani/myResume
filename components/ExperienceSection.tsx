@@ -25,32 +25,71 @@ const experiences: Experience[] = [
 
 export function ExperienceSection() {
   return (
-    <section id="experience" aria-labelledby="experience-title" className="rounded-xl border bg-white p-4 sm:p-6 space-y-4 sm:space-y-6 dark:bg-gray-900 dark:border-gray-800 shadow-sm">
-      <h2 id="experience-title" className="text-xl sm:text-2xl font-bold tracking-tight">تجربه و سوابق</h2>
-      <div className="grid grid-cols-1 gap-4 sm:gap-5">
-        {experiences.map((exp, idx) => (
-          <article 
-            key={idx} 
-            className="group rounded-lg bg-gradient-to-br from-gray-50 to-white p-4 sm:p-5 ring-1 ring-gray-200 transition-all duration-200 hover:shadow-md hover:ring-gray-300 dark:from-gray-800 dark:to-gray-900 dark:ring-gray-700 dark:hover:ring-gray-600"
-          >
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3 mb-3">
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-base sm:text-lg leading-6 text-gray-900 dark:text-gray-100">
-                  {exp.role}
-                </h3>
-                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
-                  {exp.company}
+    <section 
+      id="experience" 
+      aria-labelledby="experience-title" 
+      className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-8 md:p-10 lg:p-12 shadow-lg"
+      itemScope
+      itemType="https://schema.org/ItemList"
+    >
+      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-orange-100/50 to-red-100/50 dark:from-orange-900/20 dark:to-red-900/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+      
+      <div className="relative space-y-6">
+        <div className="space-y-2">
+          <h2 id="experience-title" className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+            تجربه و سوابق
+          </h2>
+          <div className="h-1 w-20 bg-gradient-to-r from-brand to-indigo-500 rounded-full"></div>
+        </div>
+        <div className="grid grid-cols-1 gap-6">
+          {experiences.map((exp, idx) => (
+            <article 
+              key={idx} 
+              className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-6 border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-xl hover:border-brand dark:hover:border-brand"
+              itemScope
+              itemType="https://schema.org/JobPosting"
+              itemProp="itemListElement"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-brand/10 to-indigo-500/10 rounded-full blur-2xl"></div>
+              
+              <div className="relative space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <h3 
+                      className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-brand dark:group-hover:text-blue-400 transition-colors"
+                      itemProp="title"
+                    >
+                      {exp.role}
+                    </h3>
+                    <p 
+                      className="text-base font-medium text-gray-600 dark:text-gray-400"
+                      itemProp="hiringOrganization"
+                      itemScope
+                      itemType="https://schema.org/Organization"
+                    >
+                      <span itemProp="name">{exp.company}</span>
+                    </p>
+                  </div>
+                  <time 
+                    className="shrink-0 inline-flex items-center gap-2 text-sm font-semibold text-white bg-gradient-to-r from-brand to-brand-dark px-4 py-2 rounded-lg shadow-sm"
+                    itemProp="datePosted"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    {exp.start} — {exp.end}
+                  </time>
+                </div>
+                <p 
+                  className="text-base text-gray-700 dark:text-gray-300 leading-relaxed"
+                  itemProp="description"
+                >
+                  {exp.summary}
                 </p>
               </div>
-              <time className="shrink-0 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-md">
-                {exp.start} — {exp.end}
-              </time>
-            </div>
-            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-              {exp.summary}
-            </p>
-          </article>
-        ))}
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
