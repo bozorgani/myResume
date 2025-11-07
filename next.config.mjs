@@ -4,8 +4,6 @@ const nextConfig = {
   experimental: {
     typedRoutes: true
   },
-  // Increase static page generation timeout for pages that need to fetch data
-  staticPageGenerationTimeout: 120, // 120 seconds
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],

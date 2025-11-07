@@ -23,6 +23,12 @@ export type Post = {
 
 const CMS_API_BASE = process.env.NEXT_PUBLIC_CMS_API || 'http://localhost:4000';
 
+// Log API base URL for debugging (both dev and production)
+if (typeof window === 'undefined') {
+  console.log(`[posts.ts] CMS_API_BASE: ${CMS_API_BASE}`);
+  console.log(`[posts.ts] NODE_ENV: ${process.env.NODE_ENV}`);
+  console.log(`[posts.ts] NEXT_PUBLIC_CMS_API from env: ${process.env.NEXT_PUBLIC_CMS_API || 'NOT SET'}`);
+}
 
 function buildMediaUrl(path?: string): string | undefined {
   if (!path) return undefined;
@@ -168,6 +174,11 @@ function renderContentToHtml(content: any): string {
 function mapCmsPostToSitePost(p: any): Post {
   const imagePath = p?.coverImageId?.path || p?.seo?.ogImageId?.path;
   
+  // Debug: Log raw category data
+  if (p.categoryIds || p.categoryId) {
+    console.log(`[mapCmsPostToSitePost] Post "${p.title}": categoryId=`, p.categoryId, 'categoryIds=', p.categoryIds);
+  }
+  
   // Handle multiple categories (categoryIds) - preserve order
   let categories: Array<{ name: string; slug: string }> | undefined;
   if (Array.isArray(p.categoryIds) && p.categoryIds.length > 0) {
@@ -177,6 +188,9 @@ function mapCmsPostToSitePost(p: any): Post {
         name: cat.name || '',
         slug: cat.slug || ''
       }));
+      if (categories) {
+        console.log(`[mapCmsPostToSitePost] Mapped ${categories.length} categories for "${p.title}"`);
+      }
     }
   }
   
@@ -213,6 +227,7 @@ function mapCmsPostToSitePost(p: any): Post {
 export async function getAllPosts(): Promise<Post[]> {
   try {
     const url = `${CMS_API_BASE}/v1/posts?status=published&limit=100&t=${Date.now()}`;
+    console.log(`[getAllPosts] Attempting to fetch from: ${url}`);
     
     const controller = new AbortController();
     // Very short timeout for build - fail fast if API is unavailable
@@ -228,36 +243,45 @@ export async function getAllPosts(): Promise<Post[]> {
       });
       clearTimeout(timeoutId);
       
+      console.log(`[getAllPosts] Response status: ${res.status} ${res.statusText}`);
+      
       if (!res.ok) {
+        const errorText = await res.text().catch(() => 'Could not read error response');
+        console.error(`[getAllPosts] API returned ${res.status} ${res.statusText} for ${url}`);
+        console.error(`[getAllPosts] Error response: ${errorText}`);
         return [];
       }
       
       const data = await res.json();
+      console.log(`[getAllPosts] Received data:`, { 
+        hasItems: !!data?.items, 
+        itemsCount: Array.isArray(data?.items) ? data.items.length : 0,
+        total: data?.total 
+      });
+      
       const items = Array.isArray(data?.items) ? (data.items as unknown[]) : [];
+      if (items.length === 0) {
+        console.warn(`[getAllPosts] No items in response. Full response:`, JSON.stringify(data, null, 2));
+      }
       
       const mapped = items.map(mapCmsPostToSitePost) as Post[];
       const sorted = mapped.sort((a: Post, b: Post) => (a.date < b.date ? 1 : -1));
+      console.log(`[getAllPosts] Returning ${sorted.length} posts`);
+      // Debug: Log first post's categories if available
+      if (sorted.length > 0 && sorted[0].categories) {
+        console.log(`[getAllPosts] First post categories:`, sorted[0].categories);
+      }
       return sorted;
     } catch (fetchError) {
       clearTimeout(timeoutId);
-      // If fetch fails (network error, timeout, etc.), return empty array instead of throwing
-      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-        return [];
-      }
-      // Handle connection errors gracefully
-      const isConnectionError = fetchError instanceof Error && (
-        fetchError.message.includes('ECONNREFUSED') || 
-        fetchError.message.includes('fetch failed') ||
-        (fetchError.cause && typeof fetchError.cause === 'object' && (
-          ('code' in fetchError.cause && fetchError.cause.code === 'ECONNREFUSED') ||
-          ('errors' in fetchError.cause && Array.isArray(fetchError.cause.errors))
-        ))
-      );
-      
       // Always return empty array on any error - allows build to continue
+      // Silently handle connection errors during build
       return [];
     }
   } catch (error) {
+    // Catch any other unexpected errors and return empty array
+    console.warn(`[getAllPosts] Unexpected error fetching posts from ${CMS_API_BASE}:`, error instanceof Error ? error.message : error);
+    console.warn(`[getAllPosts] Make sure NEXT_PUBLIC_CMS_API is set correctly. Current value: ${CMS_API_BASE}`);
     // Always return empty array instead of throwing - app should work even without API
     return [];
   }
@@ -282,6 +306,7 @@ export async function getPostBySlug(slug: string): Promise<Post | undefined> {
       clearTimeout(timeoutId);
       
       if (!res.ok) {
+        console.error(`[getPostBySlug] API returned ${res.status} ${res.statusText} for ${url}`);
         return undefined;
       }
       const data = await res.json();
@@ -292,6 +317,7 @@ export async function getPostBySlug(slug: string): Promise<Post | undefined> {
       return undefined;
     }
   } catch (error) {
+    // Always return undefined on any error
     return undefined;
   }
 }
@@ -322,6 +348,7 @@ export async function getAllCategories(): Promise<Category[]> {
       clearTimeout(timeoutId);
       
       if (!res.ok) {
+        console.error(`[getAllCategories] API returned ${res.status} ${res.statusText} for ${url}`);
         return [];
       }
       const data = await res.json();
@@ -334,18 +361,11 @@ export async function getAllCategories(): Promise<Category[]> {
       }));
     } catch (fetchError) {
       clearTimeout(timeoutId);
-      // Handle connection errors gracefully
-      if (fetchError instanceof Error && (
-        fetchError.name === 'AbortError' ||
-        fetchError.message.includes('ECONNREFUSED') ||
-        fetchError.message.includes('fetch failed') ||
-        (fetchError.cause && typeof fetchError.cause === 'object' && 'code' in fetchError.cause && fetchError.cause.code === 'ECONNREFUSED')
-      )) {
-        return [];
-      }
+      // Always return empty array on any error - allows build to continue
       return [];
     }
   } catch (error) {
+    // Always return empty array instead of throwing
     return [];
   }
 }
