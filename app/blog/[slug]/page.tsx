@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { SITE, createPageMeta } from '@/lib/seo';
-import { getAllPosts, getPostBySlug } from '@/lib/posts';
+import { getAllPosts, getPostBySlug, type Post } from '@/lib/posts';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Schema } from '@/components/Schema';
