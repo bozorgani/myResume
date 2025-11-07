@@ -80,11 +80,65 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
 /* Blog Content Styles - Matching Editor Appearance */
 .blog-content {
   color: #374151;
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.75;
   max-width: 100%;
   /* Optimal reading width for Persian text: 65-75 characters per line */
   /* This ensures comfortable reading experience */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 640px) {
+  .blog-content {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .blog-content {
+    font-size: 1.0625rem;
+  }
+}
+
+/* Improve mobile responsiveness for blog content */
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content h4,
+.blog-content h5,
+.blog-content h6 {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.blog-content p,
+.blog-content li,
+.blog-content blockquote {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.blog-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5rem auto;
+}
+
+.blog-content table {
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 640px) {
+  .blog-content table {
+    display: table;
+  }
 }
 
 /* Dark mode overrides for blog content */

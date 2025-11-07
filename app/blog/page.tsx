@@ -121,71 +121,72 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
     <div className="space-y-8 sm:space-y-10 lg:space-y-12">
       <Schema json={blogSchema} />
 
-      <header className="relative overflow-hidden rounded-3xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white via-gray-50/50 to-white dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 p-8 sm:p-10 lg:p-12 shadow-xl dark:shadow-2xl backdrop-blur-sm">
+      <header className="relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white via-gray-50/50 to-white dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 shadow-xl dark:shadow-2xl backdrop-blur-sm">
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-90"></div>
         <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05] bg-[radial-gradient(circle_at_1px_1px,_currentColor_1px,_transparent_0)] bg-[length:24px_24px]"></div>
         <div className="relative z-10 mx-auto max-w-3xl text-center">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3 sm:mb-4">
             <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-gray-50 dark:via-gray-100 dark:to-gray-50 bg-clip-text text-transparent">
               بلاگ {SITE.name}
             </span>
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base sm:text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+          <p className="mx-auto mt-3 sm:mt-4 max-w-2xl text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300 leading-relaxed px-2 sm:px-0">
             مجموعه مقالات تخصصی درباره توسعه Full-Stack با Next.js و React، بهینه‌سازی عملکرد وب‌سایت‌ها، بهبود Core Web Vitals، و بهترین شیوه‌های سئو فنی. در این بلاگ تجربیات عملی، راهنماهای گام‌به‌گام، و نکات پیشرفته در زمینه توسعه وب و بهبود رتبه‌بندی در موتورهای جستجو را به اشتراک می‌گذارم.
           </p>
         </div>
       </header>
 
       {first && (
-        <section className="group overflow-hidden rounded-3xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-sm shadow-xl dark:shadow-2xl hover:shadow-2xl transition-all duration-300">
-          <div className="grid gap-0 sm:gap-6 lg:grid-cols-2">
+        <section className="group overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-sm shadow-xl dark:shadow-2xl hover:shadow-2xl transition-all duration-300">
+          <div className="grid gap-0 lg:grid-cols-2">
             {first.image && (
-              <div className="relative aspect-[16/10] w-full lg:aspect-auto lg:min-h-[400px] overflow-hidden">
+              <div className="relative aspect-[16/9] sm:aspect-[16/10] w-full lg:aspect-auto lg:min-h-[400px] overflow-hidden">
                 <Image
                   src={first.image}
                   alt={`کاور ${first.title}`}
                   fill
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent"></div>
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-blue-500/10 group-hover:via-purple-500/10 group-hover:to-pink-500/10 transition-all duration-700"></div>
               </div>
             )}
-            <div className="p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight mb-4 leading-tight">
+            <div className="p-4 sm:p-6 md:p-8 lg:p-10 flex flex-col justify-center">
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4 leading-tight">
                 <Link href={`/blog/${first.slug}`} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                   <span className="bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-50 dark:to-gray-300 bg-clip-text text-transparent group-hover:from-blue-600 group-hover:to-purple-600 dark:group-hover:from-blue-400 dark:group-hover:to-purple-400 transition-all">
                     {first.title}
                   </span>
                 </Link>
               </h2>
-              <p className="mt-2 sm:mt-3 text-base sm:text-lg text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-3">{first.description}</p>
-              <div className="mt-4 sm:mt-5 flex flex-wrap items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-                <time dateTime={new Date(first.date).toISOString()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100/80 dark:bg-gray-800/80">
-                  <span>📅</span>
+              <p className="mt-2 sm:mt-3 text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-3">{first.description}</p>
+              <div className="mt-3 sm:mt-4 md:mt-5 flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                <time dateTime={new Date(first.date).toISOString()} className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-gray-100/80 dark:bg-gray-800/80">
+                  <span className="text-sm sm:text-base">📅</span>
                   <span>{new Date(first.date).toLocaleDateString('fa-IR')}</span>
                 </time>
                 {first.readingTime ? (
-                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50/80 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
-                    <span>⏱️</span>
+                  <span className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-blue-50/80 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                    <span className="text-sm sm:text-base">⏱️</span>
                     <span>{first.readingTime} دقیقه</span>
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50/80 dark:bg-green-900/30 text-green-700 dark:text-green-300">
-                    <span>⚡</span>
+                  <span className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-green-50/80 dark:bg-green-900/30 text-green-700 dark:text-green-300">
+                    <span className="text-sm sm:text-base">⚡</span>
                     <span>سریع</span>
                   </span>
                 )}
               </div>
               {(first.categories && first.categories.length > 0) && (
-                <div className="mt-4 overflow-x-auto scrollbar-hide -mx-6 sm:mx-0 px-6 sm:px-0 pb-2 sm:pb-0">
+                <div className="mt-3 sm:mt-4 overflow-x-auto scrollbar-hide -mx-4 sm:-mx-6 md:mx-0 px-4 sm:px-6 md:px-0 pb-2 sm:pb-0">
                   <div className="flex items-center gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
                     {first.categories.map((cat) => (
                       <Link 
                         key={cat.slug}
                         href={`/blog?category=${cat.slug}`}
-                        className="group inline-flex items-center gap-1.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 whitespace-nowrap shrink-0"
+                        className="group inline-flex items-center gap-1.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 px-2 sm:px-2.5 md:px-3.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 whitespace-nowrap shrink-0"
                       >
                         <span className="text-xs sm:text-sm transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
                         <span>{cat.name}</span>
@@ -195,10 +196,10 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
                 </div>
               )}
               {(!first.categories || first.categories.length === 0) && first.category && (
-                <div className="mt-4">
+                <div className="mt-3 sm:mt-4">
                   <Link 
                     href={`/blog?category=${first.category.slug}`}
-                    className="group inline-flex items-center gap-1.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                    className="group inline-flex items-center gap-1.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 px-2 sm:px-2.5 md:px-3.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5"
                   >
                     <span className="text-xs sm:text-sm transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
                     <span>{first.category.name}</span>
@@ -207,10 +208,10 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
               )}
               <Link 
                 href={`/blog/${first.slug}`} 
-                className="mt-6 sm:mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-sm sm:text-base font-semibold text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95"
+                className="mt-4 sm:mt-6 md:mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm md:text-base font-semibold text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95"
               >
                 <span>مطالعه مقاله</span>
-                <span className="text-lg transition-transform duration-300 group-hover:translate-x-1">→</span>
+                <span className="text-base sm:text-lg transition-transform duration-300 group-hover:translate-x-1">→</span>
               </Link>
             </div>
           </div>
@@ -255,25 +256,25 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
       )}
 
       <section>
-        <div className="mb-6 sm:mb-8 flex flex-col items-stretch justify-between gap-4 sm:gap-5 sm:flex-row sm:items-center">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">جدیدترین مقالات</h2>
-          <form method="get" action="/blog" className="relative w-full sm:w-auto flex items-center gap-2">
+        <div className="mb-4 sm:mb-6 md:mb-8 flex flex-col items-stretch justify-between gap-3 sm:gap-4 md:gap-5 sm:flex-row sm:items-center">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">جدیدترین مقالات</h2>
+          <form method="get" action="/blog" className="relative w-full sm:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <div className="relative flex-1 sm:flex-initial">
               <input
                 type="search"
                 name="q"
                 placeholder="جستجوی عنوان و خلاصه..."
                 defaultValue={query}
-                className="w-full rounded-xl border-2 border-gray-200/80 dark:border-gray-700/80 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm px-4 py-3 pr-11 text-sm outline-none focus:border-blue-400 dark:focus:border-blue-600 focus:ring-4 focus:ring-blue-500/20 dark:focus:ring-blue-500/30 transition-all duration-200 sm:min-w-[300px] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                className="w-full rounded-xl border-2 border-gray-200/80 dark:border-gray-700/80 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-11 text-sm outline-none focus:border-blue-400 dark:focus:border-blue-600 focus:ring-4 focus:ring-blue-500/20 dark:focus:ring-blue-500/30 transition-all duration-200 sm:min-w-[280px] md:min-w-[300px] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
                 aria-label="جستجو در مقالات"
               />
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-lg" aria-hidden>
+              <span className="pointer-events-none absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-base sm:text-lg" aria-hidden>
                 🔎
               </span>
             </div>
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-5 py-3 text-sm font-semibold text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 whitespace-nowrap"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 whitespace-nowrap"
               aria-label="جستجو"
             >
               <span>جستجو</span>
@@ -344,7 +345,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
         )}
 
         {totalPages > 1 && (
-          <nav className="mt-10 sm:mt-12 flex items-center justify-center gap-2" aria-label="صفحه‌بندی">
+          <nav className="mt-8 sm:mt-10 md:mt-12 flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap" aria-label="صفحه‌بندی">
             {Array.from({ length: totalPages }).map((_, i) => {
               const page = i + 1;
               const params = new URLSearchParams();
@@ -359,7 +360,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
                   key={page}
                   href={href}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`inline-flex h-10 min-w-[40px] items-center justify-center rounded-xl border-2 px-4 text-sm font-semibold transition-all duration-200 ${
+                  className={`inline-flex h-9 sm:h-10 min-w-[36px] sm:min-w-[40px] items-center justify-center rounded-lg sm:rounded-xl border-2 px-3 sm:px-4 text-xs sm:text-sm font-semibold transition-all duration-200 ${
                     isActive 
                       ? 'bg-gradient-to-r from-gray-900 to-gray-800 text-white dark:from-white dark:to-gray-100 dark:text-gray-900 border-gray-900 dark:border-white shadow-lg scale-105' 
                       : 'bg-white/80 dark:bg-gray-900/80 text-gray-700 dark:text-gray-300 border-gray-200/80 dark:border-gray-700/80 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 hover:scale-105 hover:shadow-md backdrop-blur-sm'
