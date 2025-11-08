@@ -14,7 +14,8 @@ export function ScrollToTop() {
       }
     };
 
-    window.addEventListener('scroll', toggleVisibility);
+    // Use passive listener for better scroll performance on mobile
+    window.addEventListener('scroll', toggleVisibility, { passive: true });
     return () => window.removeEventListener('scroll', toggleVisibility);
   }, []);
 

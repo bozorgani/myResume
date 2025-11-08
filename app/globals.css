@@ -631,30 +631,110 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
 html {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 100%;
+  position: relative;
 }
 
 body {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 100%;
+  position: relative;
+  /* Prevent scroll jank on mobile */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Prevent scroll lock on mobile for blog pages */
+/* Fix for sticky elements on mobile - disable sticky on small screens */
 @media (max-width: 1023px) {
+  /* Ensure TOC container doesn't interfere with scroll on mobile */
+  aside.not-sticky-mobile {
+    position: static !important;
+    transform: none !important;
+  }
+  
   /* Ensure TOC navigation doesn't block page scrolling on mobile */
-  aside nav.custom-scrollbar {
+  aside.not-sticky-mobile nav.custom-scrollbar {
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
+    max-height: none !important;
+    overflow-y: visible !important;
   }
   
   /* Ensure page content can scroll freely */
   article {
     touch-action: pan-y;
+    overflow-x: hidden;
+    overflow-y: visible;
+    min-height: 0;
   }
   
   /* Prevent any container from blocking scroll */
   .blog-content {
     touch-action: pan-y;
+    overflow-x: hidden;
+    overflow-y: visible;
+    /* Prevent scroll lock and enable hardware acceleration */
+    position: relative;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  /* Fix for main container */
+  main {
+    overflow-x: hidden;
+    overflow-y: visible;
+    touch-action: pan-y;
+  }
+  
+  /* Optimize backdrop-blur for mobile performance */
+  .backdrop-blur-sm,
+  .backdrop-blur-md {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+}
+
+/* Additional mobile optimizations for blog pages */
+@media (max-width: 767px) {
+  /* Reduce backdrop blur intensity on mobile for better performance */
+  article .backdrop-blur-sm {
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+  
+  /* Ensure smooth scrolling */
+  article,
+  .blog-content {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Prevent horizontal scroll on blog content elements */
+  .blog-content img,
+  .blog-content table,
+  .blog-content pre,
+  .blog-content video,
+  .blog-content iframe {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Fix for header sticky positioning */
+  header.sticky {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+  
+  /* Ensure containers don't cause horizontal scroll */
+  article > div {
+    overflow-x: hidden;
   }
 }
 
