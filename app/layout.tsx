@@ -7,6 +7,7 @@ import { SITE, personSchema, organizationSchema } from '@/lib/seo';
 import { Schema } from '@/components/Schema';
 import { DevAxe } from '@/components/DevAxe';
 import { ThemeScript } from '@/components/ThemeScript';
+import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 
 // متادیتای سراسری با الگوی عنوان برای برندسازی یکپارچه در تمام صفحات
 export const metadata: Metadata = {
@@ -108,6 +109,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 ${vazirmatn.className}`}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:shadow">پرش به محتوای اصلی</a>
         {process.env.NODE_ENV === 'development' && <DevAxe />}
+        {/* Google Analytics */}
+        <GoogleAnalytics />
         {/* Schema برای شناسایی شخص و سازمان توسط موتورهای جستجو */}
         <Schema json={personSchema} />
         <Schema json={organizationSchema} />
