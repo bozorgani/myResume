@@ -39,7 +39,10 @@ export function createPageMeta({
   publishedTime,
   modifiedTime,
   type = 'website',
-  section
+  section,
+  ogTitle,
+  ogDescription,
+  robots
 }: {
   title: string;
   description: string;
@@ -51,10 +54,78 @@ export function createPageMeta({
   modifiedTime?: string;
   type?: 'website' | 'article';
   section?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  robots?: string;
 }) {
   const ogImage = image ?? SITE.ogImage;
   const fullImageUrl = ogImage.startsWith('http') ? ogImage : `${SITE.domain}${ogImage}`;
   const fullUrl = url.startsWith('http') ? url : `${SITE.domain}${url}`;
+  
+  // Parse robots string (e.g., "index, follow" or "noindex, nofollow")
+  const parseRobots = (robotsStr?: string): import('next').Metadata['robots'] => {
+    if (!robotsStr) {
+      return {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1,
+          'max-image-preview': 'large' as const,
+          'max-snippet': -1
+        }
+      };
+    }
+    
+    const lower = robotsStr.toLowerCase();
+    const index = !lower.includes('noindex');
+    const follow = !lower.includes('nofollow');
+    const noarchive = lower.includes('noarchive');
+    const nosnippet = lower.includes('nosnippet');
+    const noimageindex = lower.includes('noimageindex');
+    
+    // Build robots object
+    const robotsConfig: any = {
+      index,
+      follow
+    };
+    
+    // Add optional properties based on Next.js Robots type
+    if (noarchive) {
+      robotsConfig.noarchive = true;
+    }
+    if (nosnippet) {
+      robotsConfig.nosnippet = true;
+    }
+    if (noimageindex) {
+      robotsConfig.noimageindex = true;
+    }
+    
+    // Build googleBot config
+    const googleBotConfig: {
+      index: boolean;
+      follow: boolean;
+      'max-video-preview': number;
+      'max-image-preview': 'large' | 'none' | 'standard';
+      'max-snippet': number;
+      noimageindex?: boolean;
+    } = {
+      index,
+      follow,
+      'max-video-preview': nosnippet ? 0 : -1,
+      'max-image-preview': noimageindex ? ('none' as const) : ('large' as const),
+      'max-snippet': nosnippet ? 0 : -1
+    };
+    
+    if (noimageindex) {
+      googleBotConfig.noimageindex = true;
+    }
+    
+    robotsConfig.googleBot = googleBotConfig;
+    
+    return robotsConfig as import('next').Metadata['robots'];
+  };
   
   const meta: import('next').Metadata = {
     title,
@@ -69,15 +140,15 @@ export function createPageMeta({
       }
     },
     openGraph: {
-      title,
-      description,
+      title: ogTitle || title,
+      description: ogDescription || description,
       url: fullUrl,
       siteName: SITE.name,
       type: type,
       locale: 'fa_IR',
       images: [{ 
         url: fullImageUrl, 
-        alt: `${title} - ${SITE.name}`,
+        alt: `${ogTitle || title} - ${SITE.name}`,
         width: 1200,
         height: 630
       }],
@@ -90,23 +161,13 @@ export function createPageMeta({
     },
     twitter: {
       card: 'summary_large_image',
-      title,
-      description,
+      title: ogTitle || title,
+      description: ogDescription || description,
       images: [fullImageUrl],
       site: SITE.twitter,
       creator: SITE.twitter
     },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1
-      }
-    },
+    robots: parseRobots(robots),
     // Extra meta for accessibility of previews
     other: {
       'twitter:image:alt': `${title} - ${SITE.name}`,

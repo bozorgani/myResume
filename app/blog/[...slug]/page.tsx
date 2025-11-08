@@ -29,36 +29,41 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       url: `${SITE.domain}/blog`
     });
   }
-  // Ensure description exists and is not empty
-  const description = post.description && post.description.trim() 
-    ? post.description 
-    : `مقاله ${post.title} از بلاگ ${SITE.name} درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
+  // Use SEO fields from CMS if available, otherwise use defaults
+  const metaTitle = post.seo?.metaTitle || `${post.title} | ${SITE.name}`;
+  const metaDescription = post.seo?.metaDescription || post.description || 
+    `مقاله ${post.title} از بلاگ ${SITE.name} درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
   
-  // Extract keywords from categories and tags
-  const keywords = [
-    ...(post.categories?.map(c => c.name) || []),
-    ...(post.tags?.map(t => t.name) || []),
-    post.category?.name,
-    'مقالات توسعه وب',
-    'بلاگ',
-    'Next.js',
-    'React',
-    'سئو فنی'
-  ].filter(Boolean) as string[];
+  // Extract keywords from SEO field or categories and tags
+  const keywords = post.seo?.keywords && post.seo.keywords.length > 0
+    ? post.seo.keywords
+    : [
+        ...(post.categories?.map(c => c.name) || []),
+        ...(post.tags?.map(t => t.name) || []),
+        post.category?.name,
+        'مقالات توسعه وب',
+        'بلاگ',
+        'Next.js',
+        'React',
+        'سئو فنی'
+      ].filter(Boolean) as string[];
 
   const postUrl = getPostUrl(post);
 
   const base = createPageMeta({
-    title: `${post.title} | ${SITE.name}`,
-    description: description,
+    title: metaTitle,
+    description: metaDescription,
     url: post.canonicalUrl || `${SITE.domain}${postUrl}`,
     image: post.image,
     keywords: keywords,
     author: SITE.name,
     publishedTime: post.date,
-    modifiedTime: post.date,
+    modifiedTime: post.updatedAt || post.date,
     type: 'article',
-    section: post.categories?.[0]?.name || post.category?.name
+    section: post.categories?.[0]?.name || post.category?.name,
+    ogTitle: post.seo?.ogTitle,
+    ogDescription: post.seo?.ogDescription,
+    robots: post.seo?.robots
   });
   
   return base;
@@ -141,13 +146,14 @@ export default async function BlogPostPage({ params }: { params: Params }) {
     ? post.description 
     : `مقاله ${post.title} از بلاگ ${SITE.name} درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
   
-  const articleSchema = {
+  // Use JSON-LD from CMS if available, otherwise generate default
+  const articleSchema = post.seo?.jsonLd || {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: post.title,
     description: description,
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.updatedAt || post.date,
     author: { 
       '@type': 'Person', 
       name: SITE.name,
@@ -271,6 +277,16 @@ export default async function BlogPostPage({ params }: { params: Params }) {
                 <span className="text-base sm:text-lg leading-none">📅</span>
                 <span className="whitespace-nowrap">{new Date(post.date).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
               </time>
+              {post.updatedAt && post.updatedAt !== post.date && (
+                <time 
+                  dateTime={new Date(post.updatedAt).toISOString()} 
+                  className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 md:py-2.5 rounded-lg sm:rounded-xl bg-amber-50/80 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-medium backdrop-blur-sm hover:bg-amber-100/80 dark:hover:bg-amber-800/40 transition-colors"
+                  title="آخرین به‌روزرسانی"
+                >
+                  <span className="text-base sm:text-lg leading-none">🔄</span>
+                  <span className="whitespace-nowrap">{new Date(post.updatedAt).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                </time>
+              )}
               {post.readingTime ? (
                 <span className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 md:py-2.5 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-50 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/30 text-blue-700 dark:text-blue-300 font-medium backdrop-blur-sm hover:from-blue-100 hover:to-blue-200 dark:hover:from-blue-800/40 dark:hover:to-blue-700/40 transition-all">
                   <span className="text-base sm:text-lg leading-none">⏱️</span>
@@ -285,8 +301,9 @@ export default async function BlogPostPage({ params }: { params: Params }) {
             </div>
           </div>
 
-          {((post.categories && post.categories.length > 0) || post.category) && (
-            <div className="hidden md:block relative z-10 pt-4 sm:pt-5 md:pt-6 border-t-2 border-gray-200/80 dark:border-gray-700/80">
+          {(((post.categories && post.categories.length > 0) || post.category) || (post.tags && post.tags.length > 0)) && (
+            <div className="hidden md:block relative z-10 pt-4 sm:pt-5 md:pt-6 border-t-2 border-gray-200/80 dark:border-gray-700/80 space-y-4">
+              {/* Categories */}
               {(post.categories && post.categories.length > 0) && (
                 <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-3">
                   <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest whitespace-nowrap">دسته‌بندی‌ها</span>
@@ -316,6 +333,26 @@ export default async function BlogPostPage({ params }: { params: Params }) {
                     <span className="relative z-10">{post.category.name}</span>
                     <span className="absolute inset-0 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/10 group-hover:to-purple-500/10 transition-all duration-300"></span>
                   </Link>
+                </div>
+              )}
+              
+              {/* Tags */}
+              {post.tags && post.tags.length > 0 && (
+                <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-3">
+                  <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest whitespace-nowrap">برچسب‌ها</span>
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
+                    {post.tags.map((tag) => (
+                      <Link 
+                        key={tag.slug}
+                        href={`/blog?tag=${tag.slug}`}
+                        className="group relative inline-flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl bg-gradient-to-br from-purple-50 to-pink-50/80 dark:from-purple-900/40 dark:to-pink-900/40 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-purple-700 dark:text-purple-300 hover:from-purple-100 hover:to-pink-100 dark:hover:from-purple-800/50 dark:hover:to-pink-800/50 transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-0.5 backdrop-blur-sm"
+                      >
+                        <span className="text-sm sm:text-base transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">🏷️</span>
+                        <span className="relative z-10">#{tag.name}</span>
+                        <span className="absolute inset-0 rounded-lg sm:rounded-xl bg-gradient-to-r from-purple-500/0 to-pink-500/0 group-hover:from-purple-500/10 group-hover:to-pink-500/10 transition-all duration-300"></span>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

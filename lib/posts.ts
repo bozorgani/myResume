@@ -2,7 +2,8 @@ export type Post = {
   slug: string;
   title: string;
   description: string;
-  date: string; // ISO
+  date: string; // ISO - publish date
+  updatedAt?: string; // ISO - last modified date
   image?: string;
   content: string;
   readingTime?: number;
@@ -19,6 +20,15 @@ export type Post = {
     name: string;
     slug: string;
   }>;
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    ogTitle?: string;
+    ogDescription?: string;
+    robots?: string;
+    keywords?: string[];
+    jsonLd?: any;
+  };
 };
 
 // Map Persian category names/slugs to English slugs for better URLs
@@ -322,7 +332,11 @@ function renderContentToHtml(content: any): string {
         case 'image': {
           const src = buildMediaUrl(node.attrs?.src) || '';
           const alt = node.attrs?.alt || '';
-          return src ? `<img src="${src}" alt="${alt}" />` : '';
+          // Add loading="lazy" and decoding="async" for better performance
+          // Also add width/height attributes if available for CLS prevention
+          const width = node.attrs?.width ? ` width="${node.attrs.width}"` : '';
+          const height = node.attrs?.height ? ` height="${node.attrs.height}"` : '';
+          return src ? `<img src="${src}" alt="${alt || ''}"${width}${height} loading="lazy" decoding="async" />` : '';
         }
         default:
           return children;
@@ -360,11 +374,16 @@ function mapCmsPostToSitePost(p: any): Post {
   const finalCategories = categories && categories.length > 0 ? categories : undefined;
   const finalCategory = finalCategories ? finalCategories[0] : singleCategory;
   
+  // Get publish date and updated date
+  const publishDate = p.publishAt || p.createdAt || new Date().toISOString();
+  const updatedDate = p.updatedAt || p.publishAt || p.createdAt;
+  
   return {
     slug: p.slug,
     title: p.title,
     description: p.excerpt || p.seo?.metaDescription || '',
-    date: p.publishAt || p.updatedAt || p.createdAt || new Date().toISOString(),
+    date: publishDate,
+    updatedAt: updatedDate !== publishDate ? updatedDate : undefined,
     image: buildMediaUrl(imagePath),
     content: renderContentToHtml(p.content),
     readingTime: p.readingTime || undefined,
@@ -376,7 +395,16 @@ function mapCmsPostToSitePost(p: any): Post {
           name: tag.name || '',
           slug: tag.slug || ''
         }))
-      : undefined
+      : undefined,
+    seo: p.seo ? {
+      metaTitle: p.seo.metaTitle || undefined,
+      metaDescription: p.seo.metaDescription || undefined,
+      ogTitle: p.seo.ogTitle || undefined,
+      ogDescription: p.seo.ogDescription || undefined,
+      robots: p.seo.robots || undefined,
+      keywords: Array.isArray(p.seo.keywords) ? p.seo.keywords : (p.keywords && Array.isArray(p.keywords) ? p.keywords : undefined),
+      jsonLd: p.seo.jsonLd || undefined
+    } : undefined
   };
 }
 
