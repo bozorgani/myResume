@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { SITE, createPageMeta } from '@/lib/seo';
-import { getAllPosts, getAllCategories } from '@/lib/posts';
+import { getAllPosts, getAllCategories, getPostUrl } from '@/lib/posts';
 import { Schema } from '@/components/Schema';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -53,17 +53,93 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
   const categorySlug = searchParams?.category;
   const tagSlug = searchParams?.tag;
 
+  // Helper function to flatten categories for finding category name
+  const flattenCategories = (cats: typeof categories): Array<{ slug: string; name: string }> => {
+    const result: Array<{ slug: string; name: string }> = [];
+    cats.forEach(cat => {
+      result.push({ slug: cat.slug, name: cat.name });
+      if (cat.children && cat.children.length > 0) {
+        result.push(...flattenCategories(cat.children));
+      }
+    });
+    return result;
+  };
+
+  const allCategoriesFlat = flattenCategories(categories);
+
+  // Helper function to find a category by slug in the hierarchical structure
+  const findCategoryBySlug = (cats: typeof categories, targetSlug: string): typeof categories[0] | null => {
+    for (const cat of cats) {
+      if (cat.slug === targetSlug) {
+        return cat;
+      }
+      if (cat.children && cat.children.length > 0) {
+        const found = findCategoryBySlug(cat.children, targetSlug);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  // Helper function to get all category slugs (including children) for a given category slug
+  const getCategorySlugsIncludingChildren = (slug: string): string[] => {
+    const result: string[] = [slug];
+    
+    const category = findCategoryBySlug(categories, slug);
+    if (category) {
+      // If it's a main category (has children), include all its children slugs
+      if (category.children && category.children.length > 0) {
+        category.children.forEach(child => {
+          result.push(child.slug);
+        });
+      }
+    }
+    
+    return result;
+  };
+
   let filtered = posts;
   
   if (categorySlug) {
+    // Get all slugs to match (category itself + its children if it's a main category)
+    const slugsToMatch = getCategorySlugsIncludingChildren(categorySlug);
+    
+    // Debug log (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[BlogPage] Filtering by category:', categorySlug);
+      console.log('[BlogPage] Slugs to match:', slugsToMatch);
+      console.log('[BlogPage] Total posts before filter:', posts.length);
+    }
+    
     filtered = filtered.filter((p) => {
+      let matches = false;
+      
       // Check if category matches in categories array
       if (p.categories && p.categories.length > 0) {
-        return p.categories.some((cat) => cat.slug === categorySlug);
+        matches = p.categories.some((cat) => {
+          const catSlug = cat.slug;
+          const isMatch = slugsToMatch.includes(catSlug);
+          if (process.env.NODE_ENV === 'development' && isMatch) {
+            console.log('[BlogPage] Post matched:', p.title, 'via category:', catSlug);
+          }
+          return isMatch;
+        });
       }
-      // Fallback to single category
-      return p.category?.slug === categorySlug;
+      
+      // Fallback to single category if not matched yet
+      if (!matches && p.category?.slug) {
+        matches = slugsToMatch.includes(p.category.slug);
+        if (process.env.NODE_ENV === 'development' && matches) {
+          console.log('[BlogPage] Post matched:', p.title, 'via single category:', p.category.slug);
+        }
+      }
+      
+      return matches;
     });
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[BlogPage] Total posts after filter:', filtered.length);
+    }
   }
   
   if (tagSlug) {
@@ -88,15 +164,16 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
   const pageSize = 9;
   const currentPage = Math.max(1, parseInt(searchParams?.page || '1', 10) || 1);
   
-  // Only show featured post (first) on page 1 and when no category/tag filter is active
-  const showFeaturedPost = currentPage === 1 && !categorySlug && !tagSlug;
+  // Show featured post (first) on page 1 if there are any filtered posts
+  // Featured post will be the first post from filtered results
+  const showFeaturedPost = currentPage === 1 && filtered.length > 0;
   
   // Calculate total pages based on whether we show featured post or not
   const itemsToPaginate = showFeaturedPost ? filtered.length - 1 : filtered.length;
   const totalPages = Math.max(1, Math.ceil(itemsToPaginate / pageSize));
 
-  // Get featured post only on first page without filters
-  const first = showFeaturedPost && filtered.length > 0 ? filtered[0] : undefined;
+  // Get featured post from filtered results (first post)
+  const first = showFeaturedPost ? filtered[0] : undefined;
   const postsToPaginate = showFeaturedPost && filtered.length > 0 ? filtered.slice(1) : filtered;
   
   const start = (currentPage - 1) * pageSize;
@@ -113,7 +190,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
       headline: p.title,
       description: p.description,
       datePublished: p.date,
-      url: `${SITE.domain}/blog/${p.slug}`,
+      url: `${SITE.domain}${getPostUrl(p)}`,
       image: p.image ? [p.image] : undefined
     }))
   } as const;
@@ -156,7 +233,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
             )}
             <div className="p-4 sm:p-6 md:p-8 lg:p-10 flex flex-col justify-center">
               <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4 leading-tight">
-                <Link href={`/blog/${first.slug}`} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                <Link href={getPostUrl(first) as any} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                   <span className="bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-50 dark:to-gray-300 bg-clip-text text-transparent group-hover:from-blue-600 group-hover:to-purple-600 dark:group-hover:from-blue-400 dark:group-hover:to-purple-400 transition-all">
                     {first.title}
                   </span>
@@ -210,7 +287,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
                 </div>
               )}
               <Link 
-                href={`/blog/${first.slug}`} 
+                href={getPostUrl(first) as any} 
                 className="mt-4 sm:mt-6 md:mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm md:text-base font-semibold text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95"
               >
                 <span>مطالعه مقاله</span>
@@ -224,38 +301,78 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
       {/* Categories Section */}
       {categories.length > 0 && (
         <section className="hidden md:block rounded-2xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-sm p-4 sm:p-6 md:p-8 shadow-xl dark:shadow-2xl">
-          <h2 className="mb-3 sm:mb-4 md:mb-5 text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">دسته‌بندی‌ها</h2>
-          {/* Mobile: Horizontal scroll, Desktop: Flex wrap */}
-          <div className="w-full">
-            <div className="overflow-x-auto scrollbar-hide sm:overflow-x-visible">
-              <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 flex-nowrap sm:flex-wrap sm:w-full">
-                <Link
-                  href="/blog"
-                  className={`group inline-flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 shrink-0 ${
-                    !categorySlug
-                      ? 'bg-gradient-to-r from-gray-900 to-gray-800 text-white dark:from-white dark:to-gray-100 dark:text-gray-900 shadow-lg'
-                      : 'bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600'
-                  }`}
-                >
-                  <span className="text-sm sm:text-base transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
-                  <span>همه</span>
-                </Link>
-                {categories.map((cat) => (
-                  <Link
-                    key={cat.slug}
-                    href={`/blog?category=${cat.slug}`}
-                    className={`group inline-flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 shrink-0 ${
-                      categorySlug === cat.slug
-                        ? 'bg-gradient-to-r from-gray-900 to-gray-800 text-white dark:from-white dark:to-gray-100 dark:text-gray-900 shadow-lg'
-                        : 'bg-gradient-to-br from-gray-100 to-gray-200/80 dark:from-gray-800 dark:to-gray-700/80 text-gray-700 dark:text-gray-300 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600'
-                    }`}
-                  >
-                    <span className="text-sm sm:text-base transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
-                    <span>{cat.name}</span>
-                  </Link>
-                ))}
-              </div>
+          <h2 className="mb-4 sm:mb-5 md:mb-6 text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <span className="text-xl sm:text-2xl">📚</span>
+            <span>دسته‌بندی‌ها</span>
+          </h2>
+          <div className="w-full space-y-4">
+            {/* All Categories Button */}
+            <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 flex-wrap">
+              <Link
+                href="/blog"
+                className={`group inline-flex items-center gap-1.5 sm:gap-2 rounded-xl px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base font-bold whitespace-nowrap transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 ${
+                  !categorySlug
+                    ? 'bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white dark:from-blue-600 dark:via-purple-600 dark:to-blue-600 shadow-xl ring-2 ring-gray-900/20 dark:ring-blue-500/30'
+                    : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 text-gray-700 dark:text-gray-200 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 border border-gray-300 dark:border-gray-600'
+                }`}
+              >
+                <span className="text-base sm:text-lg transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
+                <span>همه مقالات</span>
+              </Link>
             </div>
+            
+            {/* Main Categories with Subcategories */}
+            {categories.map((mainCat) => {
+              const isMainCategoryActive = categorySlug === mainCat.slug;
+              const isSubCategoryActive = mainCat.children?.some(subCat => subCat.slug === categorySlug);
+              const isActive = isMainCategoryActive || isSubCategoryActive;
+              
+              return (
+                <div key={mainCat.slug} className="space-y-3">
+                  {/* Main Category */}
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/blog?category=${mainCat.slug}`}
+                      className={`group inline-flex items-center gap-2 sm:gap-2.5 rounded-xl px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 md:py-3.5 text-sm sm:text-base font-bold whitespace-nowrap transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 flex-1 ${
+                        isMainCategoryActive
+                          ? 'bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white dark:from-blue-600 dark:via-purple-600 dark:to-blue-600 shadow-xl ring-2 ring-gray-900/20 dark:ring-blue-500/30'
+                          : isActive
+                          ? 'bg-gradient-to-br from-blue-100 via-blue-50 to-blue-100 dark:from-blue-900/60 dark:via-blue-800/60 dark:to-blue-900/60 text-blue-800 dark:text-blue-200 border-2 border-blue-300 dark:border-blue-600 hover:from-blue-200 hover:to-blue-100 dark:hover:from-blue-800/80 dark:hover:to-blue-700/80'
+                          : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 text-gray-800 dark:text-gray-200 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 border border-gray-300 dark:border-gray-600'
+                      }`}
+                    >
+                      <span className="text-base sm:text-lg transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
+                      <span>{mainCat.name}</span>
+                      {mainCat.children && mainCat.children.length > 0 && (
+                        <span className="text-xs sm:text-sm opacity-75 bg-white/20 dark:bg-black/20 px-2 py-0.5 rounded-full">
+                          {mainCat.children.length}
+                        </span>
+                      )}
+                    </Link>
+                  </div>
+                  
+                  {/* Subcategories */}
+                  {mainCat.children && mainCat.children.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 md:gap-3 mr-6 sm:mr-8 md:mr-10 pl-2 border-r-2 border-gray-200 dark:border-gray-700">
+                      {mainCat.children.map((subCat) => (
+                        <Link
+                          key={subCat.slug}
+                          href={`/blog?category=${subCat.slug}`}
+                          className={`group inline-flex items-center gap-1.5 sm:gap-2 rounded-lg px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 ${
+                            categorySlug === subCat.slug
+                              ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 text-white shadow-lg ring-2 ring-blue-400/50 dark:ring-blue-500/50'
+                              : 'bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/90 border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                          }`}
+                        >
+                          <span className="text-xs sm:text-sm transition-transform duration-300 group-hover:scale-110 text-blue-500 dark:text-blue-400">•</span>
+                          <span className={categorySlug === subCat.slug ? 'text-white' : 'text-gray-700 dark:text-gray-200'}>{subCat.name}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
@@ -295,18 +412,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
               <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">
                 <span>📂</span>
                 <span>
-                  {(() => {
-                    // Try to find category name from categories array first
-                    const postWithCategory = posts.find((p) => 
-                      (p.categories && p.categories.some((cat) => cat.slug === categorySlug)) ||
-                      p.category?.slug === categorySlug
-                    );
-                    if (postWithCategory?.categories) {
-                      const cat = postWithCategory.categories.find((c) => c.slug === categorySlug);
-                      if (cat) return cat.name;
-                    }
-                    return postWithCategory?.category?.name || categorySlug;
-                  })()}
+                  {allCategoriesFlat.find(cat => cat.slug === categorySlug)?.name || categorySlug}
                 </span>
                 <a 
                   href={query || tagSlug ? `/blog?${new URLSearchParams({ ...(query ? { q: query } : {}), ...(tagSlug ? { tag: tagSlug } : {}) }).toString()}` : '/blog'}

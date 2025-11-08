@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "img:opt": "node scripts/optimize-images.mjs"
+    "img:opt": "node scripts/optimize-images.mjs",
+    "favicon:generate": "node scripts/generate-favicons.mjs"
   },
   "dependencies": {
     "next": "14.2.5",

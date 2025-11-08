@@ -21,10 +21,174 @@ export type Post = {
   }>;
 };
 
+// Map Persian category names/slugs to English slugs for better URLs
+// This mapping should match the one in cms-api/src/server/routes/categories.ts
+const categorySlugMap: Record<string, string> = {
+  // Main categories
+  'توسعه فرانت‌اند': 'frontend',
+  'Frontend Development': 'frontend',
+  'بک‌اند و سرور': 'backend',
+  'Backend & APIs': 'backend',
+  'سئو و بهینه‌سازی': 'seo',
+  'SEO & Performance': 'seo',
+  'هوش مصنوعی و ابزارهای نوین': 'ai-tools',
+  'AI & Tools': 'ai-tools',
+  'توسعه وب مدرن': 'modern-web',
+  'Modern Web Development': 'modern-web',
+  // Common slugs that might be Persian (with hyphens from slugify)
+  'بک-اند-و-سرور': 'backend',
+  'توسعه-فرانت-اند': 'frontend',
+  'سئو-و-بهینه-سازی': 'seo',
+  'هوش-مصنوعی-و-ابزارهای-نوین': 'ai-tools',
+  'توسعه-وب-مدرن': 'modern-web',
+  // Subcategories - Frontend
+  'Next.js': 'nextjs',
+  'next-js': 'nextjs',
+  'React': 'react',
+  'TypeScript': 'typescript',
+  'Tailwind CSS': 'tailwind',
+  'tailwind-css': 'tailwind',
+  'UI/UX': 'ui-ux',
+  'ui-ux': 'ui-ux',
+  // Subcategories - Backend
+  'Node.js': 'nodejs',
+  'node-js': 'nodejs',
+  'Express': 'express',
+  'API Design': 'api-design',
+  'api-design': 'api-design',
+  'Database': 'database',
+  // Subcategories - SEO
+  'سئو تکنیکال': 'technical-seo',
+  'Technical SEO': 'technical-seo',
+  'technical-seo': 'technical-seo',
+  'Performance Optimization': 'performance',
+  'performance-optimization': 'performance',
+  'Content SEO': 'content-seo',
+  'content-seo': 'content-seo',
+  'Google Search Console': 'search-console',
+  'google-search-console': 'search-console',
+  // Subcategories - AI
+  'AI Tools': 'ai-tools',
+  'ai-tools': 'ai-tools',
+  'GitHub Copilot': 'github-copilot',
+  'github-copilot': 'github-copilot',
+  'ChatGPT for Developers': 'chatgpt',
+  'chatgpt-for-developers': 'chatgpt',
+  'Automation': 'automation',
+  // Subcategories - Modern Web
+  'Trends 2025': 'trends-2025',
+  'trends-2025': 'trends-2025',
+  'Edge Runtime': 'edge-runtime',
+  'edge-runtime': 'edge-runtime',
+  'Serverless': 'serverless',
+  'Web Frameworks': 'web-frameworks',
+  'web-frameworks': 'web-frameworks',
+};
+
+// Helper function to convert category slug to English
+function convertCategorySlugToEnglish(slug: string): string {
+  if (!slug) return '';
+  
+  // Check if we have a direct mapping
+  if (categorySlugMap[slug]) {
+    return categorySlugMap[slug];
+  }
+  
+  // Check if slug is already URL-safe (only ASCII alphanumeric, hyphens, underscores)
+  if (/^[a-zA-Z0-9_-]+$/.test(slug)) {
+    return slug;
+  }
+  
+  // If slug contains Persian characters, try to find a mapping
+  // For now, encode it (but ideally slugs should be English in database)
+  try {
+    // Try to decode first to see the original
+    const decoded = decodeURIComponent(slug);
+    if (categorySlugMap[decoded]) {
+      return categorySlugMap[decoded];
+    }
+  } catch {
+    // Not URL encoded
+  }
+  
+  // Fallback: if it's not English, we should ideally have it in the mapping
+  // For now, return as-is but log a warning in development
+  if (process.env.NODE_ENV === 'development') {
+    console.warn(`[getPostUrl] Category slug "${slug}" is not in mapping. Please add it to categorySlugMap.`);
+  }
+  
+  return slug;
+}
+
+// Helper function to sanitize slug for URL (ensure it's URL-safe)
+function sanitizeSlug(slug: string): string {
+  if (!slug) return '';
+  // Check if slug is already URL-safe (only ASCII alphanumeric, hyphens, underscores)
+  if (/^[a-zA-Z0-9_-]+$/.test(slug)) {
+    return slug;
+  }
+  // If not, it should be English but if it's not, we'll encode it
+  try {
+    return encodeURIComponent(slug);
+  } catch {
+    return slug;
+  }
+}
+
+// Helper function to get post URL with category
+export function getPostUrl(post: Post): string {
+  const categorySlug = post.categories?.[0]?.slug || post.category?.slug;
+  if (categorySlug) {
+    // Convert Persian slug to English if needed
+    const englishCategorySlug = convertCategorySlugToEnglish(categorySlug);
+    const safePostSlug = sanitizeSlug(post.slug);
+    return `/blog/${englishCategorySlug}/${safePostSlug}`;
+  }
+  return `/blog/${sanitizeSlug(post.slug)}`;
+}
+
 const CMS_API_BASE = process.env.NEXT_PUBLIC_CMS_API || 'http://localhost:4000';
 
-// Log API base URL for debugging (both dev and production)
-if (typeof window === 'undefined') {
+// Helper function to check if we're in a build environment
+function isBuildTime(): boolean {
+  return process.env.NEXT_PHASE === 'phase-production-build' || 
+         (process.env.NODE_ENV === 'production' && !process.env.VERCEL && !process.env.NETLIFY);
+}
+
+// Helper function to check if error is a connection error (handles AggregateError with nested causes)
+function isConnectionError(err: any): boolean {
+  if (!err) return false;
+  
+  // Check error message
+  if (err.message && (
+    err.message.includes('ECONNREFUSED') ||
+    err.message.includes('ENOTFOUND') ||
+    err.message.includes('fetch failed') ||
+    err.message === 'API_UNAVAILABLE_DURING_BUILD'
+  )) {
+    return true;
+  }
+  
+  // Check error code
+  if (err.code === 'ECONNREFUSED' || err.code === 'ENOTFOUND') {
+    return true;
+  }
+  
+  // Check cause (for AggregateError in Node.js 18+)
+  if (err.cause) {
+    return isConnectionError(err.cause);
+  }
+  
+  // Check errors array (for AggregateError)
+  if (Array.isArray(err.errors)) {
+    return err.errors.some((e: any) => isConnectionError(e));
+  }
+  
+  return false;
+}
+
+// Log API base URL for debugging (both dev and production) - but not during build
+if (typeof window === 'undefined' && !isBuildTime()) {
   console.log(`[posts.ts] CMS_API_BASE: ${CMS_API_BASE}`);
   console.log(`[posts.ts] NODE_ENV: ${process.env.NODE_ENV}`);
   console.log(`[posts.ts] NEXT_PUBLIC_CMS_API from env: ${process.env.NEXT_PUBLIC_CMS_API || 'NOT SET'}`);
@@ -221,8 +385,10 @@ async function fetchWithRetry(
   options: RequestInit & { timeout?: number },
   maxRetries = 0 // کاهش retry برای سریع‌تر شدن
 ): Promise<Response> {
-  // افزایش timeout برای جلوگیری از timeout زودرس - اما نه خیلی زیاد
-  const timeout = options.timeout || (process.env.NODE_ENV === 'production' ? 15000 : 8000);
+  const buildTime = isBuildTime();
+  
+  // Shorter timeout during build to fail faster
+  const timeout = options.timeout || (buildTime ? 3000 : (process.env.NODE_ENV === 'production' ? 15000 : 8000));
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
@@ -239,20 +405,35 @@ async function fetchWithRetry(
       } catch (fetchError) {
         clearTimeout(timeoutId);
         
+        // During build time, if it's a connection error, don't retry - fail fast
+        if (buildTime && isConnectionError(fetchError) && attempt === 0) {
+          // Create a mock error response to be handled gracefully
+          throw new Error('API_UNAVAILABLE_DURING_BUILD');
+        }
+        
         // فقط در آخرین attempt خطا را throw کن
         if (attempt === maxRetries) {
           throw fetchError;
         }
         
-        // Wait before retry (short delay)
-        await new Promise(resolve => setTimeout(resolve, 300));
+        // Wait before retry (short delay, but skip during build)
+        if (!buildTime) {
+          await new Promise(resolve => setTimeout(resolve, 300));
+        }
         continue;
       }
     } catch (error) {
+      // If it's our special build-time error, re-throw it
+      if (error instanceof Error && error.message === 'API_UNAVAILABLE_DURING_BUILD') {
+        throw error;
+      }
+      
       if (attempt === maxRetries) {
         throw error;
       }
-      await new Promise(resolve => setTimeout(resolve, 300));
+      if (!buildTime) {
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
     }
   }
   
@@ -263,12 +444,13 @@ export async function getAllPosts(): Promise<Post[]> {
   try {
     const url = `${CMS_API_BASE}/v1/posts?status=published&limit=100&t=${Date.now()}`;
     const isProduction = process.env.NODE_ENV === 'production';
+    const buildTime = isBuildTime();
     
     try {
       const res = await fetchWithRetry(url, {
-        timeout: isProduction ? 15000 : 8000, // timeout متعادل
+        timeout: buildTime ? 3000 : (isProduction ? 15000 : 8000),
         next: { 
-          revalidate: isProduction ? 180 : 30, // cache time متعادل
+          revalidate: isProduction ? 180 : 30,
         },
         headers: {
           'Accept': 'application/json',
@@ -276,19 +458,19 @@ export async function getAllPosts(): Promise<Post[]> {
       });
       
       if (!res.ok) {
-        // فقط در dev mode خطا را log کن
-        if (!isProduction) {
+        // Suppress logs during build time
+        if (!buildTime && !isProduction) {
           const errorText = await res.text().catch(() => 'Could not read error response');
           console.error(`[getAllPosts] API returned ${res.status} ${res.statusText} for ${CMS_API_BASE}`);
           console.error(`[getAllPosts] Error response: ${errorText.substring(0, 200)}`);
         }
-        return []; // در صورت خطا، آرایه خالی برگردان
+        return [];
       }
       
       const data = await res.json().catch(() => ({}));
       const items = Array.isArray(data?.items) ? (data.items as unknown[]) : [];
       
-      if (items.length === 0 && !isProduction) {
+      if (items.length === 0 && !buildTime && !isProduction) {
         console.warn(`[getAllPosts] No items in response. Total in response: ${data?.total || 0}`);
       }
       
@@ -297,8 +479,14 @@ export async function getAllPosts(): Promise<Post[]> {
       
       return sorted;
     } catch (fetchError) {
-      // فقط در dev mode خطا را log کن
-      if (!isProduction) {
+      // Suppress connection error logs during build time
+      if (buildTime && isConnectionError(fetchError)) {
+        // Silently return empty array during build if API is unavailable
+        return [];
+      }
+      
+      // Only log in dev mode (not during build)
+      if (!buildTime && !isProduction) {
         const errorMessage = fetchError instanceof Error ? fetchError.message : String(fetchError);
         console.error(`[getAllPosts] Fetch error: ${errorMessage}`);
         console.error(`[getAllPosts] API URL: ${CMS_API_BASE}`);
@@ -308,8 +496,8 @@ export async function getAllPosts(): Promise<Post[]> {
       return [];
     }
   } catch (error) {
-    // فقط در dev mode خطا را log کن
-    if (process.env.NODE_ENV !== 'production') {
+    // Suppress all error logs during build time
+    if (!isBuildTime() && process.env.NODE_ENV !== 'production') {
       const errorMessage = error instanceof Error ? error.message : String(error);
       console.error(`[getAllPosts] Unexpected error: ${errorMessage}`);
       console.error(`[getAllPosts] API Base: ${CMS_API_BASE}`);
@@ -324,12 +512,13 @@ export async function getPostBySlug(slug: string): Promise<Post | undefined> {
   try {
     const url = `${CMS_API_BASE}/v1/posts/slug/${slug}?t=${Date.now()}`;
     const isProduction = process.env.NODE_ENV === 'production';
+    const buildTime = isBuildTime();
     
     try {
       const res = await fetchWithRetry(url, {
-        timeout: isProduction ? 15000 : 8000, // timeout متعادل
+        timeout: buildTime ? 3000 : (isProduction ? 15000 : 8000),
         next: { 
-          revalidate: isProduction ? 180 : 30, // cache time متعادل
+          revalidate: isProduction ? 180 : 30,
         },
         headers: {
           'Accept': 'application/json',
@@ -337,10 +526,13 @@ export async function getPostBySlug(slug: string): Promise<Post | undefined> {
       });
       
       if (!res.ok) {
-        if (res.status === 404) {
-          console.warn(`[getPostBySlug] Post not found: ${slug}`);
-        } else {
-          console.error(`[getPostBySlug] API returned ${res.status} ${res.statusText} for slug: ${slug}`);
+        // Suppress logs during build time
+        if (!buildTime) {
+          if (res.status === 404) {
+            console.warn(`[getPostBySlug] Post not found: ${slug}`);
+          } else {
+            console.error(`[getPostBySlug] API returned ${res.status} ${res.statusText} for slug: ${slug}`);
+          }
         }
         return undefined;
       }
@@ -348,13 +540,24 @@ export async function getPostBySlug(slug: string): Promise<Post | undefined> {
       const data = await res.json();
       return mapCmsPostToSitePost(data);
     } catch (fetchError) {
-      const errorMessage = fetchError instanceof Error ? fetchError.message : String(fetchError);
-      console.error(`[getPostBySlug] Fetch error for slug "${slug}": ${errorMessage}`);
+      // Suppress connection error logs during build time
+      if (buildTime && isConnectionError(fetchError)) {
+        return undefined;
+      }
+      
+      // Only log in dev mode (not during build)
+      if (!buildTime && !isProduction) {
+        const errorMessage = fetchError instanceof Error ? fetchError.message : String(fetchError);
+        console.error(`[getPostBySlug] Fetch error for slug "${slug}": ${errorMessage}`);
+      }
       return undefined;
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`[getPostBySlug] Unexpected error for slug "${slug}": ${errorMessage}`);
+    // Suppress error logs during build time
+    if (!isBuildTime() && process.env.NODE_ENV !== 'production') {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`[getPostBySlug] Unexpected error for slug "${slug}": ${errorMessage}`);
+    }
     return undefined;
   }
 }
@@ -364,43 +567,109 @@ export type Category = {
   name: string;
   slug: string;
   description?: string;
+  parentId?: {
+    _id: string;
+    name: string;
+    slug: string;
+  } | null;
+  children?: Category[];
 };
 
 export async function getAllCategories(): Promise<Category[]> {
   try {
     const url = `${CMS_API_BASE}/v1/categories?t=${Date.now()}`;
     const isProduction = process.env.NODE_ENV === 'production';
+    const buildTime = isBuildTime();
     
     try {
       const res = await fetchWithRetry(url, {
-        timeout: isProduction ? 15000 : 8000, // timeout متعادل
-        next: { revalidate: 300 }, // Cache for 5 minutes (categories don't change often)
+        timeout: buildTime ? 3000 : (isProduction ? 15000 : 8000),
+        next: { revalidate: 300 },
         headers: {
           'Accept': 'application/json',
         },
       });
       
       if (!res.ok) {
-        console.error(`[getAllCategories] API returned ${res.status} ${res.statusText}`);
+        // Suppress logs during build time
+        if (!buildTime && !isProduction) {
+          console.error(`[getAllCategories] API returned ${res.status} ${res.statusText}`);
+        }
         return [];
       }
       
       const data = await res.json();
       const items = Array.isArray(data?.items) ? data.items : [];
-      return items.map((cat: any) => ({
+      
+      // Map categories with parentId support
+      const mappedCategories: Category[] = items.map((cat: any) => ({
         _id: cat._id || '',
         name: cat.name || '',
         slug: cat.slug || '',
-        description: cat.description || undefined
+        description: cat.description || undefined,
+        parentId: cat.parentId ? {
+          _id: cat.parentId._id || '',
+          name: cat.parentId.name || '',
+          slug: cat.parentId.slug || ''
+        } : null
       }));
+      
+      // Build hierarchical structure
+      const categoryMap = new Map<string, Category>();
+      const rootCategories: Category[] = [];
+      
+      // First pass: create map and identify root categories
+      mappedCategories.forEach(cat => {
+        categoryMap.set(cat._id, { ...cat, children: [] });
+        if (!cat.parentId) {
+          rootCategories.push(categoryMap.get(cat._id)!);
+        }
+      });
+      
+      // Second pass: assign children to parents
+      mappedCategories.forEach(cat => {
+        if (cat.parentId) {
+          const parent = categoryMap.get(cat.parentId._id);
+          const child = categoryMap.get(cat._id);
+          if (parent && child) {
+            parent.children = parent.children || [];
+            parent.children.push(child);
+          }
+        }
+      });
+      
+      // Sort children within each parent
+      const sortCategories = (cats: Category[]) => {
+        cats.sort((a, b) => a.name.localeCompare(b.name, 'fa'));
+        cats.forEach(cat => {
+          if (cat.children && cat.children.length > 0) {
+            sortCategories(cat.children);
+          }
+        });
+      };
+      
+      sortCategories(rootCategories);
+      
+      return rootCategories;
     } catch (fetchError) {
-      const errorMessage = fetchError instanceof Error ? fetchError.message : String(fetchError);
-      console.error(`[getAllCategories] Fetch error: ${errorMessage}`);
+      // Suppress connection error logs during build time
+      if (buildTime && isConnectionError(fetchError)) {
+        return [];
+      }
+      
+      // Only log in dev mode (not during build)
+      if (!buildTime && !isProduction) {
+        const errorMessage = fetchError instanceof Error ? fetchError.message : String(fetchError);
+        console.error(`[getAllCategories] Fetch error: ${errorMessage}`);
+      }
       return [];
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`[getAllCategories] Unexpected error: ${errorMessage}`);
+    // Suppress error logs during build time
+    if (!isBuildTime() && process.env.NODE_ENV !== 'production') {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`[getAllCategories] Unexpected error: ${errorMessage}`);
+    }
     return [];
   }
 }

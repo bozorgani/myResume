@@ -6,6 +6,7 @@ import Link from 'next/link';
 interface Category {
   slug: string;
   name: string;
+  children?: Category[];
 }
 
 interface CategoriesDrawerProps {
@@ -101,27 +102,62 @@ export function CategoriesDrawer({ isOpen, onClose, categories, activeCategory }
               </Link>
             </li>
 
-            {/* Category Links */}
-            {categories.map((cat) => {
-              const isActive = activeCategory === cat.slug;
+            {/* Category Links with Subcategories */}
+            {categories.map((mainCat) => {
+              const isMainActive = activeCategory === mainCat.slug;
+              const isSubActive = mainCat.children?.some(subCat => subCat.slug === activeCategory);
+              const isActive = isMainActive || isSubActive;
+              
               return (
-                <li key={cat.slug}>
+                <li key={mainCat.slug} className="space-y-1">
+                  {/* Main Category */}
                   <Link
-                    href={`/blog?category=${cat.slug}`}
+                    href={`/blog?category=${mainCat.slug}`}
                     onClick={handleLinkClick}
                     className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 font-medium ${
-                      isActive
+                      isMainActive
                         ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md scale-[1.02]'
+                        : isActive
+                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-[1.01]'
                     }`}
-                    aria-current={isActive ? 'page' : undefined}
+                    aria-current={isMainActive ? 'page' : undefined}
                   >
                     <span className="text-xl flex-shrink-0">📂</span>
-                    <span className="flex-1">{cat.name}</span>
-                    {isActive && (
+                    <span className="flex-1">{mainCat.name}</span>
+                    {isMainActive && (
                       <span className="text-sm opacity-75">●</span>
                     )}
                   </Link>
+                  
+                  {/* Subcategories */}
+                  {mainCat.children && mainCat.children.length > 0 && (
+                    <ul className="mr-4 space-y-1">
+                      {mainCat.children.map((subCat) => {
+                        const isSubActive = activeCategory === subCat.slug;
+                        return (
+                          <li key={subCat.slug}>
+                            <Link
+                              href={`/blog?category=${subCat.slug}`}
+                              onClick={handleLinkClick}
+                              className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 text-sm ${
+                                isSubActive
+                                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md scale-[1.02]'
+                                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-[1.01]'
+                              }`}
+                              aria-current={isSubActive ? 'page' : undefined}
+                            >
+                              <span className="text-sm flex-shrink-0">•</span>
+                              <span className="flex-1">{subCat.name}</span>
+                              {isSubActive && (
+                                <span className="text-xs opacity-75">●</span>
+                              )}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
                 </li>
               );
             })}

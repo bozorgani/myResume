@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Post } from '@/lib/posts';
+import { getPostUrl } from '@/lib/posts';
 
 export function PostCard({ post }: { post: Post }) {
   return (
@@ -11,7 +12,7 @@ export function PostCard({ post }: { post: Post }) {
         </div>
       )}
       <h3 id={`${post.slug}-title`} className="mt-0 sm:mt-1 text-base sm:text-lg md:text-xl font-semibold line-clamp-2 leading-snug">
-        <Link href={`/blog/${post.slug}`} className="hover:underline text-gray-900 dark:text-gray-100">{post.title}</Link>
+        <Link href={getPostUrl(post) as any} className="hover:underline text-gray-900 dark:text-gray-100">{post.title}</Link>
       </h3>
       <p className="mt-2 sm:mt-3 text-sm sm:text-base line-clamp-3 text-gray-700 dark:text-gray-300 flex-grow">{post.description}</p>
       <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400">

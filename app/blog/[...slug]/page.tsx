@@ -1,17 +1,17 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { SITE, createPageMeta } from '@/lib/seo';
-import { getAllPosts, getPostBySlug, type Post } from '@/lib/posts';
+import { getAllPosts, getPostBySlug, getAllCategories, getPostUrl, type Post } from '@/lib/posts';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Schema } from '@/components/Schema';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Breadcrumbs, type Crumb } from '@/components/Breadcrumbs';
 import { ScrollToTop } from '@/components/ScrollToTop';
 
 // بهینه‌سازی: استفاده از ISR برای بهتر شدن performance
 export const revalidate = 300; // 5 minutes
 
-type Params = { slug: string };
+type Params = { slug: string[] };
 
 // Note: generateStaticParams is not used when dynamic = 'force-dynamic'
 // but we keep it for type safety
@@ -20,7 +20,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const post = await getPostBySlug(params.slug);
+  const { postSlug } = parseSlug(params.slug);
+  const post = await getPostBySlug(postSlug);
   if (!post) {
     return createPageMeta({
       title: `مقاله پیدا نشد | ${SITE.name}`,
@@ -45,10 +46,12 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     'سئو فنی'
   ].filter(Boolean) as string[];
 
+  const postUrl = getPostUrl(post);
+
   const base = createPageMeta({
     title: `${post.title} | ${SITE.name}`,
     description: description,
-    url: post.canonicalUrl || `${SITE.domain}/blog/${post.slug}`,
+    url: post.canonicalUrl || `${SITE.domain}${postUrl}`,
     image: post.image,
     keywords: keywords,
     author: SITE.name,
@@ -59,6 +62,28 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   });
   
   return base;
+}
+
+// Helper function to decode URL-encoded slug
+function decodeSlug(slug: string): string {
+  try {
+    return decodeURIComponent(slug);
+  } catch {
+    return slug;
+  }
+}
+
+function parseSlug(slug: string[]): { categorySlug?: string; postSlug: string } {
+  if (slug.length === 1) {
+    // Just post slug: /blog/post-slug
+    return { postSlug: decodeSlug(slug[0]) };
+  } else if (slug.length === 2) {
+    // Category and post: /blog/category-slug/post-slug
+    return { categorySlug: decodeSlug(slug[0]), postSlug: decodeSlug(slug[1]) };
+  } else {
+    // Invalid, use last as post slug
+    return { postSlug: decodeSlug(slug[slug.length - 1]) };
+  }
 }
 
 function extractHeadings(html: string): { id: string; text: string; level: 2 | 3 }[] {
@@ -89,8 +114,13 @@ function addIdsToHeadings(html: string): string {
 }
 
 export default async function BlogPostPage({ params }: { params: Params }) {
-  const post = await getPostBySlug(params.slug);
+  const { categorySlug: urlCategorySlug, postSlug } = parseSlug(params.slug);
+  
+  const post = await getPostBySlug(postSlug);
   if (!post) return notFound();
+  
+  // Get the correct URL for this post (with English category slug)
+  const postUrl = getPostUrl(post);
 
   // Extract keywords from categories and tags
   const keywords = [
@@ -135,7 +165,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
     image: post.image ? [post.image.startsWith('http') ? post.image : `${SITE.domain}${post.image}`] : [`${SITE.domain}${SITE.ogImage}`],
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${SITE.domain}/blog/${post.slug}`
+      '@id': `${SITE.domain}${postUrl}`
     },
     articleSection: post.categories?.[0]?.name || post.category?.name || 'توسعه وب',
     keywords: keywords.join(', '),
@@ -143,13 +173,17 @@ export default async function BlogPostPage({ params }: { params: Params }) {
     inLanguage: 'fa-IR',
     ...(post.readingTime && { timeRequired: `PT${post.readingTime}M` })
   };
+  
+  const categoryName = post.categories?.[0]?.name || post.category?.name || 'بلاگ';
+  const categorySlug = post.categories?.[0]?.slug || post.category?.slug;
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'صفحه اصلی', item: `${SITE.domain}` },
       { '@type': 'ListItem', position: 2, name: 'بلاگ', item: `${SITE.domain}/blog` },
-      { '@type': 'ListItem', position: 3, name: post.title, item: `${SITE.domain}/blog/${post.slug}` }
+      ...(categorySlug ? [{ '@type': 'ListItem', position: 3, name: categoryName, item: `${SITE.domain}/blog?category=${categorySlug}` }] : []),
+      { '@type': 'ListItem', position: categorySlug ? 4 : 3, name: post.title, item: `${SITE.domain}${postUrl}` }
     ]
   };
 
@@ -170,12 +204,26 @@ export default async function BlogPostPage({ params }: { params: Params }) {
     // اگر خطا رخ داد، navigation را نمایش نده
   }
 
+  const breadcrumbItems: Crumb[] = [
+    { name: 'صفحه اصلی', href: '/' },
+    { name: 'بلاگ', href: '/blog' }
+  ];
+  
+  if (categorySlug) {
+    breadcrumbItems.push({ 
+      name: categoryName, 
+      href: `/blog?category=${categorySlug}` 
+    });
+  }
+  
+  breadcrumbItems.push({ name: post.title });
+
   return (
     <article className="max-w-none">
       <Schema json={articleSchema} />
       <Schema json={breadcrumbSchema} />
       <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8">
-        <Breadcrumbs items={[{ name: 'صفحه اصلی', href: '/' }, { name: 'بلاگ', href: '/blog' }, { name: post.title }]} />
+        <Breadcrumbs items={breadcrumbItems} />
 
         {/* Article Header */}
         <header className="mt-3 sm:mt-4 md:mt-6 mb-6 sm:mb-8 md:mb-10 lg:mb-14 max-w-7xl">
@@ -316,7 +364,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           <nav className="mt-8 sm:mt-10 md:mt-12 lg:mt-16 xl:mt-20 grid gap-4 sm:gap-5 md:gap-6 sm:grid-cols-2 max-w-6xl" aria-label="پیمایش مقاله‌ها">
           {prev && (
             <Link 
-              href={`/blog/${prev.slug}`} 
+              href={getPostUrl(prev) as any} 
               className="group relative overflow-hidden rounded-xl sm:rounded-2xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-md p-4 sm:p-6 md:p-8 shadow-xl hover:shadow-2xl hover:border-blue-300/80 dark:hover:border-blue-700/80 transition-all duration-300 hover:-translate-y-1"
             >
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 via-blue-600 to-purple-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
@@ -336,7 +384,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           )}
           {next && (
             <Link 
-              href={`/blog/${next.slug}`} 
+              href={getPostUrl(next) as any} 
               className="group relative overflow-hidden rounded-xl sm:rounded-2xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-md p-4 sm:p-6 md:p-8 shadow-xl hover:shadow-2xl hover:border-purple-300/80 dark:hover:border-purple-700/80 transition-all duration-300 hover:-translate-y-1 sm:justify-self-end"
             >
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-purple-500 via-pink-500 to-pink-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
@@ -362,5 +410,4 @@ export default async function BlogPostPage({ params }: { params: Params }) {
     </article>
   );
 }
-
 

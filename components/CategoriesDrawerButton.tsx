@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { CategoriesDrawer } from './CategoriesDrawer';
 
 interface Category {
   slug: string;
   name: string;
+  children?: Category[];
 }
 
 interface CategoriesDrawerButtonProps {
@@ -13,11 +14,27 @@ interface CategoriesDrawerButtonProps {
   activeCategory?: string;
 }
 
+// Helper function to flatten categories for counting
+function flattenCategories(categories: Category[]): Category[] {
+  const result: Category[] = [];
+  categories.forEach(cat => {
+    result.push(cat);
+    if (cat.children && cat.children.length > 0) {
+      result.push(...flattenCategories(cat.children));
+    }
+  });
+  return result;
+}
+
 export function CategoriesDrawerButton({ categories, activeCategory }: CategoriesDrawerButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
+
+  const totalCategories = useMemo(() => {
+    return flattenCategories(categories).length;
+  }, [categories]);
 
   if (categories.length === 0) {
     return null;
@@ -33,7 +50,7 @@ export function CategoriesDrawerButton({ categories, activeCategory }: Categorie
       >
         <span className="text-2xl">📂</span>
         <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-          {categories.length}
+          {totalCategories}
         </span>
       </button>
 
