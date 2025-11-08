@@ -627,4 +627,35 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
   -webkit-overflow-scrolling: touch;
 }
 
+/* Ensure proper scrolling on mobile devices - enhance existing styles */
+html {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto;
+}
+
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto;
+}
+
+/* Prevent scroll lock on mobile for blog pages */
+@media (max-width: 1023px) {
+  /* Ensure TOC navigation doesn't block page scrolling on mobile */
+  aside nav.custom-scrollbar {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+  
+  /* Ensure page content can scroll freely */
+  article {
+    touch-action: pan-y;
+  }
+  
+  /* Prevent any container from blocking scroll */
+  .blog-content {
+    touch-action: pan-y;
+  }
+}
+
 

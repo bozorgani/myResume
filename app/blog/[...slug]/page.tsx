@@ -219,10 +219,10 @@ export default async function BlogPostPage({ params }: { params: Params }) {
   breadcrumbItems.push({ name: post.title });
 
   return (
-    <article className="max-w-none">
+    <article className="max-w-none overflow-visible">
       <Schema json={articleSchema} />
       <Schema json={breadcrumbSchema} />
-      <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8">
+      <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8 overflow-visible">
         <Breadcrumbs items={breadcrumbItems} />
 
         {/* Article Header */}
@@ -324,10 +324,10 @@ export default async function BlogPostPage({ params }: { params: Params }) {
       </header>
 
         {/* Article Content */}
-        <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] lg:gap-10 xl:gap-12">
-          <div className="min-w-0 max-w-6xl lg:max-w-7xl order-2 lg:order-1">
+        <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] lg:gap-10 xl:gap-12 overflow-visible">
+          <div className="min-w-0 max-w-6xl lg:max-w-7xl order-2 lg:order-1 overflow-visible">
             <div 
-              className="blog-content rounded-2xl sm:rounded-3xl border border-gray-200/80 dark:border-gray-800/80 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 shadow-xl dark:shadow-2xl"
+              className="blog-content rounded-2xl sm:rounded-3xl border border-gray-200/80 dark:border-gray-800/80 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 shadow-xl dark:shadow-2xl overflow-visible"
               dangerouslySetInnerHTML={{ __html: contentWithIds }} 
             />
           </div>
@@ -339,7 +339,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
                 <span className="text-xl sm:text-2xl leading-none">📑</span>
                 <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">فهرست مطالب</h2>
               </div>
-              <nav className="max-h-[400px] sm:max-h-[500px] lg:max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
+              <nav className="sm:max-h-[400px] lg:max-h-[calc(100vh-200px)] sm:overflow-y-auto lg:overflow-y-auto custom-scrollbar overscroll-contain">
                 <ul className="space-y-2 sm:space-y-2.5">
                   {toc.map((h) => (
                     <li key={h.id} className={h.level === 3 ? 'pr-4 sm:pr-6' : ''}>
