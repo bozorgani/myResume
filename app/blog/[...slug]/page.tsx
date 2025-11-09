@@ -442,7 +442,8 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           </nav>
         )}
 
-        <ScrollToTop />
+        {/* موقتاً غیرفعال شده برای تست - ScrollToTop */}
+        {/* <ScrollToTop /> */}
       </div>
     </article>
   );
