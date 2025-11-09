@@ -630,16 +630,18 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
 /* Ensure proper scrolling on mobile devices - enhance existing styles */
 html {
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: auto;
+  overscroll-behavior-y: contain;
   overflow-x: hidden;
   overflow-y: auto;
   height: 100%;
   position: relative;
+  /* Prevent scroll bouncing on mobile Chrome */
+  overscroll-behavior-block: contain;
 }
 
 body {
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: auto;
+  overscroll-behavior-y: contain;
   overflow-x: hidden;
   overflow-y: auto;
   min-height: 100%;
@@ -647,6 +649,9 @@ body {
   /* Prevent scroll jank on mobile */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Fix for Chrome mobile scroll issues */
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Fix for sticky elements on mobile - disable sticky on small screens */
@@ -693,12 +698,12 @@ body {
     touch-action: pan-y;
     overflow-x: hidden;
     overflow-y: visible;
-    /* Prevent scroll lock and enable hardware acceleration */
+    /* Prevent scroll lock - removed transform to avoid conflicts */
     position: relative;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
     /* Ensure content can scroll naturally */
     -webkit-overflow-scrolling: touch;
+    /* Prevent layout shifts */
+    contain: layout style;
   }
   
   /* Fix for main container */
@@ -710,28 +715,107 @@ body {
     -webkit-overflow-scrolling: touch;
   }
   
-  /* Optimize backdrop-blur for mobile performance */
+  /* Disable or reduce backdrop-blur on mobile for better performance in Chrome */
   .backdrop-blur-sm,
   .backdrop-blur-md {
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
+    /* Disable backdrop-filter on mobile Chrome to prevent scroll jank */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    /* Use solid background instead */
+    background-color: rgba(255, 255, 255, 0.98) !important;
+  }
+  
+  .dark .backdrop-blur-sm,
+  .dark .backdrop-blur-md {
+    background-color: rgba(17, 24, 39, 0.98) !important;
+  }
+  
+  /* Optimize sticky header for mobile */
+  header.sticky {
+    /* Remove backdrop-blur from header on mobile */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: rgba(255, 255, 255, 0.98) !important;
+    /* Enable hardware acceleration */
+    will-change: transform;
     transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  .dark header.sticky {
+    background-color: rgba(17, 24, 39, 0.98) !important;
   }
 }
 
 /* Additional mobile optimizations for blog pages */
 @media (max-width: 767px) {
-  /* Reduce backdrop blur intensity on mobile for better performance */
-  article .backdrop-blur-sm {
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+  /* Completely disable backdrop blur on small mobile devices for Chrome */
+  article .backdrop-blur-sm,
+  article .backdrop-blur-md {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
   
-  /* Ensure smooth scrolling */
-  article,
+  /* Remove backdrop-blur from ScrollToTop button on mobile */
+  button[aria-label="بازگشت به بالا"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: linear-gradient(to bottom right, #3b82f6, #8b5cf6, #ec4899) !important;
+  }
+  
+  /* Ensure smooth scrolling - disable smooth scroll on mobile Chrome to prevent jank */
+  article {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: auto; /* Changed from smooth to auto for better performance */
+    /* Prevent scroll chaining issues */
+    overscroll-behavior-y: contain;
+  }
+  
   .blog-content {
     -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
+    /* Prevent layout thrashing */
+    contain: layout style;
+  }
+  
+  /* Disable smooth scroll for anchor links on mobile Chrome to prevent jank */
+  html {
+    scroll-behavior: auto !important;
+  }
+  
+  /* Fix for grid layout on mobile - prevent layout shifts */
+  .grid {
+    /* Ensure grid doesn't cause reflow issues */
+    contain: layout;
+  }
+  
+  /* Optimize all fixed/sticky elements for mobile */
+  [class*="fixed"],
+  [class*="sticky"] {
+    /* Enable hardware acceleration without transform conflicts */
+    will-change: scroll-position;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  
+  /* Prevent pointer events from blocking scroll */
+  header.sticky {
+    pointer-events: auto;
+    /* Allow touch interactions but prevent scroll blocking */
+    touch-action: pan-y pinch-zoom;
+  }
+  
+  /* Allow scrolling on main content */
+  main,
+  article {
+    touch-action: pan-y;
+    pointer-events: auto;
+  }
+  
+  /* Ensure header links are clickable */
+  header.sticky a,
+  header.sticky button {
+    touch-action: manipulation;
   }
   
   /* Prevent horizontal scroll on blog content elements */

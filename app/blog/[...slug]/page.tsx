@@ -361,7 +361,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
       </header>
 
         {/* Article Content */}
-        <div className={`gap-6 sm:gap-8 ${false && toc.length > 0 ? 'grid lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] lg:gap-10 xl:gap-12' : ''}`}>
+        <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] lg:gap-10 xl:gap-12">
           <div className="min-w-0 max-w-6xl lg:max-w-7xl order-2 lg:order-1">
             <div 
               className="blog-content rounded-2xl sm:rounded-3xl border border-gray-200/80 dark:border-gray-800/80 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 shadow-xl dark:shadow-2xl"
@@ -369,8 +369,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
             />
           </div>
         
-        {/* موقتاً مخفی شده برای تست - فهرست مطالب */}
-        {false && toc.length > 0 && (
+        {toc.length > 0 && (
           <aside className="lg:sticky lg:top-6 h-max order-1 lg:order-2 mb-6 lg:mb-0 not-sticky-mobile">
             <div className="rounded-xl sm:rounded-2xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-md p-4 sm:p-6 shadow-xl dark:shadow-2xl">
               <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b-2 border-gray-200/80 dark:border-gray-700/80">
