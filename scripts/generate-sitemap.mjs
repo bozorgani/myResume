@@ -2,7 +2,7 @@
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const DOMAIN = 'https://bozorgani.ir';
+const DOMAIN = 'https://www.bozorgani.ir';
 
 // Static routes of the site
 const staticPaths = ['/', '/projects', '/resume', '/contact', '/blog'];

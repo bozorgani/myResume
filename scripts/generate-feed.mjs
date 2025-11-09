@@ -2,7 +2,7 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { posts } from '../lib/posts.js';
 
-const DOMAIN = 'https://bozorgani.ir';
+const DOMAIN = 'https://www.bozorgani.ir';
 
 function generateRss(posts) {
   const items = posts

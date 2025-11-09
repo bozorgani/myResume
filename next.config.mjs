@@ -37,6 +37,22 @@ const nextConfig = {
       return patterns;
     })()
   },
+  // ری‌دایرکت 301 از non-www به www برای SEO
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'bozorgani.ir',
+          },
+        ],
+        destination: 'https://www.bozorgani.ir/:path*',
+        permanent: true, // 301 redirect
+      },
+    ];
+  },
   // بهینه‌سازی headers برای بهتر شدن caching و امنیت
   async headers() {
     return [

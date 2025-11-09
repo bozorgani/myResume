@@ -18,6 +18,6 @@ Disallow: /api/
 Disallow: /_next/
 Disallow: /admin/
 
-Sitemap: https://bozorgani.ir/sitemap.xml
+Sitemap: https://www.bozorgani.ir/sitemap.xml
 
 

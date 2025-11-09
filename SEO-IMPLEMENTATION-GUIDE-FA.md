@@ -1,541 +1,308 @@
-# راهنمای پیاده‌سازی SEO - بهبودهای سریع
+# راهنمای پیاده‌سازی SEO - گام‌به‌گام
+**تاریخ:** ۹ نوامبر ۲۰۲۵
 
-این راهنما دستورالعمل‌های گام‌به‌گام برای پیاده‌سازی بهبودهای اولویت بالای SEO را ارائه می‌دهد.
+---
 
-## 🔴 بهبودهای اولویت بالا
+## ✅ کار ۱: تنظیم ری‌دایرکت 301 از non-www به www
 
-### ۱. اضافه کردن هدرهای امنیتی
+### روش ۱: استفاده از Next.js Config (پیاده‌سازی شده ✅)
 
-**فایل:** `myResume/next.config.mjs`
+ری‌دایرکت 301 در فایل `next.config.mjs` اضافه شده است. این کار به صورت خودکار تمام درخواست‌های `bozorgani.ir` را به `www.bozorgani.ir` ری‌دایرکت می‌کند.
 
-**کد فعلی:**
-```javascript
-async headers() {
-  return [
+**وضعیت:** ✅ انجام شد
+
+### روش ۲: تنظیم در سطح Hosting (توصیه می‌شود)
+
+اگر از **Vercel** استفاده می‌کنید:
+
+1. به داشبورد Vercel بروید: https://vercel.com/dashboard
+2. پروژه خود را انتخاب کنید
+3. به بخش **Settings** → **Domains** بروید
+4. دامنه `bozorgani.ir` را اضافه کنید
+5. در تنظیمات دامنه، گزینه **Redirect** را فعال کنید و `www.bozorgani.ir` را به عنوان مقصد تنظیم کنید
+
+یا از فایل `vercel.json` استفاده کنید:
+
+```json
+{
+  "redirects": [
     {
-      source: '/fonts/:path*',
-      headers: [
+      "source": "/:path*",
+      "has": [
         {
-          key: 'Cache-Control',
-          value: 'public, max-age=31536000, immutable',
-        },
+          "type": "host",
+          "value": "bozorgani.ir"
+        }
       ],
-    },
-  ];
-},
-```
-
-**کد به‌روزرسانی شده:**
-```javascript
-async headers() {
-  return [
-    {
-      source: '/:path*',
-      headers: [
-        {
-          key: 'Strict-Transport-Security',
-          value: 'max-age=31536000; includeSubDomains; preload',
-        },
-        {
-          key: 'X-Frame-Options',
-          value: 'DENY',
-        },
-        {
-          key: 'X-Content-Type-Options',
-          value: 'nosniff',
-        },
-        {
-          key: 'Referrer-Policy',
-          value: 'strict-origin-when-cross-origin',
-        },
-        {
-          key: 'Permissions-Policy',
-          value: 'geolocation=(), microphone=(), camera=()',
-        },
-      ],
-    },
-    {
-      source: '/fonts/:path*',
-      headers: [
-        {
-          key: 'Cache-Control',
-          value: 'public, max-age=31536000, immutable',
-        },
-      ],
-    },
-  ];
-},
-```
-
-**تست:**
-1. تغییرات را deploy کنید
-2. به آدرس https://securityheaders.com بروید
-3. دامنه خود را وارد کرده و امتیاز را بررسی کنید
-4. باید به رتبه A+ برسید
-
----
-
-### ۲. حذف Crawl Delay از robots.txt
-
-**فایل:** `myResume/public/robots.txt`
-
-**کد فعلی:**
-```txt
-User-agent: *
-Allow: /
-Disallow: /api/
-Disallow: /_next/
-Disallow: /admin/
-Crawl-delay: 1  # <-- این خط را حذف کنید
-```
-
-**کد به‌روزرسانی شده:**
-```txt
-User-agent: *
-Allow: /
-Disallow: /api/
-Disallow: /_next/
-Disallow: /admin/
-
-# Google
-User-agent: Googlebot
-Allow: /
-Disallow: /api/
-Disallow: /_next/
-Disallow: /admin/
-
-# Bing
-User-agent: Bingbot
-Allow: /
-Disallow: /api/
-Disallow: /_next/
-Disallow: /admin/
-
-Sitemap: https://bozorgani.ir/sitemap.xml
-```
-
-**تست:**
-1. مطمئن شوید robots.txt در آدرس https://bozorgani.ir/robots.txt قابل دسترسی است
-2. در Google Search Console بررسی کنید (Crawl > robots.txt Tester)
-
----
-
-### ۳. بهبود متا دیسکریپشن‌ها
-
-**فایل:** `myResume/app/blog/[...slug]/page.tsx`
-
-**کد فعلی (خط ۳۳-۳۵):**
-```typescript
-const description = post.description && post.description.trim() 
-  ? post.description 
-  : `مقاله ${post.title} از بلاگ ${SITE.name} درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
-```
-
-**توصیه:**
-- مطمئن شوید همه پست‌های بلاگ دیسکریپشن‌های یکتا و جذاب دارند (۱۵۰-۱۶۰ کاراکتر)
-- کلمه کلیدی اصلی را به طور طبیعی شامل کنید
-- در صورت مناسب بودن، call-to-action اضافه کنید
-- هنگام ایجاد پست‌ها در CMS، دیسکریپشن‌ها را بنویسید
-
-**مثال:**
-```
-بد: "مقاله درباره Next.js"
-خوب: "راهنمای جامع بهینه‌سازی Core Web Vitals در Next.js. یاد بگیرید چگونه LCP، FID و CLS را بهبود دهید و رتبه سایت خود را افزایش دهید."
-```
-
----
-
-### ۴. بهبود Alt Text برای تصاویر
-
-**فایل:** `myResume/app/blog/[...slug]/page.tsx`
-
-**کد فعلی (خط ۲۴۱):**
-```typescript
-alt={`کاور ${post.title}`}
-```
-
-**کد به‌روزرسانی شده:**
-```typescript
-alt={post.imageAlt || `تصویر کاور مقاله ${post.title} درباره ${post.categories?.[0]?.name || 'توسعه وب'}`}
-```
-
-**توصیه:**
-- فیلد `imageAlt` را به پست‌های بلاگ در CMS اضافه کنید
-- alt text توصیفی بنویسید (۱۲۵ کاراکتر یا کمتر)
-- کلمات کلیدی مرتبط را به طور طبیعی شامل کنید
-- محتوای تصویر را توصیف کنید، نه فقط زمینه
-
-**مثال:**
-```
-بد: "کاور مقاله"
-خوب: "نمودار بهبود Core Web Vitals در Next.js - مقایسه LCP قبل و بعد از بهینه‌سازی"
-```
-
----
-
-### ۵. اضافه کردن Resource Hints
-
-**فایل:** `myResume/app/layout.tsx`
-
-**اضافه کردن به بخش `<head>`:**
-
-```tsx
-<head>
-  <ThemeScript />
-  {/* Resource Hints */}
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-  <link rel="dns-prefetch" href="https://cms-api-pv3h.onrender.com" />
-  {/* در صورت نیاز دامنه‌های خارجی دیگر را اضافه کنید */}
-</head>
-```
-
----
-
-### ۶. اضافه کردن Google Analytics 4
-
-**فایل:** `myResume/app/layout.tsx`
-
-**اضافه کردن به بخش `<head>`:**
-
-```tsx
-<head>
-  <ThemeScript />
-  {/* Google Analytics */}
-  {process.env.NEXT_PUBLIC_GA_ID && (
-    <>
-      <script
-        async
-        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-      />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
-          `,
-        }}
-      />
-    </>
-  )}
-</head>
-```
-
-**متغیر محیطی:**
-اضافه کردن به `.env.local`:
-```env
-NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
-```
-
-**راه‌اندازی:**
-1. یک property Google Analytics 4 ایجاد کنید
-2. Measurement ID را دریافت کنید (G-XXXXXXXXXX)
-3. به متغیرهای محیطی اضافه کنید
-4. Deploy کنید و در داشبورد GA4 تأیید کنید
-
----
-
-### ۷. بهبود لینک‌دهی داخلی
-
-**فایل:** `myResume/app/blog/[...slug]/page.tsx`
-
-**اضافه کردن بخش پست‌های مرتبط (بعد از navigation):**
-
-```tsx
-{/* Related Posts */}
-{relatedPosts.length > 0 && (
-  <section className="mt-12" aria-label="مقالات مرتبط">
-    <h2 className="text-2xl font-bold mb-6">مقالات مرتبط</h2>
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {relatedPosts.slice(0, 3).map((relatedPost) => (
-        <Link
-          key={relatedPost.slug}
-          href={getPostUrl(relatedPost)}
-          className="group rounded-xl border p-4 hover:shadow-lg transition-shadow"
-        >
-          <h3 className="font-semibold text-lg mb-2 group-hover:text-blue-600">
-            {relatedPost.title}
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-            {relatedPost.description}
-          </p>
-        </Link>
-      ))}
-    </div>
-  </section>
-)}
-```
-
-**اضافه کردن منطق پست‌های مرتبط (قبل از return statement):**
-
-```tsx
-// Get related posts (same category or tags)
-const relatedPosts = posts
-  .filter((p) => {
-    if (p.slug === post.slug) return false;
-    // Same category
-    if (post.categories?.[0] && p.categories?.some(c => c.slug === post.categories[0].slug)) {
-      return true;
+      "destination": "https://www.bozorgani.ir/:path*",
+      "permanent": true
     }
-    // Same tags
-    if (post.tags && p.tags && post.tags.some(t => p.tags?.some(pt => pt.slug === t.slug))) {
-      return true;
-    }
-    return false;
-  })
-  .slice(0, 3);
-```
-
----
-
-### ۸. اضافه کردن بیوگرافی نویسنده به پست‌های بلاگ
-
-**فایل:** `myResume/app/blog/[...slug]/page.tsx`
-
-**اضافه کردن بعد از محتوای مقاله، قبل از navigation:**
-
-```tsx
-{/* Author Bio */}
-<section className="mt-12 rounded-xl border p-6 bg-gray-50 dark:bg-gray-900">
-  <div className="flex items-start gap-4">
-    <div className="relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
-      <Image
-        src="/images/amin-bozorgani-portrait-512.webp"
-        alt="محمد امین بزرگانی"
-        width={64}
-        height={64}
-        className="object-cover"
-      />
-    </div>
-    <div>
-      <h3 className="font-bold text-lg mb-2">محمد امین بزرگانی</h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-        توسعه‌دهنده Full-Stack با ۱۰+ سال تجربه در ساخت وب‌اپلیکیشن‌های مدرن با Next.js، React و Node.js. 
-        متخصص در بهینه‌سازی عملکرد، بهبود Core Web Vitals، و سئو فنی.
-      </p>
-      <div className="flex gap-3">
-        <a href={SITE.github} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-900">
-          GitHub
-        </a>
-        <a href={SITE.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-900">
-          LinkedIn
-        </a>
-        <a href={`mailto:${SITE.email}`} className="text-gray-600 hover:text-gray-900">
-          Email
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-```
-
----
-
-### ۹. اضافه کردن دکمه‌های اشتراک‌گذاری اجتماعی
-
-**ایجاد کامپوننت:** `myResume/components/SocialShare.tsx`
-
-```tsx
-'use client';
-
-import { usePathname } from 'next/navigation';
-import { SITE } from '@/lib/seo';
-
-export function SocialShare({ title, description }: { title: string; description?: string }) {
-  const pathname = usePathname();
-  const url = `${SITE.domain}${pathname}`;
-  const encodedUrl = encodeURIComponent(url);
-  const encodedTitle = encodeURIComponent(title);
-  const encodedDescription = encodeURIComponent(description || '');
-
-  const shareLinks = {
-    twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
-    telegram: `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`,
-    whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
-  };
-
-  return (
-    <div className="mt-8 pt-8 border-t">
-      <p className="text-sm font-medium mb-3">اشتراک‌گذاری:</p>
-      <div className="flex gap-3">
-        <a
-          href={shareLinks.twitter}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-          aria-label="اشتراک در توییتر"
-        >
-          توییتر
-        </a>
-        <a
-          href={shareLinks.linkedin}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-4 py-2 rounded-lg bg-blue-700 text-white hover:bg-blue-800 transition-colors"
-          aria-label="اشتراک در لینکدین"
-        >
-          لینکدین
-        </a>
-        <a
-          href={shareLinks.telegram}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-4 py-2 rounded-lg bg-blue-400 text-white hover:bg-blue-500 transition-colors"
-          aria-label="اشتراک در تلگرام"
-        >
-          تلگرام
-        </a>
-        <a
-          href={shareLinks.whatsapp}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors"
-          aria-label="اشتراک در واتساپ"
-        >
-          واتساپ
-        </a>
-      </div>
-    </div>
-  );
+  ]
 }
 ```
 
-**اضافه کردن به صفحه پست بلاگ:**
+اگر از **Netlify** استفاده می‌کنید:
 
-```tsx
-import { SocialShare } from '@/components/SocialShare';
+فایل `netlify.toml` ایجاد کنید:
 
-// در کامپوننت، بعد از محتوای مقاله:
-<SocialShare title={post.title} description={post.description} />
+```toml
+[[redirects]]
+  from = "https://bozorgani.ir/*"
+  to = "https://www.bozorgani.ir/:splat"
+  status = 301
+  force = true
 ```
 
----
+### تست ری‌دایرکت
 
-### ۱۰. ایجاد صفحه حریم خصوصی
+#### تست محلی (قبل از deploy):
 
-**فایل:** `myResume/app/privacy/page.tsx`
+1. سرور development را اجرا کنید: `npm run dev`
+2. در فایل `hosts` سیستم خود (Windows: `C:\Windows\System32\drivers\etc\hosts`)، خط زیر را اضافه کنید:
+   ```
+   127.0.0.1 bozorgani.ir
+   127.0.0.1 www.bozorgani.ir
+   ```
+3. به آدرس `http://bozorgani.ir:3000` بروید
+4. باید به `http://www.bozorgani.ir:3000` ری‌دایرکت شوید
 
-```tsx
-import type { Metadata } from 'next';
-import { SITE, createPageMeta } from '@/lib/seo';
+#### تست پس از deploy:
 
-export const metadata: Metadata = createPageMeta({
-  title: `حریم خصوصی | ${SITE.name}`,
-  description: `سیاست حریم خصوصی ${SITE.name} - اطلاعات درباره جمع‌آوری و استفاده از اطلاعات شخصی.`,
-  url: `${SITE.domain}/privacy`,
-});
+1. مرورگر را باز کنید
+2. به آدرس `https://bozorgani.ir` بروید
+3. باید به طور خودکار به `https://www.bozorgani.ir` ری‌دایرکت شوید
+4. در Developer Tools → Network، باید کد 301 را ببینید
+5. آدرس URL در address bar باید تغییر کند
 
-export default function PrivacyPage() {
-  return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <h1 className="text-3xl font-bold">حریم خصوصی</h1>
-      
-      <section>
-        <h2 className="text-2xl font-semibold mb-3">جمع‌آوری اطلاعات</h2>
-        <p className="text-gray-700 dark:text-gray-300">
-          ما اطلاعاتی که شما به صورت داوطلبانه در فرم تماس یا نظرات ارسال می‌کنید را جمع‌آوری می‌کنیم.
-        </p>
-      </section>
+### ابزار تست آنلاین:
 
-      <section>
-        <h2 className="text-2xl font-semibold mb-3">استفاده از اطلاعات</h2>
-        <p className="text-gray-700 dark:text-gray-300">
-          اطلاعات جمع‌آوری شده صرفاً برای پاسخ به درخواست‌های شما و بهبود خدمات استفاده می‌شود.
-        </p>
-      </section>
+- https://www.redirect-checker.org/
+- https://httpstatus.io/
+- https://httpstatus.io/redirect-checker
 
-      <section>
-        <h2 className="text-2xl font-semibold mb-3">حفظ امنیت</h2>
-        <p className="text-gray-700 dark:text-gray-300">
-          ما از روش‌های امنیتی استاندارد برای محافظت از اطلاعات شما استفاده می‌کنیم.
-        </p>
-      </section>
+### نکته مهم:
 
-      <section>
-        <h2 className="text-2xl font-semibold mb-3">تماس با ما</h2>
-        <p className="text-gray-700 dark:text-gray-300">
-          اگر سوالی درباره این سیاست حریم خصوصی دارید، لطفاً با ما تماس بگیرید: 
-          <a href={`mailto:${SITE.email}`} className="text-blue-600 hover:underline">
-            {SITE.email}
-          </a>
-        </p>
-      </section>
-
-      <p className="text-sm text-gray-500">
-        آخرین به‌روزرسانی: {new Date().toLocaleDateString('fa-IR')}
-      </p>
-    </div>
-  );
-}
-```
-
-**اضافه کردن به ناوبری Footer:**
-
-فایل `myResume/components/Footer.tsx` را به‌روزرسانی کنید تا لینک حریم خصوصی شامل شود.
+اگر از Vercel استفاده می‌کنید، می‌توانید در تنظیمات پروژه نیز ری‌دایرکت را تنظیم کنید (اما middleware کافی است).
 
 ---
 
-## چک‌لیست تست
+## ✅ کار ۲: ارسال Sitemap به Google Search Console
 
-بعد از پیاده‌سازی تغییرات:
+### گام ۱: ایجاد حساب Google Search Console
 
-- [ ] تست هدرهای امنیتی در securityheaders.com
-- [ ] تأیید دسترسی robots.txt
-- [ ] تست متا دیسکریپشن‌ها در Google Search Console
-- [ ] بررسی alt text تصاویر در source صفحه
-- [ ] تأیید ردیابی Google Analytics
-- [ ] تست ساختار لینک‌دهی داخلی
-- [ ] تأیید نمایش صحیح بیوگرافی نویسنده
-- [ ] تست دکمه‌های اشتراک‌گذاری اجتماعی
-- [ ] تأیید دسترسی صفحه حریم خصوصی
-- [ ] اجرای audit Lighthouse
-- [ ] تست روی دستگاه‌های موبایل
-- [ ] تأیید عملکرد صحیح همه لینک‌ها
+1. به آدرس بروید: https://search.google.com/search-console
+2. با حساب Google خود وارد شوید
+3. روی **Add Property** کلیک کنید
+4. **URL prefix** را انتخاب کنید
+5. آدرس `https://www.bozorgani.ir` را وارد کنید
+6. روی **Continue** کلیک کنید
+
+### گام ۲: تأیید مالکیت دامنه
+
+روش‌های تأیید:
+
+#### روش ۱: HTML Tag (آسان‌ترین)
+
+1. Google یک تگ HTML به شما می‌دهد مثل:
+   ```html
+   <meta name="google-site-verification" content="XeFvCtZt5MKDwcNWELRzeIOcAT5gCYPlR0gvO5Ys6EI" />
+   ```
+
+2. بررسی کنید که این تگ در فایل `app/layout.tsx` موجود است:
+   ```typescript
+   verification: {
+     google: 'XeFvCtZt5MKDwcNWELRzeIOcAT5gCYPlR0gvO5Ys6EI'
+   }
+   ```
+
+3. اگر موجود است، روی **Verify** کلیک کنید
+4. اگر موجود نیست، باید اضافه کنید (که قبلاً اضافه شده ✅)
+
+#### روش ۲: HTML File Upload
+
+1. Google یک فایل HTML به شما می‌دهد
+2. آن را در پوشه `public` قرار دهید
+3. روی **Verify** کلیک کنید
+
+#### روش ۳: DNS Record
+
+1. یک TXT record در DNS خود اضافه کنید
+2. مقدار داده شده توسط Google را وارد کنید
+3. روی **Verify** کلیک کنید
+
+### گام ۳: ارسال Sitemap
+
+1. پس از تأیید، به داشبورد Google Search Console بروید
+2. در منوی سمت چپ، روی **Sitemaps** کلیک کنید
+3. در قسمت **Add a new sitemap**، آدرس زیر را وارد کنید:
+   ```
+   https://www.bozorgani.ir/sitemap.xml
+   ```
+4. روی **Submit** کلیک کنید
+5. وضعیت sitemap را بررسی کنید (معمولاً چند دقیقه تا چند ساعت طول می‌کشد)
+
+### گام ۴: بررسی وضعیت Sitemap
+
+1. پس از چند ساعت، به بخش **Sitemaps** برگردید
+2. وضعیت sitemap را بررسی کنید:
+   - ✅ **Success**: sitemap با موفقیت پردازش شد
+   - ⚠️ **Has errors**: خطاهایی وجود دارد (باید بررسی کنید)
+   - ⏳ **Pending**: در حال پردازش
+
+### نکات مهم:
+
+- Sitemap باید قابل دسترسی باشد (https://www.bozorgani.ir/sitemap.xml)
+- پس از تغییرات در sitemap، Google به طور خودکار آن را بررسی می‌کند
+- می‌توانید sitemap را دوباره submit کنید اگر مشکلی وجود دارد
 
 ---
 
-## نظارت
+## ✅ کار ۳: ارسال Sitemap به Bing Webmaster Tools
 
-راه‌اندازی نظارت برای:
+### گام ۱: ایجاد حساب Bing Webmaster Tools
 
-1. **Google Search Console:**
-   - نظارت بر وضعیت ایندکسینگ
-   - ردیابی عملکرد جستجو
-   - بررسی خطاهای خزیدن
-   - نظارت بر Core Web Vitals
+1. به آدرس بروید: https://www.bing.com/webmasters
+2. با حساب Microsoft خود وارد شوید (می‌توانید با Google هم وارد شوید)
+3. روی **Add a site** کلیک کنید
+4. آدرس `https://www.bozorgani.ir` را وارد کنید
+5. روی **Add** کلیک کنید
 
-2. **Google Analytics:**
-   - ردیابی page views
-   - نظارت بر نرخ پرش
-   - ردیابی رفتار کاربر
-   - نظارت بر رویدادهای تبدیل
+### گام ۲: تأیید مالکیت دامنه
 
-3. **عملکرد:**
-   - auditهای منظم Lighthouse
-   - نظارت بر Core Web Vitals
-   - ردیابی زمان بارگذاری صفحه
-   - نظارت بر زمان پاسخ سرور
+روش‌های تأیید:
 
-4. **ابزارهای SEO:**
-   - Ahrefs/SEMrush برای بکلینک‌ها
-   - نظارت بر رتبه‌بندی کلمات کلیدی
-   - ردیابی اقتدار دامنه
-   - نظارت بر عملکرد رقبا
+#### روش ۱: XML File Upload (آسان‌ترین)
+
+1. Bing یک فایل XML به شما می‌دهد (مثل `BingSiteAuth.xml`)
+2. آن را در پوشه `public` قرار دهید
+3. مطمئن شوید که در آدرس `https://www.bozorgani.ir/BingSiteAuth.xml` قابل دسترسی است
+4. روی **Verify** کلیک کنید
+
+#### روش ۲: Meta Tag
+
+1. Bing یک تگ HTML به شما می‌دهد
+2. آن را در `app/layout.tsx` اضافه کنید (در بخش `other` در metadata)
+3. روی **Verify** کلیک کنید
+
+#### روش ۳: CNAME Record
+
+1. یک CNAME record در DNS خود اضافه کنید
+2. مقدار داده شده توسط Bing را وارد کنید
+3. روی **Verify** کلیک کنید
+
+### گام ۳: ارسال Sitemap
+
+1. پس از تأیید، به داشبورد Bing Webmaster Tools بروید
+2. در منوی سمت چپ، روی **Sitemaps** کلیک کنید
+3. در قسمت **Submit a sitemap**، آدرس زیر را وارد کنید:
+   ```
+   https://www.bozorgani.ir/sitemap.xml
+   ```
+4. روی **Submit** کلیک کنید
+5. وضعیت sitemap را بررسی کنید
+
+### گام ۴: بررسی وضعیت Sitemap
+
+1. پس از چند ساعت، به بخش **Sitemaps** برگردید
+2. وضعیت sitemap را بررسی کنید:
+   - ✅ **Submitted**: sitemap با موفقیت submit شد
+   - ⚠️ **Errors**: خطاهایی وجود دارد
+   - ⏳ **Pending**: در حال پردازش
+
+### نکات مهم:
+
+- Bing معمولاً sitemap را سریع‌تر از Google پردازش می‌کند
+- می‌توانید چندین sitemap submit کنید (مثلاً sitemap-index)
+- Bing همچنین از Google Search Console داده دریافت می‌کند (اگر اتصال داده باشید)
 
 ---
 
-## گام‌های بعدی
+## چک‌لیست کامل
 
-بعد از پیاده‌سازی بهبودهای اولویت بالا:
+### ✅ کار ۱: ری‌دایرکت 301
+- [x] ری‌دایرکت در `next.config.mjs` اضافه شد
+- [ ] تست ری‌دایرکت انجام شد
+- [ ] (اختیاری) تنظیم در سطح hosting انجام شد
 
-1. **هفته ۱-۲:** پیاده‌سازی همه بهبودهای اولویت بالا
-2. **هفته ۳-۴:** شروع ایجاد و بهینه‌سازی محتوا
-3. **ماه ۲:** شروع کمپین ساخت بکلینک
-4. **ماه ۳:** بررسی و بهینه‌سازی بر اساس داده
+### ✅ کار ۲: Google Search Console
+- [ ] حساب Google Search Console ایجاد شد
+- [ ] مالکیت دامنه تأیید شد
+- [ ] Sitemap submit شد
+- [ ] وضعیت sitemap بررسی شد
 
-برای استراتژی دقیق SEO، به `SEO-AUDIT-REPORT-FA.md` مراجعه کنید.
+### ✅ کار ۳: Bing Webmaster Tools
+- [ ] حساب Bing Webmaster Tools ایجاد شد
+- [ ] مالکیت دامنه تأیید شد
+- [ ] Sitemap submit شد
+- [ ] وضعیت sitemap بررسی شد
 
+---
 
+## عیب‌یابی مشکلات رایج
+
+### مشکل ۱: Sitemap قابل دسترسی نیست
+
+**راه‌حل:**
+1. مطمئن شوید که sitemap در آدرس `https://www.bozorgani.ir/sitemap.xml` قابل دسترسی است
+2. در مرورگر آدرس را تست کنید
+3. مطمئن شوید که robots.txt آن را block نکرده باشد
+
+### مشکل ۲: تأیید مالکیت انجام نمی‌شود
+
+**راه‌حل:**
+1. مطمئن شوید که تگ/فایل درست اضافه شده است
+2. Cache مرورگر را پاک کنید
+3. از روش دیگر تأیید استفاده کنید
+
+### مشکل ۳: ری‌دایرکت کار نمی‌کند
+
+**راه‌حل:**
+1. مطمئن شوید که کد در `next.config.mjs` درست است
+2. پروژه را دوباره build و deploy کنید
+3. اگر در Vercel است، از `vercel.json` استفاده کنید
+4. Cache CDN را پاک کنید
+
+---
+
+## منابع مفید
+
+### Google Search Console:
+- مستندات: https://developers.google.com/search-console
+- راهنمای شروع: https://support.google.com/webmasters/answer/9128668
+
+### Bing Webmaster Tools:
+- مستندات: https://www.bing.com/webmasters/help
+- راهنمای شروع: https://www.bing.com/webmasters/help/getting-started-with-bing-webmaster-tools
+
+### تست Sitemap:
+- Google Sitemap Tester: https://www.xml-sitemaps.com/validate-xml-sitemap.html
+- Bing Sitemap Validator: در Bing Webmaster Tools موجود است
+
+---
+
+## بعد از انجام کارها
+
+پس از انجام این سه کار:
+
+1. **نظارت منظم:**
+   - هر هفته Google Search Console را بررسی کنید
+   - خطاهای crawl را بررسی کنید
+   - عملکرد جستجو را بررسی کنید
+
+2. **به‌روزرسانی Sitemap:**
+   - هر بار که محتوای جدید اضافه می‌کنید، sitemap به طور خودکار به‌روز می‌شود
+   - می‌توانید sitemap را دوباره submit کنید
+
+3. **تحلیل عملکرد:**
+   - از Google Analytics استفاده کنید
+   - رتبه‌بندی کلمات کلیدی را ردیابی کنید
+   - ترافیک ارگانیک را بررسی کنید
+
+---
+
+**تاریخ ایجاد:** ۹ نوامبر ۲۰۲۵  
+**آخرین به‌روزرسانی:** ۹ نوامبر ۲۰۲۵
+
+---
+
+**پایان راهنما**

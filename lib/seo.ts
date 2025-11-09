@@ -1,7 +1,7 @@
 export const SITE = {
   name: 'محمد امین بزرگانی',
   role: 'توسعه‌دهنده Full-Stack و متخصص سئو فنی',
-  domain: 'https://bozorgani.ir',
+  domain: 'https://www.bozorgani.ir',
   twitter: '@bozorgani',
   github: 'https://github.com/bozorgani',
   linkedin: 'https://www.linkedin.com/in/bozorgani/',
