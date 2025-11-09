@@ -655,15 +655,27 @@ body {
   aside.not-sticky-mobile {
     position: static !important;
     transform: none !important;
+    will-change: auto !important;
   }
   
   /* Ensure TOC navigation doesn't block page scrolling on mobile */
-  aside.not-sticky-mobile nav.custom-scrollbar {
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
+  /* Remove all scroll constraints on mobile to prevent nested scrolling */
+  aside.not-sticky-mobile nav {
     max-height: none !important;
     overflow-y: visible !important;
+    overflow-x: visible !important;
+    overscroll-behavior: none !important;
+    -webkit-overflow-scrolling: auto !important;
+    touch-action: auto !important;
+    /* Prevent any scroll container behavior */
+    height: auto !important;
+    position: relative !important;
+  }
+  
+  /* Ensure TOC navigation list can expand naturally on mobile */
+  aside.not-sticky-mobile nav ul {
+    display: block !important;
+    overflow: visible !important;
   }
   
   /* Ensure page content can scroll freely */
@@ -672,6 +684,8 @@ body {
     overflow-x: hidden;
     overflow-y: visible;
     min-height: 0;
+    /* Enable smooth scrolling on mobile */
+    -webkit-overflow-scrolling: touch;
   }
   
   /* Prevent any container from blocking scroll */
@@ -683,6 +697,8 @@ body {
     position: relative;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+    /* Ensure content can scroll naturally */
+    -webkit-overflow-scrolling: touch;
   }
   
   /* Fix for main container */
@@ -690,6 +706,8 @@ body {
     overflow-x: hidden;
     overflow-y: visible;
     touch-action: pan-y;
+    /* Enable smooth scrolling */
+    -webkit-overflow-scrolling: touch;
   }
   
   /* Optimize backdrop-blur for mobile performance */
@@ -735,6 +753,33 @@ body {
   /* Ensure containers don't cause horizontal scroll */
   article > div {
     overflow-x: hidden;
+  }
+  
+  /* Additional TOC optimizations for mobile */
+  /* Ensure TOC container doesn't create scroll conflicts */
+  aside.not-sticky-mobile > div {
+    /* Remove any potential scroll blocking */
+    overflow: visible !important;
+    position: relative !important;
+  }
+  
+  /* Ensure TOC links are easily tappable on mobile */
+  aside.not-sticky-mobile nav a {
+    /* Improve touch target size for better accessibility */
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    /* Improve tap highlight for better UX */
+    -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+    /* Allow text selection but prevent accidental selection during scroll */
+    -webkit-touch-callout: default;
+  }
+  
+  /* Prevent scroll chaining issues */
+  aside.not-sticky-mobile {
+    /* Ensure no scroll containment */
+    contain: none !important;
+    isolation: auto !important;
   }
 }
 

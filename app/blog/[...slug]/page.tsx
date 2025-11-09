@@ -376,7 +376,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
                 <span className="text-xl sm:text-2xl leading-none">📑</span>
                 <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">فهرست مطالب</h2>
               </div>
-              <nav className="sm:max-h-[400px] lg:max-h-[calc(100vh-200px)] sm:overflow-y-auto lg:overflow-y-auto custom-scrollbar overscroll-contain">
+              <nav className="lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto custom-scrollbar overscroll-contain">
                 <ul className="space-y-2 sm:space-y-2.5">
                   {toc.map((h) => (
                     <li key={h.id} className={h.level === 3 ? 'pr-4 sm:pr-6' : ''}>
