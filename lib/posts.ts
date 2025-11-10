@@ -39,12 +39,17 @@ const categorySlugMap: Record<string, string> = {
   'Frontend Development': 'frontend',
   'بک‌اند و سرور': 'backend',
   'Backend & APIs': 'backend',
+  'بک‌اند و سرور (Backend & APIs)': 'backend', // Combined format with parentheses
   'سئو و بهینه‌سازی': 'seo',
   'SEO & Performance': 'seo',
+  'سئو و بهینه‌سازی (SEO & Performance)': 'seo', // Combined format with parentheses
   'هوش مصنوعی و ابزارهای نوین': 'ai-tools',
   'AI & Tools': 'ai-tools',
+  'هوش مصنوعی و ابزارهای نوین (AI & Tools)': 'ai-tools', // Combined format with parentheses
   'توسعه وب مدرن': 'modern-web',
   'Modern Web Development': 'modern-web',
+  'توسعه وب مدرن (Modern Web Development)': 'modern-web', // Combined format with parentheses
+  'توسعه فرانت‌اند (Frontend Development)': 'frontend', // Combined format with parentheses
   // Common slugs that might be Persian (with hyphens from slugify)
   'بک-اند-و-سرور': 'backend',
   'توسعه-فرانت-اند': 'frontend',
@@ -99,9 +104,18 @@ const categorySlugMap: Record<string, string> = {
 function convertCategorySlugToEnglish(slug: string): string {
   if (!slug) return '';
   
-  // Check if we have a direct mapping
+  // Store original for debugging
+  const originalSlug = slug;
+  
+  // Trim whitespace and normalize (but keep a copy of original)
+  slug = slug.trim().replace(/\s+/g, ' ');
+  
+  // Check if we have a direct mapping (exact match) - try both normalized and original
   if (categorySlugMap[slug]) {
     return categorySlugMap[slug];
+  }
+  if (categorySlugMap[originalSlug.trim()]) {
+    return categorySlugMap[originalSlug.trim()];
   }
   
   // Check if slug is already URL-safe (only ASCII alphanumeric, hyphens, underscores)
@@ -109,22 +123,105 @@ function convertCategorySlugToEnglish(slug: string): string {
     return slug;
   }
   
-  // If slug contains Persian characters, try to find a mapping
-  // For now, encode it (but ideally slugs should be English in database)
+  // Try to extract English text from parentheses first (e.g., "بک‌اند و سرور (Backend & APIs)" -> "Backend & APIs")
+  const parenthesesMatch = slug.match(/\(([^)]+)\)/);
+  if (parenthesesMatch) {
+    let englishPart = parenthesesMatch[1].trim();
+    
+    // Check if we have a mapping for the English part (exact match)
+    if (categorySlugMap[englishPart]) {
+      return categorySlugMap[englishPart];
+    }
+    
+    // Try with normalized spaces (multiple spaces to single space)
+    const normalizedSpaces = englishPart.replace(/\s+/g, ' ').trim();
+    if (normalizedSpaces !== englishPart && categorySlugMap[normalizedSpaces]) {
+      return categorySlugMap[normalizedSpaces];
+    }
+    
+    // Try trimming again in case there are leading/trailing spaces in parentheses
+    englishPart = englishPart.replace(/^\s+|\s+$/g, '');
+    if (categorySlugMap[englishPart]) {
+      return categorySlugMap[englishPart];
+    }
+  }
+  
+  // Try removing parentheses and check the Persian part
+  const withoutParentheses = slug.replace(/\s*\([^)]+\)\s*/, '').trim();
+  if (withoutParentheses && withoutParentheses !== slug) {
+    if (categorySlugMap[withoutParentheses]) {
+      return categorySlugMap[withoutParentheses];
+    }
+    // Try with normalized spaces
+    const normalizedPersian = withoutParentheses.replace(/\s+/g, ' ').trim();
+    if (normalizedPersian !== withoutParentheses && categorySlugMap[normalizedPersian]) {
+      return categorySlugMap[normalizedPersian];
+    }
+  }
+  
+  // Try case-insensitive lookup for English parts
+  if (parenthesesMatch) {
+    const englishPart = parenthesesMatch[1].trim();
+    const lowerEnglish = englishPart.toLowerCase();
+    // Check all keys case-insensitively
+    for (const [key, value] of Object.entries(categorySlugMap)) {
+      if (key.toLowerCase() === lowerEnglish || key.toLowerCase() === englishPart.toLowerCase()) {
+        return value;
+      }
+    }
+  }
+  
+  // If slug contains Persian characters, try to find a mapping with URL decoding
   try {
-    // Try to decode first to see the original
     const decoded = decodeURIComponent(slug);
-    if (categorySlugMap[decoded]) {
+    if (decoded !== slug && categorySlugMap[decoded]) {
       return categorySlugMap[decoded];
     }
   } catch {
     // Not URL encoded
   }
   
-  // Fallback: if it's not English, we should ideally have it in the mapping
-  // For now, return as-is but log a warning in development
+  // Final fallback: return the English part from parentheses if it exists and convert to URL-safe
+  if (parenthesesMatch) {
+    const englishPart = parenthesesMatch[1].trim();
+    
+    // Smart detection based on keywords in English part
+    const lowerEnglish = englishPart.toLowerCase();
+    if (lowerEnglish.includes('backend') && (lowerEnglish.includes('api') || lowerEnglish.includes('apis'))) {
+      return 'backend';
+    }
+    if (lowerEnglish.includes('frontend')) {
+      return 'frontend';
+    }
+    if (lowerEnglish.includes('seo') || lowerEnglish.includes('performance')) {
+      return 'seo';
+    }
+    if (lowerEnglish.includes('ai') && lowerEnglish.includes('tools')) {
+      return 'ai-tools';
+    }
+    if (lowerEnglish.includes('modern') && lowerEnglish.includes('web')) {
+      return 'modern-web';
+    }
+    
+    // Convert to URL-safe format: lowercase, replace spaces and special chars with hyphens
+    const urlSafe = englishPart
+      .toLowerCase()
+      .replace(/\s*&\s*/g, '-and-')
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+    if (urlSafe) {
+      return urlSafe;
+    }
+  }
+  
+  // Last resort: log warning with more details for debugging
   if (process.env.NODE_ENV === 'development') {
-    console.warn(`[getPostUrl] Category slug "${slug}" is not in mapping. Please add it to categorySlugMap.`);
+    const matchingKeys = Object.keys(categorySlugMap).filter(key => 
+      key.includes('بک') || key.toLowerCase().includes('backend') || key.includes(slug.slice(0, 10))
+    );
+    console.warn(`[getPostUrl] Category slug "${slug}" (original: "${originalSlug}") is not in mapping.`, 
+      matchingKeys.length > 0 ? `Similar keys: ${matchingKeys.slice(0, 3).join(', ')}` : 'No similar keys found.');
   }
   
   return slug;

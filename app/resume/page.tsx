@@ -29,39 +29,39 @@ export default function ResumePage() {
   return (
     <article className="space-y-6 sm:space-y-8 md:space-y-10" aria-labelledby="resume-title">
       {/* Hero / Header */}
-      <header className="rounded-xl border bg-gradient-to-br from-white to-gray-50 p-4 sm:p-6 md:p-8 dark:from-gray-900 dark:to-gray-800 dark:border-gray-700 shadow-sm">
-        <div className="flex flex-col gap-5 sm:gap-5 md:flex-row md:items-center md:justify-between">
+      <header className="rounded-xl border bg-gradient-to-br from-white to-gray-50 p-6 sm:p-8 md:p-10 lg:p-12 dark:from-gray-900 dark:to-gray-800 dark:border-gray-700 shadow-sm">
+        <div className="flex flex-col gap-6 sm:gap-8 lg:flex-row lg:items-center lg:justify-between">
           {/* Profile Section - Improved mobile layout */}
-          <div className="flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-4 w-full md:w-auto">
+          <div className="flex flex-col sm:flex-row items-center sm:items-center gap-6 sm:gap-6 lg:gap-8 w-full lg:w-auto">
             {/* Profile Image - Larger and centered on mobile, professional styling */}
-            <div className="relative h-36 w-36 sm:h-32 sm:w-32 md:h-28 md:w-28 shrink-0">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 blur-xl"></div>
-              <div className="relative h-full w-full overflow-hidden rounded-full ring-4 ring-brand/30 dark:ring-brand/40 shadow-xl">
+            <div className="relative shrink-0">
+              <div className="absolute -inset-2 sm:-inset-3 md:-inset-4 rounded-full bg-gradient-to-br from-blue-500/30 via-purple-500/30 to-pink-500/30 blur-xl opacity-75"></div>
+              <div className="relative h-48 w-48 sm:h-56 sm:w-56 md:h-64 md:w-64 lg:h-72 lg:w-72 xl:h-80 xl:w-80 overflow-hidden rounded-full ring-4 sm:ring-[6px] md:ring-8 ring-brand/30 dark:ring-brand/40 shadow-2xl border-4 sm:border-[6px] md:border-8 border-white dark:border-gray-800">
                 <Image 
                   src="/images/amin-bozorgani-portrait-512.webp" 
                   alt={SITE.name} 
-                  width={384} 
-                  height={384} 
+                  width={640} 
+                  height={640} 
                   quality={100}
                   className="h-full w-full object-cover" 
                   priority
-                  sizes="(min-width: 768px) 112px, (min-width: 640px) 128px, 144px"
+                  sizes="(min-width: 1280px) 320px, (min-width: 1024px) 288px, (min-width: 768px) 256px, (min-width: 640px) 224px, 192px"
                   unoptimized={false}
                 />
               </div>
             </div>
             {/* Name and Role - Centered on mobile, right-aligned on larger screens */}
-            <div className="space-y-2 sm:space-y-2 min-w-0 flex-1 text-center sm:text-right">
-              <h1 id="resume-title" className="text-3xl sm:text-3xl md:text-4xl font-bold tracking-tight leading-tight text-gray-900 dark:text-gray-100">
+            <div className="space-y-3 sm:space-y-3 min-w-0 flex-1 text-center sm:text-right">
+              <h1 id="resume-title" className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-gray-900 dark:text-gray-100">
                 {SITE.name}
               </h1>
-              <p className="text-base sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+              <p className="text-lg sm:text-xl md:text-2xl text-gray-700 dark:text-gray-300 leading-relaxed">
                 {SITE.role} — تمرکز بر Next.js, React, Node.js و سئو فنی
               </p>
             </div>
           </div>
-          <div className="w-full sm:w-auto">
-            <div className="flex flex-wrap gap-2 sm:gap-3">
+          <div className="w-full lg:w-auto flex-shrink-0">
+            <div className="flex flex-wrap gap-2 sm:gap-3 justify-center lg:justify-start">
               {/* Download PDF Button */}
               <a 
                 className="group flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-md bg-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-dark transition-all duration-200 text-center shadow-sm hover:shadow-md hover:scale-105 active:scale-95" 

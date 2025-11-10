@@ -1,3 +1,8 @@
+'use client';
+
+import { motion } from 'framer-motion';
+import { FadeInUp, StaggerChildren, StaggerItem } from './animations';
+
 type Experience = {
   company: string;
   role: string;
@@ -32,64 +37,102 @@ export function ExperienceSection() {
       itemScope
       itemType="https://schema.org/ItemList"
     >
-      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-orange-100/50 to-red-100/50 dark:from-orange-900/20 dark:to-red-900/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+      <motion.div 
+        className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-orange-100/50 to-red-100/50 dark:from-orange-900/20 dark:to-red-900/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"
+        animate={{
+          scale: [1, 1.1, 1],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{
+          duration: 7,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
       
       <div className="relative space-y-6">
-        <div className="space-y-2">
-          <h2 id="experience-title" className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
-            تجربه و سوابق
-          </h2>
-          <div className="h-1 w-20 bg-gradient-to-r from-brand to-indigo-500 rounded-full"></div>
-        </div>
-        <div className="grid grid-cols-1 gap-6">
+        <FadeInUp>
+          <div className="space-y-2">
+            <h2 id="experience-title" className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+              تجربه و سوابق
+            </h2>
+            <motion.div 
+              className="h-1 w-20 bg-gradient-to-r from-brand to-indigo-500 rounded-full"
+              initial={{ width: 0 }}
+              whileInView={{ width: 80 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            />
+          </div>
+        </FadeInUp>
+        
+        <StaggerChildren className="grid grid-cols-1 gap-6" staggerDelay={0.15}>
           {experiences.map((exp, idx) => (
-            <article 
-              key={idx} 
-              className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-6 border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-xl hover:border-brand dark:hover:border-brand"
-              itemScope
-              itemType="https://schema.org/JobPosting"
-              itemProp="itemListElement"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-brand/10 to-indigo-500/10 rounded-full blur-2xl"></div>
-              
-              <div className="relative space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                  <div className="flex-1 min-w-0 space-y-1">
-                    <h3 
-                      className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-brand dark:group-hover:text-blue-400 transition-colors"
-                      itemProp="title"
+            <StaggerItem key={idx}>
+              <motion.article 
+                className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-6 border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-xl hover:border-brand dark:hover:border-brand"
+                itemScope
+                itemType="https://schema.org/JobPosting"
+                itemProp="itemListElement"
+                whileHover={{ y: -5, scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.div 
+                  className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-brand/10 to-indigo-500/10 rounded-full blur-2xl"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.1, 0.2, 0.1],
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: idx * 0.5
+                  }}
+                />
+                
+                <div className="relative space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <motion.h3 
+                        className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-brand dark:group-hover:text-blue-400 transition-colors"
+                        itemProp="title"
+                        whileHover={{ x: 4 }}
+                      >
+                        {exp.role}
+                      </motion.h3>
+                      <p 
+                        className="text-base font-medium text-gray-600 dark:text-gray-400"
+                        itemProp="hiringOrganization"
+                        itemScope
+                        itemType="https://schema.org/Organization"
+                      >
+                        <span itemProp="name">{exp.company}</span>
+                      </p>
+                    </div>
+                    <motion.time 
+                      className="shrink-0 inline-flex items-center gap-2 text-sm font-semibold text-white bg-gradient-to-r from-brand to-brand-dark px-4 py-2 rounded-lg shadow-sm"
+                      itemProp="datePosted"
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.2 }}
                     >
-                      {exp.role}
-                    </h3>
-                    <p 
-                      className="text-base font-medium text-gray-600 dark:text-gray-400"
-                      itemProp="hiringOrganization"
-                      itemScope
-                      itemType="https://schema.org/Organization"
-                    >
-                      <span itemProp="name">{exp.company}</span>
-                    </p>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {exp.start} — {exp.end}
+                    </motion.time>
                   </div>
-                  <time 
-                    className="shrink-0 inline-flex items-center gap-2 text-sm font-semibold text-white bg-gradient-to-r from-brand to-brand-dark px-4 py-2 rounded-lg shadow-sm"
-                    itemProp="datePosted"
+                  <p 
+                    className="text-base text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-4"
+                    itemProp="description"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    {exp.start} — {exp.end}
-                  </time>
+                    {exp.summary}
+                  </p>
                 </div>
-                <p 
-                  className="text-base text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-4"
-                  itemProp="description"
-                >
-                  {exp.summary}
-                </p>
-              </div>
-            </article>
+              </motion.article>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerChildren>
       </div>
     </section>
   );

@@ -3,18 +3,25 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
+  const protocol = request.nextUrl.protocol;
   const url = request.nextUrl.clone();
 
-  // Redirect non-www to www with HTTPS (301 Permanent Redirect)
-  // This handles both http and https non-www requests
+  // Handle http://bozorgani.ir → https://www.bozorgani.ir (301)
+  // This must be done in middleware to override Vercel's automatic 308 redirect
   if (hostname === 'bozorgani.ir' || hostname === 'bozorgani.ir:3000') {
     url.hostname = 'www.bozorgani.ir';
     url.protocol = 'https:';
     return NextResponse.redirect(url, 301);
   }
 
-  // Redirect http to https for www (301 Permanent Redirect)
-  if (hostname === 'www.bozorgani.ir' && request.nextUrl.protocol === 'http:') {
+  // Handle https://bozorgani.ir → https://www.bozorgani.ir (301)
+  if (hostname === 'bozorgani.ir' && protocol === 'https:') {
+    url.hostname = 'www.bozorgani.ir';
+    return NextResponse.redirect(url, 301);
+  }
+
+  // Handle http://www.bozorgani.ir → https://www.bozorgani.ir (301)
+  if (hostname === 'www.bozorgani.ir' && protocol === 'http:') {
     url.protocol = 'https:';
     return NextResponse.redirect(url, 301);
   }
@@ -22,18 +29,15 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// فقط برای درخواست‌های HTTP اعمال می‌شود (نه برای static files)
+// Apply to all requests to catch redirects before Vercel's automatic redirects
+// This ensures 301 redirects instead of Vercel's default 308
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public files (images, etc.)
+     * Match all request paths to handle domain redirects
+     * This is necessary to override Vercel's automatic 308 redirects
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)',
+    '/(.*)',
   ],
 };
 
