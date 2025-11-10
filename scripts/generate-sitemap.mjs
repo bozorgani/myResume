@@ -1,3 +1,7 @@
+// DEPRECATED: This script is no longer needed
+// Sitemap is now generated dynamically via app/sitemap.ts
+// This file is kept for reference only
+
 // Simple sitemap generator for static routes and dynamic project slugs
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';

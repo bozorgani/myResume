@@ -14,7 +14,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { url: `${base}/blog`, changeFrequency: 'daily', priority: 0.9, lastModified: new Date() },
       { url: `${base}/projects`, changeFrequency: 'monthly', priority: 0.8, lastModified: new Date() },
       { url: `${base}/resume`, changeFrequency: 'monthly', priority: 0.8, lastModified: new Date() },
-      { url: `${base}/contact`, changeFrequency: 'yearly', priority: 0.6, lastModified: new Date() }
+      { url: `${base}/contact`, changeFrequency: 'yearly', priority: 0.6, lastModified: new Date() },
+      { url: `${base}/resume.pdf`, changeFrequency: 'monthly', priority: 0.7, lastModified: new Date() }
     ];
 
     const projectUrls: MetadataRoute.Sitemap = getAllProjects().map((p) => ({
@@ -41,7 +42,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { url: `${base}/blog`, changeFrequency: 'daily', priority: 0.9, lastModified: new Date() },
       { url: `${base}/projects`, changeFrequency: 'monthly', priority: 0.8, lastModified: new Date() },
       { url: `${base}/resume`, changeFrequency: 'monthly', priority: 0.8, lastModified: new Date() },
-      { url: `${base}/contact`, changeFrequency: 'yearly', priority: 0.6, lastModified: new Date() }
+      { url: `${base}/contact`, changeFrequency: 'yearly', priority: 0.6, lastModified: new Date() },
+      { url: `${base}/resume.pdf`, changeFrequency: 'monthly', priority: 0.7, lastModified: new Date() }
     ];
 
     const projectUrls: MetadataRoute.Sitemap = getAllProjects().map((p) => ({

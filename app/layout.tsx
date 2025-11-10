@@ -96,7 +96,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     },
     potentialAction: {
       '@type': 'SearchAction',
-      target: `${SITE.domain}/search?q={search_term_string}`,
+      target: `${SITE.domain}/blog?q={search_term_string}`,
       'query-input': 'required name=search_term_string'
     }
   } as const;

@@ -10,21 +10,31 @@ import { CategoriesDrawerButton } from '@/components/CategoriesDrawerButton';
 // بهینه‌سازی: استفاده از ISR برای بهتر شدن performance
 export const revalidate = 180; // 3 minutes
 
-export const metadata: Metadata = createPageMeta({
-  title: `بلاگ | ${SITE.name}`,
-  description: `مجموعه مقالات تخصصی ${SITE.name} درباره توسعه Full-Stack با Next.js و React، بهینه‌سازی عملکرد وب‌سایت‌ها، بهبود Core Web Vitals، و بهترین شیوه‌های سئو فنی. تجربیات عملی، راهنماهای گام‌به‌گام، و نکات پیشرفته در زمینه توسعه وب.`,
-  url: `${SITE.domain}/blog`,
-  keywords: [
-    'مقالات توسعه وب',
-    'بلاگ Next.js',
-    'مقالات React',
-    'مقالات سئو فنی',
-    'بهینه‌سازی عملکرد',
-    'Core Web Vitals',
-    'توسعه Full-Stack',
-    'مقالات برنامه‌نویسی'
-  ]
-});
+// Generate metadata dynamically to handle canonical URLs properly
+export async function generateMetadata({ searchParams }: { searchParams?: { q?: string; page?: string; category?: string; tag?: string } }): Promise<Metadata> {
+  // For filtered pages (with query params), canonical should always point to base /blog URL
+  // This prevents duplicate content issues in Google Search Console
+  const hasFilters = !!(searchParams?.category || searchParams?.tag || searchParams?.q || searchParams?.page);
+  const canonicalUrl = hasFilters ? `${SITE.domain}/blog` : `${SITE.domain}/blog`;
+  
+  return createPageMeta({
+    title: `بلاگ | ${SITE.name}`,
+    description: `مجموعه مقالات تخصصی ${SITE.name} درباره توسعه Full-Stack با Next.js و React، بهینه‌سازی عملکرد وب‌سایت‌ها، بهبود Core Web Vitals، و بهترین شیوه‌های سئو فنی. تجربیات عملی، راهنماهای گام‌به‌گام، و نکات پیشرفته در زمینه توسعه وب.`,
+    url: canonicalUrl,
+    keywords: [
+      'مقالات توسعه وب',
+      'بلاگ Next.js',
+      'مقالات React',
+      'مقالات سئو فنی',
+      'بهینه‌سازی عملکرد',
+      'Core Web Vitals',
+      'توسعه Full-Stack',
+      'مقالات برنامه‌نویسی'
+    ],
+    // Set noindex for filtered pages to prevent duplicate content issues
+    robots: hasFilters ? 'noindex, follow' : undefined
+  });
+}
 
 export default async function BlogPage({ searchParams }: { searchParams?: { q?: string; page?: string; category?: string; tag?: string } }) {
   // Parallel fetching برای سریع‌تر شدن

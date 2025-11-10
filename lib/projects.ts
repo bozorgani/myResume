@@ -18,11 +18,11 @@ export const projects: Project[] = [
       'طراحی و توسعه یک پلتفرم تجارت الکترونیک کامل با Next.js 14 و App Router. پیاده‌سازی سیستم مدیریت محتوا (CMS) سفارشی، پردازش پرداخت‌های آنلاین، مدیریت موجودی و سفارشات، و داشبورد مدیریتی پیشرفته. بهینه‌سازی برای موتورهای جستجو با استفاده از SSR و SSG، بهبود Core Web Vitals (LCP < 2.5s، CLS < 0.1)، و پیاده‌سازی Schema.org markup. استفاده از MongoDB برای ذخیره‌سازی داده‌ها، Redis برای کش، و Docker برای استقرار. بهبود ۴۰٪ در سرعت بارگذاری و افزایش ۶۰٪ در نرخ تبدیل.',
     tech: ['Next.js 14', 'TypeScript', 'Node.js', 'Express', 'MongoDB', 'Redis', 'TailwindCSS', 'Docker'],
     image: '/images/project-1-placeholder.svg',
-    liveUrl: 'https://www.bozorgani.ir/projects/e-commerce',
+    liveUrl: 'https://www.bozorgani.ir/projects/e-commerce-platform',
     repoUrl: 'https://github.com/bozorgani/e-commerce-platform'
   },
   {
-    slug: 'cms-blog-platform',
+    slug: 'cms-blog',
     title: 'سیستم مدیریت محتوا و بلاگ با سئو پیشرفته',
     oneLiner: 'پلتفرم بلاگینگ با CMS سفارشی و بهینه‌سازی کامل برای موتورهای جستجو.',
     description:
@@ -33,7 +33,7 @@ export const projects: Project[] = [
     repoUrl: 'https://github.com/bozorgani/cms-blog-platform'
   },
   {
-    slug: 'performance-monitoring-dashboard',
+    slug: 'performance-dashboard',
     title: 'داشبورد مانیتورینگ عملکرد و Web Vitals',
     oneLiner: 'ابزار تحلیل و مانیتورینگ عملکرد وب‌سایت‌ها با تمرکز بر Core Web Vitals.',
     description:

@@ -5,9 +5,17 @@ export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   const url = request.nextUrl.clone();
 
-  // ری‌دایرکت 301 از non-www به www
+  // Redirect non-www to www with HTTPS (301 Permanent Redirect)
+  // This handles both http and https non-www requests
   if (hostname === 'bozorgani.ir' || hostname === 'bozorgani.ir:3000') {
     url.hostname = 'www.bozorgani.ir';
+    url.protocol = 'https:';
+    return NextResponse.redirect(url, 301);
+  }
+
+  // Redirect http to https for www (301 Permanent Redirect)
+  if (hostname === 'www.bozorgani.ir' && request.nextUrl.protocol === 'http:') {
+    url.protocol = 'https:';
     return NextResponse.redirect(url, 301);
   }
 
