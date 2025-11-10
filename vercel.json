@@ -13,22 +13,30 @@
       "permanent": true
     },
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "bozorgani.ir"
+        }
+      ],
+      "destination": "https://www.bozorgani.ir/",
+      "permanent": true
+    },
+    {
       "source": "/projects/cms-blog-platform",
       "destination": "/projects/cms-blog",
-      "permanent": true,
-      "statusCode": 301
+      "permanent": true
     },
     {
       "source": "/projects/performance-monitoring-dashboard",
       "destination": "/projects/performance-dashboard",
-      "permanent": true,
-      "statusCode": 301
+      "permanent": true
     },
     {
       "source": "/search",
       "destination": "/blog",
-      "permanent": true,
-      "statusCode": 301
+      "permanent": true
     }
   ],
   "headers": [
