@@ -1,17 +1,6 @@
 {
+  "version": 2,
   "redirects": [
-    {
-      "source": "http://bozorgani.ir/:path*",
-      "destination": "https://www.bozorgani.ir/:path*",
-      "permanent": true,
-      "statusCode": 301
-    },
-    {
-      "source": "https://bozorgani.ir/:path*",
-      "destination": "https://www.bozorgani.ir/:path*",
-      "permanent": true,
-      "statusCode": 301
-    },
     {
       "source": "/:path*",
       "has": [
@@ -21,8 +10,7 @@
         }
       ],
       "destination": "https://www.bozorgani.ir/:path*",
-      "permanent": true,
-      "statusCode": 301
+      "permanent": true
     },
     {
       "source": "/projects/cms-blog-platform",
