@@ -865,6 +865,49 @@ body {
     contain: none !important;
     isolation: auto !important;
   }
+  
+  /* CRITICAL: Optimize scroll performance on mobile */
+  /* Disable all blur filters on mobile for better performance */
+  [class*="blur"] {
+    filter: none !important;
+    -webkit-filter: none !important;
+  }
+  
+  /* Disable complex animations that can cause scroll lag */
+  .scroll-reveal,
+  .scroll-reveal * {
+    /* Remove any transform or filter that might cause repaint */
+    transform: none !important;
+    filter: none !important;
+    will-change: auto !important;
+    /* Ensure elements are immediately visible */
+    opacity: 1 !important;
+  }
+  
+  /* Optimize sections for smooth scrolling */
+  section {
+    /* Enable hardware acceleration for sections */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    /* Prevent layout shifts */
+    contain: layout style;
+    /* Improve scroll performance */
+    will-change: scroll-position;
+  }
+  
+  /* Disable expensive CSS effects on mobile */
+  [class*="backdrop-blur"],
+  [class*="blur-"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    filter: none !important;
+  }
+  
+  /* Optimize gradient backgrounds - reduce complexity on mobile */
+  [class*="gradient-to"] {
+    /* Simplify gradients on mobile */
+    background-attachment: scroll !important;
+  }
 }
 
 

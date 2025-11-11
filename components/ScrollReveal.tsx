@@ -64,13 +64,50 @@ const ScrollReveal = ({
     const el = containerRef.current;
     if (!el) return;
 
-    // Disable animation on mobile
+    // CRITICAL: Disable ALL animations and ScrollTriggers on mobile for better scroll performance
+    // Mobile devices have limited processing power and scroll animations cause lag
     if (isMobile) {
-      gsap.set(el, { opacity: 1, rotate: 0, filter: 'blur(0px)' });
+      // Immediately set final state without any animation or transforms
+      gsap.set(el, { 
+        opacity: 1, 
+        rotate: 0, 
+        filter: 'none',
+        y: 0,
+        x: 0,
+        scale: 1,
+        clearProps: 'all' // Clear all GSAP transform properties
+      });
+      
+      // Remove any inline styles that might interfere with scroll
+      el.style.transform = '';
+      el.style.opacity = '1';
+      el.style.filter = 'none';
+      
       const wordElements = el.querySelectorAll('.word');
       if (wordElements.length > 0) {
-        gsap.set(wordElements, { opacity: 1, filter: 'blur(0px)', y: 0 });
+        wordElements.forEach((wordEl) => {
+          gsap.set(wordEl, { 
+            opacity: 1, 
+            filter: 'none', 
+            y: 0,
+            x: 0,
+            clearProps: 'all'
+          });
+          // Remove inline styles
+          (wordEl as HTMLElement).style.transform = '';
+          (wordEl as HTMLElement).style.opacity = '1';
+          (wordEl as HTMLElement).style.filter = 'none';
+        });
       }
+      
+      // Kill any existing ScrollTriggers for this element immediately
+      ScrollTrigger.getAll().forEach(trigger => {
+        if (trigger.vars && (trigger.vars.trigger === el || trigger.trigger === el)) {
+          trigger.kill();
+        }
+      });
+      
+      // Return early to prevent any ScrollTrigger creation
       return;
     }
 

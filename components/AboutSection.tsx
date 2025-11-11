@@ -3,10 +3,12 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { SITE } from '@/lib/seo';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { FadeInUp, StaggerChildren, StaggerItem } from './animations';
 import ScrollReveal from './ScrollReveal';
 
 export function AboutSection() {
+  const isMobile = useIsMobile();
   const stats = [
     {
       value: '10+',
@@ -43,7 +45,7 @@ export function AboutSection() {
       itemType="https://schema.org/Person"
     >
       <motion.div 
-        className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100/50 to-indigo-100/50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"
+        className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100/50 to-indigo-100/50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 hidden sm:block"
         animate={{
           scale: [1, 1.1, 1],
           opacity: [0.3, 0.5, 0.3],
@@ -70,13 +72,17 @@ export function AboutSection() {
           >
             درباره من
           </ScrollReveal>
-          <motion.div 
-            className="h-1 w-20 bg-gradient-to-r from-brand to-indigo-500 rounded-full"
-            initial={{ width: 0 }}
-            whileInView={{ width: 80 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          />
+          {isMobile ? (
+            <div className="h-1 w-20 bg-gradient-to-r from-brand to-indigo-500 rounded-full" />
+          ) : (
+            <motion.div 
+              className="h-1 w-20 bg-gradient-to-r from-brand to-indigo-500 rounded-full"
+              initial={{ width: 0 }}
+              whileInView={{ width: 80 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            />
+          )}
         </div>
 
         <div className="space-y-5 text-lg text-gray-700 dark:text-gray-300 leading-relaxed" itemProp="description">
@@ -162,36 +168,41 @@ export function AboutSection() {
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={handleMouseLeave}
                   style={{
-                    rotateX,
-                    rotateY,
-                    transformStyle: 'preserve-3d',
+                    rotateX: isMobile ? 0 : rotateX,
+                    rotateY: isMobile ? 0 : rotateY,
+                    transformStyle: isMobile ? 'flat' : 'preserve-3d',
                   }}
-                  animate={{
+                  animate={isMobile ? {} : {
                     scale: isHovered ? 1.05 : 1,
                     y: isHovered ? -5 : 0,
                   }}
                   transition={{ duration: 0.3 }}
                 >
-                  {/* Magic Bento gradient border */}
+                  {/* Magic Bento gradient border - disabled on mobile */}
+                  {!isMobile && (
+                    <>
+                      <motion.div 
+                        className="absolute -inset-0.5 rounded-xl opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-500 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.6), rgba(147, 51, 234, 0.6), rgba(236, 72, 153, 0.6))',
+                        }}
+                        animate={{ opacity: isHovered ? 1 : 0 }}
+                      />
+                      
+                      {/* Glow effect following mouse - disabled on mobile */}
+                      <motion.div
+                        className="absolute -inset-1 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                        style={{
+                          background: `radial-gradient(300px circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(59, 130, 246, 0.3), transparent 40%)`,
+                        }}
+                      />
+                    </>
+                  )}
+                  {/* Animated blur background - reduced animation on mobile */}
                   <motion.div 
-                    className="absolute -inset-0.5 rounded-xl opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-500 pointer-events-none"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.6), rgba(147, 51, 234, 0.6), rgba(236, 72, 153, 0.6))',
-                    }}
-                    animate={{ opacity: isHovered ? 1 : 0 }}
-                  />
-                  
-                  {/* Glow effect following mouse */}
-                  <motion.div
-                    className="absolute -inset-1 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                    style={{
-                      background: `radial-gradient(300px circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(59, 130, 246, 0.3), transparent 40%)`,
-                    }}
-                  />
-                  <motion.div 
-                    className={`absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 ${stat.blur} rounded-full blur-2xl`}
+                    className={`absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 ${stat.blur} rounded-full blur-2xl hidden sm:block`}
                     style={{ transform: 'translateZ(5px)' }}
-                    animate={{
+                    animate={isMobile ? {} : {
                       scale: [1, 1.2, 1],
                       opacity: [0.3, 0.5, 0.3],
                     }}
@@ -202,13 +213,13 @@ export function AboutSection() {
                       delay: index * 0.5
                     }}
                   />
-                  <div className="relative" style={{ transform: 'translateZ(10px)' }}>
+                  <div className="relative" style={{ transform: isMobile ? 'none' : 'translateZ(10px)' }}>
                     <motion.div 
                       className={`text-3xl sm:text-4xl font-bold ${stat.text} mb-1 sm:mb-2`}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
+                      initial={isMobile ? { opacity: 1 } : { opacity: 0, scale: 0.8 }}
+                      whileInView={isMobile ? {} : { opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      transition={isMobile ? {} : { duration: 0.5, delay: index * 0.1 }}
                     >
                       {stat.value}
                     </motion.div>
