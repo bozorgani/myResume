@@ -11,32 +11,77 @@ import { CategoriesDrawerButton } from '@/components/CategoriesDrawerButton';
 export const revalidate = 180; // 3 minutes
 
 // Generate metadata dynamically to handle canonical URLs properly
-export async function generateMetadata({ searchParams }: { searchParams?: { q?: string; page?: string; category?: string; tag?: string } }): Promise<Metadata> {
-  // For filtered pages (with query params), canonical should point to the filtered page URL
-  // But for pagination, we should use rel="prev" and rel="next" instead
-  const hasFilters = !!(searchParams?.category || searchParams?.tag || searchParams?.q);
-  const currentPage = Math.max(1, parseInt(searchParams?.page || '1', 10) || 1);
-  const isFirstPage = currentPage === 1;
+export async function generateMetadata({ 
+  searchParams 
+}: { 
+  searchParams?: { q?: string; page?: string; category?: string; tag?: string } 
+}): Promise<Metadata> {
+  // IMPORTANT: Build canonical URL that EXACTLY matches the page URL
+  // Google's "Alternate page with proper canonical tag" error occurs when:
+  // 1. Canonical URL doesn't match the actual page URL
+  // 2. Multiple URLs have the same canonical (creating a canonical chain)
+  // 
+  // Solution: Each page (including filtered/paginated) should canonicalize to itself
+  // This tells Google that each URL is a unique, indexable page
   
-  // Build canonical URL - first page without filters uses base /blog
-  let canonicalUrl = `${SITE.domain}/blog`;
-  if (hasFilters || currentPage > 1) {
-    const params = new URLSearchParams();
-    if (searchParams?.category) params.set('category', searchParams.category);
-    if (searchParams?.tag) params.set('tag', searchParams.tag);
-    if (searchParams?.q) params.set('q', searchParams.q);
-    if (currentPage > 1) params.set('page', String(currentPage));
-    canonicalUrl = `${SITE.domain}/blog?${params.toString()}`;
+  const currentPage = Math.max(1, parseInt(searchParams?.page || '1', 10) || 1);
+  const hasTag = !!searchParams?.tag;
+  const hasCategory = !!searchParams?.category;
+  const hasSearchQuery = !!searchParams?.q && searchParams.q.trim().length > 0;
+  
+  // Build canonical URL with consistent parameter ordering
+  // Order: category, tag, q, page (alphabetical order for consistency)
+  const canonicalParams = new URLSearchParams();
+  
+  if (hasCategory && searchParams?.category) {
+    canonicalParams.set('category', searchParams.category);
+  }
+  if (hasTag && searchParams?.tag) {
+    canonicalParams.set('tag', searchParams.tag);
+  }
+  if (hasSearchQuery && searchParams?.q) {
+    canonicalParams.set('q', searchParams.q.trim());
+  }
+  // Only include page parameter if it's greater than 1
+  // Page 1 of any filtered/unfiltered results should not include page parameter
+  if (currentPage > 1) {
+    canonicalParams.set('page', String(currentPage));
   }
   
-  // For filtered/paginated pages, we want them indexed but with proper canonical
-  // Only set noindex for search queries to prevent low-quality content indexing
-  const shouldNoIndex = searchParams?.q && searchParams.q.length < 3;
+  // Build canonical URL - MUST match the actual page URL
+  const canonicalUrl = canonicalParams.toString()
+    ? `${SITE.domain}/blog?${canonicalParams.toString()}`
+    : `${SITE.domain}/blog`;
+  
+  // SEO Strategy:
+  // - Tag pages: Index them (they show unique filtered content)
+  // - Category pages: Index them (they show unique filtered content)  
+  // - Search query pages: NOINDEX to prevent indexing dynamic/low-quality search results
+  // - Base /blog page: Index it
+  // - Paginated pages: Index them (they show different content)
+  const shouldNoIndex = hasSearchQuery; // Don't index search query pages
+  
+  // Build descriptive title and description based on filters
+  // This improves SEO and helps Google understand the page content
+  let pageTitle = `بلاگ | ${SITE.name}`;
+  let pageDescription = `مجموعه مقالات تخصصی ${SITE.name} درباره توسعه Full-Stack با Next.js و React، بهینه‌سازی عملکرد وب‌سایت‌ها، بهبود Core Web Vitals، و بهترین شیوه‌های سئو فنی. تجربیات عملی، راهنماهای گام‌به‌گام، و نکات پیشرفته در زمینه توسعه وب.`;
+  
+  if (hasTag) {
+    pageTitle = `مقالات با برچسب ${searchParams.tag} | بلاگ ${SITE.name}`;
+    pageDescription = `مقالات مرتبط با برچسب "${searchParams.tag}" از بلاگ ${SITE.name}. مجموعه مقالات تخصصی درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
+  } else if (hasCategory) {
+    // Category name will be fetched in component, but we can provide a generic description
+    pageTitle = `مقالات دسته‌بندی ${searchParams.category} | بلاگ ${SITE.name}`;
+    pageDescription = `مقالات دسته‌بندی "${searchParams.category}" از بلاگ ${SITE.name}. مجموعه مقالات تخصصی درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
+  } else if (currentPage > 1) {
+    pageTitle = `بلاگ | ${SITE.name} - صفحه ${currentPage}`;
+    pageDescription = `صفحه ${currentPage} از بلاگ ${SITE.name}. مجموعه مقالات تخصصی درباره توسعه Full-Stack با Next.js و React.`;
+  }
   
   return createPageMeta({
-    title: `بلاگ | ${SITE.name}${currentPage > 1 ? ` - صفحه ${currentPage}` : ''}`,
-    description: `مجموعه مقالات تخصصی ${SITE.name} درباره توسعه Full-Stack با Next.js و React، بهینه‌سازی عملکرد وب‌سایت‌ها، بهبود Core Web Vitals، و بهترین شیوه‌های سئو فنی. تجربیات عملی، راهنماهای گام‌به‌گام، و نکات پیشرفته در زمینه توسعه وب.`,
-    url: canonicalUrl,
+    title: pageTitle,
+    description: pageDescription,
+    url: canonicalUrl, // Canonical URL that matches the actual page URL
     keywords: [
       'مقالات توسعه وب',
       'بلاگ Next.js',
@@ -47,7 +92,9 @@ export async function generateMetadata({ searchParams }: { searchParams?: { q?: 
       'توسعه Full-Stack',
       'مقالات برنامه‌نویسی'
     ],
-    // Only noindex for very short search queries
+    // IMPORTANT: Only set noindex for search query pages
+    // Category and tag pages should be indexed as they have unique content
+    // Don't set robots if we want to index (let it default to index, follow)
     robots: shouldNoIndex ? 'noindex, follow' : undefined
   });
 }

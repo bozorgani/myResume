@@ -17,8 +17,9 @@ export const metadata: Metadata = {
     template: `%s | ${SITE.name} - ${SITE.role}`
   },
   description: SITE.description,
-  alternates: { 
-    canonical: SITE.domain,
+  // Don't set canonical in root layout - let each page set its own canonical
+  // This prevents canonical conflicts
+  alternates: {
     languages: {
       'fa-IR': SITE.domain,
       'fa': SITE.domain,

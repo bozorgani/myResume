@@ -17,7 +17,7 @@ export const revalidate = 300; // 5 minutes
 export const metadata: Metadata = createPageMeta({
   title: `${SITE.name} | ${SITE.role}`,
   description: SITE.description,
-  url: SITE.domain,
+  url: `${SITE.domain}/`, // Explicit canonical for homepage
   keywords: [...SITE.keywords]
 });
 

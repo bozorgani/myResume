@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import ElectricBorder from './ElectricBorder';
 
 type Certificate = {
@@ -96,6 +97,7 @@ function CertificateModal({ certificate, isOpen, onClose }: { certificate: Certi
 export function CertificatesSection() {
   const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleImageClick = (certificate: Certificate) => {
     setSelectedCertificate(certificate);
@@ -128,6 +130,100 @@ export function CertificatesSection() {
     };
   }, [isModalOpen]);
 
+  const renderCertificateContent = (c: Certificate) => (
+    <>
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-100/30 to-orange-100/30 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-full blur-2xl"></div>
+      
+      <div className="relative flex flex-col sm:flex-row items-start gap-4 p-6">
+        {/* Image - Full width on mobile, fixed width on desktop */}
+        <button
+          onClick={() => handleImageClick(c)}
+          className="w-full sm:w-auto sm:h-40 sm:shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center border border-gray-200 dark:border-gray-600 shadow-md group-hover:shadow-lg transition-all cursor-pointer hover:scale-105 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 h-48 sm:h-40 sm:aspect-square md:h-48"
+          aria-label={`مشاهده عکس بزرگ گواهینامه ${c.title}`}
+        >
+          {c.image ? (
+            <Image 
+              src={c.image} 
+              alt={`عکس گواهینامه ${c.title} از ${c.issuer}`} 
+              width={192} 
+              height={192} 
+              className="h-full w-full object-cover rounded-xl" 
+              itemProp="image"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
+              <svg className="w-16 h-16 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+            </div>
+          )}
+        </button>
+        <div className="min-w-0 flex-1 w-full sm:w-auto space-y-2">
+          {/* Title and Year in one line on mobile */}
+          <div className="flex flex-row items-center justify-between gap-3">
+            {c.url ? (
+              <a 
+                href={c.url} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="font-bold text-base text-gray-900 dark:text-white hover:text-brand dark:hover:text-blue-400 transition-colors leading-tight group-hover:underline flex-1 min-w-0"
+                itemProp="url"
+              >
+                {c.title}
+              </a>
+            ) : (
+              <h3 
+                className="font-bold text-base text-gray-900 dark:text-white leading-tight flex-1 min-w-0"
+                itemProp="name"
+              >
+                {c.title}
+              </h3>
+            )}
+            <time 
+              className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-white bg-gradient-to-r from-yellow-500 to-orange-500 px-3 py-1 rounded-full shadow-sm"
+              itemProp="dateCreated"
+            >
+              {c.year}
+            </time>
+          </div>
+          <p 
+            className="text-sm font-medium text-gray-600 dark:text-gray-400"
+            itemProp="issuer"
+            itemScope
+            itemType="https://schema.org/Organization"
+          >
+            <span itemProp="name">{c.issuer}</span>
+          </p>
+          
+          {/* Skills Preview */}
+          {c.skills && c.skills.length > 0 && (
+            <div className="pt-3">
+              <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">مهارت‌های یادگرفته شده:</p>
+              <div className="flex flex-wrap gap-2">
+                {c.skills.slice(0, 4).map((skill, idx) => (
+                  <span
+                    key={idx}
+                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 text-xs font-semibold text-blue-700 dark:text-blue-300 shadow-sm"
+                  >
+                    {skill}
+                  </span>
+                ))}
+                {c.skills.length > 4 && (
+                  <button
+                    onClick={() => handleImageClick(c)}
+                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                  >
+                    +{c.skills.length - 4} بیشتر
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <section 
       id="certificates" 
@@ -153,104 +249,22 @@ export function CertificatesSection() {
               itemType="https://schema.org/Certificate"
               itemProp="itemListElement"
             >
-              <ElectricBorder
-                color="#7df9ff"
-                speed={1}
-                chaos={0.5}
-                thickness={2}
-                style={{ borderRadius: 16 }}
-                className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-100/30 to-orange-100/30 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-full blur-2xl"></div>
-                
-                <div className="relative flex flex-col sm:flex-row items-start gap-4 p-6">
-                {/* Image - Full width on mobile, fixed width on desktop */}
-                <button
-                  onClick={() => handleImageClick(c)}
-                  className="w-full sm:w-auto sm:h-40 sm:shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center border border-gray-200 dark:border-gray-600 shadow-md group-hover:shadow-lg transition-all cursor-pointer hover:scale-105 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 h-48 sm:h-40 sm:aspect-square md:h-48"
-                  aria-label={`مشاهده عکس بزرگ گواهینامه ${c.title}`}
+              {!isMobile ? (
+                <ElectricBorder
+                  color="#7df9ff"
+                  speed={1}
+                  chaos={0.5}
+                  thickness={2}
+                  style={{ borderRadius: 16 }}
+                  className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
                 >
-                  {c.image ? (
-                    <Image 
-                      src={c.image} 
-                      alt={`عکس گواهینامه ${c.title} از ${c.issuer}`} 
-                      width={192} 
-                      height={192} 
-                      className="h-full w-full object-cover rounded-xl" 
-                      itemProp="image"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
-                      <svg className="w-16 h-16 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                      </svg>
-                    </div>
-                  )}
-                </button>
-                <div className="min-w-0 flex-1 w-full sm:w-auto space-y-2">
-                  {/* Title and Year in one line on mobile */}
-                  <div className="flex flex-row items-center justify-between gap-3">
-                    {c.url ? (
-                      <a 
-                        href={c.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="font-bold text-base text-gray-900 dark:text-white hover:text-brand dark:hover:text-blue-400 transition-colors leading-tight group-hover:underline flex-1 min-w-0"
-                        itemProp="url"
-                      >
-                        {c.title}
-                      </a>
-                    ) : (
-                      <h3 
-                        className="font-bold text-base text-gray-900 dark:text-white leading-tight flex-1 min-w-0"
-                        itemProp="name"
-                      >
-                        {c.title}
-                      </h3>
-                    )}
-                    <time 
-                      className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-white bg-gradient-to-r from-yellow-500 to-orange-500 px-3 py-1 rounded-full shadow-sm"
-                      itemProp="dateCreated"
-                    >
-                      {c.year}
-                    </time>
-                  </div>
-                  <p 
-                    className="text-sm font-medium text-gray-600 dark:text-gray-400"
-                    itemProp="issuer"
-                    itemScope
-                    itemType="https://schema.org/Organization"
-                  >
-                    <span itemProp="name">{c.issuer}</span>
-                  </p>
-                  
-                  {/* Skills Preview */}
-                  {c.skills && c.skills.length > 0 && (
-                    <div className="pt-3">
-                      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">مهارت‌های یادگرفته شده:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {c.skills.slice(0, 4).map((skill, idx) => (
-                          <span
-                            key={idx}
-                            className="inline-flex items-center px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 text-xs font-semibold text-blue-700 dark:text-blue-300 shadow-sm"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                        {c.skills.length > 4 && (
-                          <button
-                            onClick={() => handleImageClick(c)}
-                            className="inline-flex items-center px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                          >
-                            +{c.skills.length - 4} بیشتر
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  {renderCertificateContent(c)}
+                </ElectricBorder>
+              ) : (
+                <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-6 border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-xl hover:border-brand dark:hover:border-brand hover:-translate-y-1">
+                  {renderCertificateContent(c)}
                 </div>
-                </div>
-              </ElectricBorder>
+              )}
             </li>
           ))}
         </ul>
@@ -265,5 +279,3 @@ export function CertificatesSection() {
     </section>
   );
 }
-
-

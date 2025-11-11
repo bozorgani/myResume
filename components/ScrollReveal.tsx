@@ -3,6 +3,7 @@
 import { useEffect, useRef, useMemo, ReactNode } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import './ScrollReveal.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -37,6 +38,7 @@ const ScrollReveal = ({
   id
 }: ScrollRevealProps) => {
   const containerRef = useRef<HTMLElement>(null);
+  const isMobile = useIsMobile();
   
   const isTextOnly = typeof children === 'string' || typeof children === 'number';
   
@@ -61,6 +63,16 @@ const ScrollReveal = ({
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+
+    // Disable animation on mobile
+    if (isMobile) {
+      gsap.set(el, { opacity: 1, rotate: 0, filter: 'blur(0px)' });
+      const wordElements = el.querySelectorAll('.word');
+      if (wordElements.length > 0) {
+        gsap.set(wordElements, { opacity: 1, filter: 'blur(0px)', y: 0 });
+      }
+      return;
+    }
 
     const scroller = scrollContainerRef?.current || window;
 
@@ -253,7 +265,7 @@ const ScrollReveal = ({
         }
       });
     };
-  }, [scrollContainerRef, enableBlur, baseRotation, baseOpacity, rotationEnd, wordAnimationEnd, blurStrength, isTextOnly]);
+  }, [scrollContainerRef, enableBlur, baseRotation, baseOpacity, rotationEnd, wordAnimationEnd, blurStrength, isTextOnly, isMobile]);
 
   const Component = as;
 

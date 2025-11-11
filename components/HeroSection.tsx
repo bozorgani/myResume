@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { SITE } from '@/lib/seo';
 import { FadeInUp, StaggerChildren, StaggerItem } from './animations';
-import { TrueFocus } from './TrueFocus';
 
 export function HeroSection() {
   const techStack = ['Node.js', 'Express.js', 'React.js', 'Next.js', 'MongoDB', 'TypeScript'];
@@ -95,17 +94,25 @@ export function HeroSection() {
           </FadeInUp>
 
           {/* Technology Badges */}
-          <div className="flex flex-wrap gap-2 sm:gap-3" aria-label="فناوری‌های اصلی">
+          <StaggerChildren className="flex flex-wrap gap-2 sm:gap-3" aria-label="فناوری‌های اصلی" staggerDelay={0.05}>
             {techStack.map((tech, index) => (
-              <TrueFocus
-                key={tech}
-                delay={0.6 + index * 0.1}
-                className="inline-flex items-center rounded-lg bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-default"
-              >
-                <span itemProp="knowsAbout">{tech}</span>
-              </TrueFocus>
+              <StaggerItem key={tech}>
+                <motion.span 
+                  className="inline-flex items-center rounded-lg bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-default"
+                  itemProp="knowsAbout"
+                  whileHover={{ 
+                    scale: 1.1,
+                    y: -2,
+                    boxShadow: "0 10px 20px rgba(0,0,0,0.1)"
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {tech}
+                </motion.span>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerChildren>
 
           {/* CTA Buttons */}
           <FadeInUp delay={0.7}>
