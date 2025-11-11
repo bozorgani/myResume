@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { PostCard } from '@/components/PostCard';
 import { CategoriesDrawerButton } from '@/components/CategoriesDrawerButton';
+import { BlogSidebar } from '@/components/BlogSidebar';
 
 // بهینه‌سازی: استفاده از ISR برای بهتر شدن performance
 export const revalidate = 180; // 3 minutes
@@ -307,7 +308,8 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
     <div className="space-y-8 sm:space-y-10 lg:space-y-12 w-full">
       <Schema json={blogSchema} />
       <Schema json={collectionPageSchema} />
-
+      
+      {/* Header - Full Width */}
       <header className="relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white via-gray-50/50 to-white dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 shadow-xl dark:shadow-2xl backdrop-blur-sm">
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-90"></div>
         <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05] bg-[radial-gradient(circle_at_1px_1px,_currentColor_1px,_transparent_0)] bg-[length:24px_24px]"></div>
@@ -323,7 +325,11 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
         </div>
       </header>
 
-      {first && (
+      {/* Main Content with Sidebar Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-12">
+        {/* Main Content Area */}
+        <div className="lg:col-span-3 space-y-8 sm:space-y-10 lg:space-y-12">
+          {first && (
         <section className="group overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-sm shadow-xl dark:shadow-2xl hover:shadow-2xl transition-all duration-300">
           <div className="grid gap-0 lg:grid-cols-2">
             {first.image && (
@@ -405,86 +411,86 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
             </div>
           </div>
         </section>
-      )}
+          )}
 
-      {/* Categories Section */}
-      {categories.length > 0 && (
-        <section className="hidden md:block rounded-2xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-sm p-4 sm:p-6 md:p-8 shadow-xl dark:shadow-2xl">
-          <h2 className="mb-4 sm:mb-5 md:mb-6 text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <span className="text-xl sm:text-2xl">📚</span>
-            <span>دسته‌بندی‌ها</span>
-          </h2>
-          <div className="w-full space-y-4">
-            {/* All Categories Button */}
-            <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 flex-wrap">
-              <Link
-                href="/blog"
-                className={`group inline-flex items-center gap-1.5 sm:gap-2 rounded-xl px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base font-bold whitespace-nowrap transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 ${
-                  !categorySlug
-                    ? 'bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white dark:from-blue-600 dark:via-purple-600 dark:to-blue-600 shadow-xl ring-2 ring-gray-900/20 dark:ring-blue-500/30'
-                    : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 text-gray-700 dark:text-gray-200 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 border border-gray-300 dark:border-gray-600'
-                }`}
-              >
-                <span className="text-base sm:text-lg transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
-                <span>همه مقالات</span>
-              </Link>
-            </div>
-            
-            {/* Main Categories with Subcategories */}
-            {categories.map((mainCat) => {
-              const isMainCategoryActive = categorySlug === mainCat.slug;
-              const isSubCategoryActive = mainCat.children?.some(subCat => subCat.slug === categorySlug);
-              const isActive = isMainCategoryActive || isSubCategoryActive;
-              
-              return (
-                <div key={mainCat.slug} className="space-y-3">
-                  {/* Main Category */}
-                  <div className="flex items-center gap-2">
-                    <Link
-                      href={`/blog?category=${mainCat.slug}`}
-                      className={`group inline-flex items-center gap-2 sm:gap-2.5 rounded-xl px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 md:py-3.5 text-sm sm:text-base font-bold whitespace-nowrap transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 flex-1 ${
-                        isMainCategoryActive
-                          ? 'bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white dark:from-blue-600 dark:via-purple-600 dark:to-blue-600 shadow-xl ring-2 ring-gray-900/20 dark:ring-blue-500/30'
-                          : isActive
-                          ? 'bg-gradient-to-br from-blue-100 via-blue-50 to-blue-100 dark:from-blue-900/60 dark:via-blue-800/60 dark:to-blue-900/60 text-blue-800 dark:text-blue-200 border-2 border-blue-300 dark:border-blue-600 hover:from-blue-200 hover:to-blue-100 dark:hover:from-blue-800/80 dark:hover:to-blue-700/80'
-                          : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 text-gray-800 dark:text-gray-200 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 border border-gray-300 dark:border-gray-600'
-                      }`}
-                    >
-                      <span className="text-base sm:text-lg transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
-                      <span>{mainCat.name}</span>
-                      {mainCat.children && mainCat.children.length > 0 && (
-                        <span className="text-xs sm:text-sm opacity-75 bg-white/20 dark:bg-black/20 px-2 py-0.5 rounded-full">
-                          {mainCat.children.length}
-                        </span>
-                      )}
-                    </Link>
-                  </div>
+          {/* Categories Section - Hidden on desktop (shown in sidebar), visible on mobile/tablet */}
+          {categories.length > 0 && (
+            <section className="lg:hidden rounded-2xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-sm p-4 sm:p-6 md:p-8 shadow-xl dark:shadow-2xl">
+              <h2 className="mb-4 sm:mb-5 md:mb-6 text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <span className="text-xl sm:text-2xl">📚</span>
+                <span>دسته‌بندی‌ها</span>
+              </h2>
+              <div className="w-full space-y-4">
+                {/* All Categories Button */}
+                <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 flex-wrap">
+                  <Link
+                    href="/blog"
+                    className={`group inline-flex items-center gap-1.5 sm:gap-2 rounded-xl px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base font-bold whitespace-nowrap transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 ${
+                      !categorySlug
+                        ? 'bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white dark:from-blue-600 dark:via-purple-600 dark:to-blue-600 shadow-xl ring-2 ring-gray-900/20 dark:ring-blue-500/30'
+                        : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 text-gray-700 dark:text-gray-200 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 border border-gray-300 dark:border-gray-600'
+                    }`}
+                  >
+                    <span className="text-base sm:text-lg transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
+                    <span>همه مقالات</span>
+                  </Link>
+                </div>
+                
+                {/* Main Categories with Subcategories */}
+                {categories.map((mainCat) => {
+                  const isMainCategoryActive = categorySlug === mainCat.slug;
+                  const isSubCategoryActive = mainCat.children?.some(subCat => subCat.slug === categorySlug);
+                  const isActive = isMainCategoryActive || isSubCategoryActive;
                   
-                  {/* Subcategories */}
-                  {mainCat.children && mainCat.children.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 md:gap-3 mr-6 sm:mr-8 md:mr-10 pl-2 border-r-2 border-gray-200 dark:border-gray-700">
-                      {mainCat.children.map((subCat) => (
+                  return (
+                    <div key={mainCat.slug} className="space-y-3">
+                      {/* Main Category */}
+                      <div className="flex items-center gap-2">
                         <Link
-                          key={subCat.slug}
-                          href={`/blog?category=${subCat.slug}`}
-                          className={`group inline-flex items-center gap-1.5 sm:gap-2 rounded-lg px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 ${
-                            categorySlug === subCat.slug
-                              ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 text-white shadow-lg ring-2 ring-blue-400/50 dark:ring-blue-500/50'
-                              : 'bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/90 border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                          href={`/blog?category=${mainCat.slug}`}
+                          className={`group inline-flex items-center gap-2 sm:gap-2.5 rounded-xl px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 md:py-3.5 text-sm sm:text-base font-bold whitespace-nowrap transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 flex-1 ${
+                            isMainCategoryActive
+                              ? 'bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white dark:from-blue-600 dark:via-purple-600 dark:to-blue-600 shadow-xl ring-2 ring-gray-900/20 dark:ring-blue-500/30'
+                              : isActive
+                              ? 'bg-gradient-to-br from-blue-100 via-blue-50 to-blue-100 dark:from-blue-900/60 dark:via-blue-800/60 dark:to-blue-900/60 text-blue-800 dark:text-blue-200 border-2 border-blue-300 dark:border-blue-600 hover:from-blue-200 hover:to-blue-100 dark:hover:from-blue-800/80 dark:hover:to-blue-700/80'
+                              : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 text-gray-800 dark:text-gray-200 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-700 dark:hover:to-gray-600 border border-gray-300 dark:border-gray-600'
                           }`}
                         >
-                          <span className="text-xs sm:text-sm transition-transform duration-300 group-hover:scale-110 text-blue-500 dark:text-blue-400">•</span>
-                          <span className={categorySlug === subCat.slug ? 'text-white' : 'text-gray-700 dark:text-gray-200'}>{subCat.name}</span>
+                          <span className="text-base sm:text-lg transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12">📂</span>
+                          <span>{mainCat.name}</span>
+                          {mainCat.children && mainCat.children.length > 0 && (
+                            <span className="text-xs sm:text-sm opacity-75 bg-white/20 dark:bg-black/20 px-2 py-0.5 rounded-full">
+                              {mainCat.children.length}
+                            </span>
+                          )}
                         </Link>
-                      ))}
+                      </div>
+                      
+                      {/* Subcategories */}
+                      {mainCat.children && mainCat.children.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 md:gap-3 mr-6 sm:mr-8 md:mr-10 pl-2 border-r-2 border-gray-200 dark:border-gray-700">
+                          {mainCat.children.map((subCat) => (
+                            <Link
+                              key={subCat.slug}
+                              href={`/blog?category=${subCat.slug}`}
+                              className={`group inline-flex items-center gap-1.5 sm:gap-2 rounded-lg px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 ${
+                                categorySlug === subCat.slug
+                                  ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 text-white shadow-lg ring-2 ring-blue-400/50 dark:ring-blue-500/50'
+                                  : 'bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/90 border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                              }`}
+                            >
+                              <span className="text-xs sm:text-sm transition-transform duration-300 group-hover:scale-110 text-blue-500 dark:text-blue-400">•</span>
+                              <span className={categorySlug === subCat.slug ? 'text-white' : 'text-gray-700 dark:text-gray-200'}>{subCat.name}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
+                  );
+                })}
+              </div>
+            </section>
+          )}
 
       <section>
         <div className="mb-4 sm:mb-6 md:mb-8 flex flex-col items-stretch justify-between gap-3 sm:gap-4 md:gap-5 sm:flex-row sm:items-center">
@@ -557,7 +563,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
             )}
           </div>
         ) : (
-          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
             {paginatedRest.map((p) => (
               <PostCard key={p.slug} post={p} />
             ))}
@@ -592,10 +598,17 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
             })}
           </nav>
         )}
-      </section>
+        </section>
 
-      {/* Mobile Categories Drawer Button */}
-      <CategoriesDrawerButton categories={categories} activeCategory={categorySlug} />
+        {/* Mobile Categories Drawer Button */}
+        <CategoriesDrawerButton categories={categories} activeCategory={categorySlug} />
+        </div>
+
+        {/* Sidebar - Desktop Only */}
+        <aside className="lg:col-span-1">
+          <BlogSidebar categories={categories} />
+        </aside>
+      </div>
     </div>
   );
 }

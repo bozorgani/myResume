@@ -258,7 +258,7 @@ export function HeroSection() {
             <div className="relative h-56 w-56 sm:h-64 sm:w-64 md:h-72 md:w-72 lg:h-80 lg:w-80 xl:h-96 xl:w-96 2xl:h-[28rem] 2xl:w-[28rem]">
               <Image
                 src="/images/amin-bozorgani-portrait.webp"
-                alt="پرتره محمد امین بزرگانی - توسعه‌دهنده Full-Stack و متخصص سئو فنی"
+                alt="پرتره محمد امین بزرگانی - توسعه‌دهنده فول‌استک جاوااسکریپت و متخصص SEO فنی"
                 width={700}
                 height={700}
                 quality={100}
@@ -295,7 +295,7 @@ export function HeroSection() {
                   >
                     <Image
                       src="/images/amin-bozorgani-portrait.webp"
-                      alt="پرتره محمد امین بزرگانی - توسعه‌دهنده Full-Stack و متخصص سئو فنی"
+                      alt="پرتره محمد امین بزرگانی - توسعه‌دهنده فول‌استک جاوااسکریپت و متخصص SEO فنی"
                       width={700}
                       height={700}
                       quality={100}
