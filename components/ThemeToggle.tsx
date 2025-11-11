@@ -175,14 +175,16 @@ export function ThemeToggle() {
       {/* منوی انتخاب تم */}
       {isMenuOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop - فقط در موبایل نمایش داده می‌شود */}
           <div 
-            className="fixed inset-0 z-10" 
+            className="fixed inset-0 z-[60] md:hidden bg-black/20" 
             onClick={() => setIsMenuOpen(false)}
             aria-hidden="true"
           />
           {/* Menu */}
-          <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg z-20 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          {/* در موبایل: استفاده از fixed positioning و قرار دادن منو در سمت راست صفحه */}
+          {/* در دسکتاپ: استفاده از absolute positioning و قرار دادن منو در سمت راست دکمه */}
+          <div className="md:absolute fixed md:left-0 md:right-auto md:mt-2 mt-14 right-4 left-auto w-44 md:w-48 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl z-[70] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
             {themes.map((themeOption) => (
               <button
                 key={themeOption.value}
@@ -197,13 +199,13 @@ export function ThemeToggle() {
                 aria-label={themeOption.desc}
                 aria-pressed={theme === themeOption.value}
               >
-                <span className="text-lg" role="img" aria-hidden="true">
+                <span className="text-lg flex-shrink-0" role="img" aria-hidden="true">
                   {themeOption.icon}
                 </span>
-                <span className="flex-1 font-medium">{themeOption.label}</span>
+                <span className="flex-1 font-medium text-right">{themeOption.label}</span>
                 {theme === themeOption.value && (
                   <svg 
-                    className="w-5 h-5" 
+                    className="w-5 h-5 flex-shrink-0" 
                     fill="currentColor" 
                     viewBox="0 0 20 20"
                     aria-hidden="true"
