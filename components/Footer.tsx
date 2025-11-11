@@ -25,6 +25,7 @@ export function Footer() {
               <li><a className="hover:text-brand" href="https://github.com/bozorgani" target="_blank" rel="noopener noreferrer">GitHub</a></li>
               <li><a className="hover:text-brand" href="https://www.linkedin.com/in/bozorgani" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
               <li><a className="hover:text-brand" href="mailto:hello@bozorgani.ir">Email</a></li>
+              <li><a className="hover:text-brand" href="/feed.xml" rel="alternate" type="application/rss+xml" title="RSS Feed">RSS Feed</a></li>
             </ul>
           </div>
         </div>

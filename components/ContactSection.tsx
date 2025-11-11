@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { SITE } from '@/lib/seo';
 import { FadeInUp, StaggerChildren, StaggerItem } from './animations';
+import ScrollReveal from './ScrollReveal';
 
 const contactItems = [
   {
@@ -88,23 +89,40 @@ export function ContactSection() {
       />
       
       <div className="relative space-y-6">
-        <FadeInUp>
-          <div className="space-y-2">
-            <h2 id="contact-title" className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
-              تماس با من
-            </h2>
-            <motion.div 
-              className="h-1 w-20 bg-gradient-to-r from-brand to-indigo-500 rounded-full"
-              initial={{ width: 0 }}
-              whileInView={{ width: 80 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            />
-            <p className="text-lg text-gray-600 dark:text-gray-400 pt-2">
-              برای همکاری، مشاوره یا هر سوالی که دارید، خوشحال می‌شوم با شما در ارتباط باشم.
-            </p>
-          </div>
-        </FadeInUp>
+        <div className="space-y-2">
+          <ScrollReveal
+            as="h2"
+            id="contact-title"
+            baseOpacity={0}
+            enableBlur={true}
+            baseRotation={5}
+            blurStrength={8}
+            containerClassName="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white"
+            textClassName=""
+            wordAnimationEnd="top center"
+          >
+            تماس با من
+          </ScrollReveal>
+          <motion.div 
+            className="h-1 w-20 bg-gradient-to-r from-brand to-indigo-500 rounded-full"
+            initial={{ width: 0 }}
+            whileInView={{ width: 80 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          />
+          <ScrollReveal
+            as="p"
+            baseOpacity={0}
+            enableBlur={true}
+            baseRotation={2}
+            blurStrength={6}
+            containerClassName="text-lg text-gray-600 dark:text-gray-400 pt-2"
+            textClassName=""
+            wordAnimationEnd="top center"
+          >
+            برای همکاری، مشاوره یا هر سوالی که دارید، خوشحال می‌شوم با شما در ارتباط باشم.
+          </ScrollReveal>
+        </div>
 
         <StaggerChildren className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" staggerDelay={0.1}>
           {contactItems.map((item, index) => (

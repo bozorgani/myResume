@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import ElectricBorder from './ElectricBorder';
 
 type Certificate = {
   title: string;
@@ -147,15 +148,22 @@ export function CertificatesSection() {
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {certificates.map((c, idx) => (
             <li 
-              key={idx} 
-              className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-6 border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-xl hover:border-brand dark:hover:border-brand hover:-translate-y-1"
+              key={idx}
               itemScope
               itemType="https://schema.org/Certificate"
               itemProp="itemListElement"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-100/30 to-orange-100/30 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-full blur-2xl"></div>
-              
-              <div className="relative flex flex-col sm:flex-row items-start gap-4">
+              <ElectricBorder
+                color="#7df9ff"
+                speed={1}
+                chaos={0.5}
+                thickness={2}
+                style={{ borderRadius: 16 }}
+                className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-100/30 to-orange-100/30 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-full blur-2xl"></div>
+                
+                <div className="relative flex flex-col sm:flex-row items-start gap-4 p-6">
                 {/* Image - Full width on mobile, fixed width on desktop */}
                 <button
                   onClick={() => handleImageClick(c)}
@@ -241,7 +249,8 @@ export function CertificatesSection() {
                     </div>
                   )}
                 </div>
-              </div>
+                </div>
+              </ElectricBorder>
             </li>
           ))}
         </ul>

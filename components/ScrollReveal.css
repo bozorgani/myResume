@@ -1,0 +1,52 @@
+.scroll-reveal {
+  margin: 0;
+  overflow: visible;
+  position: relative;
+  display: block;
+}
+
+.scroll-reveal-text {
+  line-height: inherit;
+  font-weight: inherit;
+  display: inline-block;
+  width: 100%;
+}
+
+.word {
+  display: inline-block;
+  will-change: opacity, filter, transform;
+  white-space: pre-wrap;
+  position: relative;
+}
+
+/* Ensure text doesn't break layout */
+.scroll-reveal h1,
+.scroll-reveal h2,
+.scroll-reveal h3,
+.scroll-reveal h4,
+.scroll-reveal h5,
+.scroll-reveal h6,
+.scroll-reveal p,
+.scroll-reveal div,
+.scroll-reveal span {
+  margin: 0;
+  padding: 0;
+}
+
+/* Dark mode support */
+.dark .scroll-reveal-text {
+  color: inherit;
+}
+
+/* Performance optimization */
+.scroll-reveal * {
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  transform: translateZ(0);
+}
+
+/* Smooth transitions */
+.word {
+  transition: opacity 0.1s ease-out, filter 0.1s ease-out, transform 0.1s ease-out;
+}
+

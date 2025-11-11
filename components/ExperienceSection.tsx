@@ -1,7 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useRef, useState } from 'react';
 import { FadeInUp, StaggerChildren, StaggerItem } from './animations';
+import ScrollReveal from './ScrollReveal';
 
 type Experience = {
   company: string;
@@ -51,47 +53,117 @@ export function ExperienceSection() {
       />
       
       <div className="relative space-y-6">
-        <FadeInUp>
-          <div className="space-y-2">
-            <h2 id="experience-title" className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
-              تجربه و سوابق
-            </h2>
-            <motion.div 
-              className="h-1 w-20 bg-gradient-to-r from-brand to-indigo-500 rounded-full"
-              initial={{ width: 0 }}
-              whileInView={{ width: 80 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            />
-          </div>
-        </FadeInUp>
+        <div className="space-y-2">
+          <ScrollReveal
+            as="h2"
+            id="experience-title"
+            baseOpacity={0}
+            enableBlur={true}
+            baseRotation={5}
+            blurStrength={8}
+            containerClassName="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white"
+            textClassName=""
+            wordAnimationEnd="top center"
+          >
+            تجربه و سوابق
+          </ScrollReveal>
+          <motion.div 
+            className="h-1 w-20 bg-gradient-to-r from-brand to-indigo-500 rounded-full"
+            initial={{ width: 0 }}
+            whileInView={{ width: 80 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          />
+        </div>
         
         <StaggerChildren className="grid grid-cols-1 gap-6" staggerDelay={0.15}>
-          {experiences.map((exp, idx) => (
-            <StaggerItem key={idx}>
-              <motion.article 
-                className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-6 border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-xl hover:border-brand dark:hover:border-brand"
-                itemScope
-                itemType="https://schema.org/JobPosting"
-                itemProp="itemListElement"
-                whileHover={{ y: -5, scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-              >
-                <motion.div 
-                  className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-brand/10 to-indigo-500/10 rounded-full blur-2xl"
+          {experiences.map((exp, idx) => {
+            const ExperienceCard = () => {
+              const ref = useRef<HTMLElement>(null);
+              const [isHovered, setIsHovered] = useState(false);
+              const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
+
+              const x = useMotionValue(0);
+              const y = useMotionValue(0);
+
+              const mouseXSpring = useSpring(x, { stiffness: 500, damping: 100 });
+              const mouseYSpring = useSpring(y, { stiffness: 500, damping: 100 });
+
+              const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['4deg', '-4deg']);
+              const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-4deg', '4deg']);
+
+              const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+                if (!ref.current) return;
+                const rect = ref.current.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                const xPct = mouseX / rect.width - 0.5;
+                const yPct = mouseY / rect.height - 0.5;
+                x.set(xPct);
+                y.set(yPct);
+                setMousePosition({ x: (mouseX / rect.width) * 100, y: (mouseY / rect.height) * 100 });
+              };
+
+              const handleMouseLeave = () => {
+                x.set(0);
+                y.set(0);
+                setIsHovered(false);
+                setMousePosition({ x: 50, y: 50 });
+              };
+
+              return (
+                <motion.article 
+                  ref={ref}
+                  className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-6 border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl"
+                  itemScope
+                  itemType="https://schema.org/JobPosting"
+                  itemProp="itemListElement"
+                  onMouseMove={handleMouseMove}
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={handleMouseLeave}
+                  style={{
+                    rotateX,
+                    rotateY,
+                    transformStyle: 'preserve-3d',
+                  }}
                   animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.1, 0.2, 0.1],
+                    scale: isHovered ? 1.02 : 1,
+                    y: isHovered ? -5 : 0,
                   }}
-                  transition={{
-                    duration: 5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: idx * 0.5
-                  }}
-                />
-                
-                <div className="relative space-y-4">
+                  transition={{ duration: 0.3 }}
+                >
+                  {/* Magic Bento gradient border */}
+                  <motion.div 
+                    className="absolute -inset-0.5 rounded-xl opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-500 pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.7), rgba(147, 51, 234, 0.7), rgba(236, 72, 153, 0.7))',
+                    }}
+                    animate={{ opacity: isHovered ? 1 : 0 }}
+                  />
+                  
+                  {/* Glow effect following mouse */}
+                  <motion.div
+                    className="absolute -inset-1 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                    style={{
+                      background: `radial-gradient(500px circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(59, 130, 246, 0.3), transparent 40%)`,
+                    }}
+                  />
+                  <motion.div 
+                    className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-brand/10 to-indigo-500/10 rounded-full blur-2xl"
+                    style={{ transform: 'translateZ(5px)' }}
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0.1, 0.2, 0.1],
+                    }}
+                    transition={{
+                      duration: 5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: idx * 0.5
+                    }}
+                  />
+                  
+                  <div className="relative space-y-4" style={{ transform: 'translateZ(10px)' }}>
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                     <div className="flex-1 min-w-0 space-y-1">
                       <motion.h3 
@@ -128,10 +200,17 @@ export function ExperienceSection() {
                   >
                     {exp.summary}
                   </p>
-                </div>
-              </motion.article>
-            </StaggerItem>
-          ))}
+                  </div>
+                </motion.article>
+              );
+            };
+
+            return (
+              <StaggerItem key={idx}>
+                <ExperienceCard />
+              </StaggerItem>
+            );
+          })}
         </StaggerChildren>
       </div>
     </section>

@@ -2,24 +2,88 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useRef, useState } from 'react';
 import type { Project } from '@/lib/projects';
 
 export function ProjectCard({ project, index = 0 }: { project: Project; index?: number }) {
+  const ref = useRef<HTMLElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x, { stiffness: 500, damping: 100 });
+  const mouseYSpring = useSpring(y, { stiffness: 500, damping: 100 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['5deg', '-5deg']);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-5deg', '5deg']);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / rect.width - 0.5;
+    const yPct = mouseY / rect.height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+    setMousePosition({ x: (mouseX / rect.width) * 100, y: (mouseY / rect.height) * 100 });
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+    setIsHovered(false);
+    setMousePosition({ x: 50, y: 50 });
+  };
+
   return (
     <motion.article 
-      className="group relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:border-brand dark:hover:border-brand" 
+      ref={ref}
+      className="group relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 hover:shadow-2xl" 
       aria-labelledby={`${project.slug}-title`}
       itemProp="item"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ y: -8 }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: 'preserve-3d',
+      }}
+      animate={{
+        scale: isHovered ? 1.02 : 1,
+        y: isHovered ? -8 : 0,
+      }}
     >
+      {/* Magic Bento gradient border */}
       <motion.div 
-        className="aspect-video overflow-hidden rounded-t-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800"
-        whileHover={{ scale: 1.05 }}
+        className="absolute -inset-0.5 rounded-xl opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-500 pointer-events-none"
+        style={{
+          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(147, 51, 234, 0.8), rgba(236, 72, 153, 0.8))',
+        }}
+        animate={{ opacity: isHovered ? 1 : 0 }}
+      />
+      
+      {/* Glow effect following mouse */}
+      <motion.div
+        className="absolute -inset-1 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{
+          background: `radial-gradient(600px circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(59, 130, 246, 0.4), transparent 40%)`,
+        }}
+      />
+      <motion.div 
+        className="aspect-video overflow-hidden rounded-t-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 relative"
+        style={{ transform: 'translateZ(20px)' }}
+        animate={{
+          scale: isHovered ? 1.05 : 1,
+        }}
         transition={{ duration: 0.4 }}
       >
         <Image
@@ -38,7 +102,7 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
           transition={{ duration: 0.3 }}
         />
       </motion.div>
-      <div className="p-5 space-y-3">
+      <div className="p-5 space-y-3 relative" style={{ transform: 'translateZ(10px)' }}>
         <motion.h3 
           id={`${project.slug}-title`} 
           className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-brand dark:group-hover:text-blue-400 transition-colors"

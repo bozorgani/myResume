@@ -17,7 +17,14 @@ export const metadata: Metadata = {
     template: `%s | ${SITE.name} - ${SITE.role}`
   },
   description: SITE.description,
-  alternates: { canonical: SITE.domain },
+  alternates: { 
+    canonical: SITE.domain,
+    languages: {
+      'fa-IR': SITE.domain,
+      'fa': SITE.domain,
+      'x-default': SITE.domain
+    }
+  },
   robots: { index: true, follow: true },
   icons: {
     icon: [
@@ -41,14 +48,26 @@ export const metadata: Metadata = {
     url: SITE.domain,
     siteName: SITE.name,
     locale: 'fa_IR',
+    alternateLocale: ['fa_IR', 'fa'],
     type: 'website',
-    images: [{ url: SITE.ogImage, alt: `${SITE.name} - ${SITE.role}` }]
+    images: [{ 
+      url: SITE.ogImage, 
+      alt: `${SITE.name} - ${SITE.role}`,
+      width: 1200,
+      height: 630,
+      type: 'image/png'
+    }]
   },
   twitter: {
     card: 'summary_large_image',
     title: `${SITE.name} - ${SITE.role}`,
     description: SITE.description,
-    images: [SITE.ogImage],
+    images: [{
+      url: SITE.ogImage,
+      alt: `${SITE.name} - ${SITE.role}`,
+      width: 1200,
+      height: 630
+    }],
     site: SITE.twitter,
     creator: SITE.twitter
   },
@@ -58,7 +77,11 @@ export const metadata: Metadata = {
   keywords: [...SITE.keywords],
   authors: [{ name: SITE.name, url: SITE.domain }],
   creator: SITE.name,
-  publisher: SITE.name
+  publisher: SITE.name,
+  other: {
+    'language': 'fa-IR',
+    'geo.region': 'IR'
+  }
 };
 
 export const viewport: Viewport = {

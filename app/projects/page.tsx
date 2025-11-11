@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { createPageMeta, SITE } from '@/lib/seo';
 import { getAllProjects } from '@/lib/projects';
 import { ProjectCard } from '@/components/ProjectCard';
+import { Schema } from '@/components/Schema';
 
 export const metadata: Metadata = createPageMeta({
   title: `پروژه‌ها | ${SITE.name}`,
@@ -20,8 +21,45 @@ export const metadata: Metadata = createPageMeta({
 
 export default function ProjectsPage() {
   const projects = getAllProjects();
+  
+  const itemListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `پروژه‌های ${SITE.name}`,
+    description: `مجموعه‌ای از پروژه‌های واقعی توسعه وب`,
+    numberOfItems: projects.length,
+    itemListElement: projects.map((p, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'SoftwareApplication',
+        name: p.title,
+        description: p.oneLiner,
+        url: `${SITE.domain}/projects/${p.slug}`,
+        applicationCategory: 'WebApplication',
+        operatingSystem: 'All',
+        author: {
+          '@type': 'Person',
+          name: SITE.name
+        }
+      }
+    }))
+  } as const;
+
+  const collectionPageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `پروژه‌ها | ${SITE.name}`,
+    url: `${SITE.domain}/projects`,
+    description: `مجموعه‌ای از پروژه‌های واقعی توسعه وب`,
+    inLanguage: 'fa-IR',
+    mainEntity: itemListSchema
+  } as const;
+
   return (
     <div className="space-y-6 sm:space-y-8">
+      <Schema json={itemListSchema} />
+      <Schema json={collectionPageSchema} />
       <div className="space-y-3 sm:space-y-4">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">پروژه‌ها</h1>
         <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">

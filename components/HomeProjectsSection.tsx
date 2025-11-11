@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { getAllProjects } from '@/lib/projects';
 import { ProjectCard } from '@/components/ProjectCard';
 import { FadeInUp, StaggerChildren, StaggerItem } from './animations';
+import ScrollReveal from './ScrollReveal';
 
 export function HomeProjectsSection() {
   const projects = getAllProjects().slice(0, 4);
@@ -31,23 +32,40 @@ export function HomeProjectsSection() {
       />
       
       <div className="relative space-y-6">
-        <FadeInUp>
-          <div className="space-y-2">
-            <h2 id="projects-title" className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
-              پروژه‌های منتخب
-            </h2>
-            <motion.div 
-              className="h-1 w-20 bg-gradient-to-r from-brand to-indigo-500 rounded-full"
-              initial={{ width: 0 }}
-              whileInView={{ width: 80 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            />
-            <p className="text-lg text-gray-600 dark:text-gray-400 pt-2">
-              نمونه‌ای از پروژه‌های حرفه‌ای که با استفاده از آخرین تکنولوژی‌ها ساخته شده‌اند
-            </p>
-          </div>
-        </FadeInUp>
+        <div className="space-y-2">
+          <ScrollReveal
+            as="h2"
+            id="projects-title"
+            baseOpacity={0}
+            enableBlur={true}
+            baseRotation={5}
+            blurStrength={8}
+            containerClassName="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white"
+            textClassName=""
+            wordAnimationEnd="top center"
+          >
+            پروژه‌های منتخب
+          </ScrollReveal>
+          <motion.div 
+            className="h-1 w-20 bg-gradient-to-r from-brand to-indigo-500 rounded-full"
+            initial={{ width: 0 }}
+            whileInView={{ width: 80 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          />
+          <ScrollReveal
+            as="p"
+            baseOpacity={0}
+            enableBlur={true}
+            baseRotation={2}
+            blurStrength={6}
+            containerClassName="text-lg text-gray-600 dark:text-gray-400 pt-2"
+            textClassName=""
+            wordAnimationEnd="top center"
+          >
+            نمونه‌ای از پروژه‌های حرفه‌ای که با استفاده از آخرین تکنولوژی‌ها ساخته شده‌اند
+          </ScrollReveal>
+        </div>
         
         <StaggerChildren className="grid gap-6 sm:grid-cols-2" staggerDelay={0.1}>
           {projects.map((p, idx) => (

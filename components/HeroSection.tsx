@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { SITE } from '@/lib/seo';
 import { FadeInUp, StaggerChildren, StaggerItem } from './animations';
+import { TrueFocus } from './TrueFocus';
 
 export function HeroSection() {
   const techStack = ['Node.js', 'Express.js', 'React.js', 'Next.js', 'MongoDB', 'TypeScript'];
@@ -45,20 +46,20 @@ export function HeroSection() {
 
       <div className="relative grid gap-8 sm:gap-10 lg:gap-12 lg:grid-cols-5 items-center">
         <div className="lg:col-span-3 space-y-4 sm:space-y-5 lg:space-y-6 order-2 lg:order-1">
-          <FadeInUp delay={0.1}>
-            <div className="space-y-2 sm:space-y-3">
-              <motion.div 
-                className="inline-flex items-center gap-2 rounded-full bg-white/80 dark:bg-gray-800/80 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.2 }}
-              >
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
-                <span className="whitespace-nowrap">در دسترس برای پروژه‌های جدید</span>
-              </motion.div>
-              
+          <div className="space-y-2 sm:space-y-3">
+            <motion.div 
+              className="inline-flex items-center gap-2 rounded-full bg-white/80 dark:bg-gray-800/80 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              <span className="whitespace-nowrap">در دسترس برای پروژه‌های جدید</span>
+            </motion.div>
+            
+            <FadeInUp delay={0.1}>
               <motion.h1 
                 id="hero-title" 
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent leading-tight"
@@ -73,7 +74,9 @@ export function HeroSection() {
                   transition={{ duration: 0.8, delay: 0.5 }}
                 >محمد امین بزرگانی</motion.span>
               </motion.h1>
-              
+            </FadeInUp>
+            
+            <FadeInUp delay={0.3}>
               <motion.p 
                 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-700 dark:text-gray-300"
                 initial={{ opacity: 0, y: 20 }}
@@ -82,8 +85,8 @@ export function HeroSection() {
               >
                 {SITE.role}
               </motion.p>
-            </div>
-          </FadeInUp>
+            </FadeInUp>
+          </div>
           
           <FadeInUp delay={0.4}>
             <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl">
@@ -92,25 +95,17 @@ export function HeroSection() {
           </FadeInUp>
 
           {/* Technology Badges */}
-          <StaggerChildren className="flex flex-wrap gap-2 sm:gap-3" aria-label="فناوری‌های اصلی" staggerDelay={0.05}>
+          <div className="flex flex-wrap gap-2 sm:gap-3" aria-label="فناوری‌های اصلی">
             {techStack.map((tech, index) => (
-              <StaggerItem key={tech}>
-                <motion.span 
-                  className="inline-flex items-center rounded-lg bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-default"
-                  itemProp="knowsAbout"
-                  whileHover={{ 
-                    scale: 1.1,
-                    y: -2,
-                    boxShadow: "0 10px 20px rgba(0,0,0,0.1)"
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {tech}
-                </motion.span>
-              </StaggerItem>
+              <TrueFocus
+                key={tech}
+                delay={0.6 + index * 0.1}
+                className="inline-flex items-center rounded-lg bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-default"
+              >
+                <span itemProp="knowsAbout">{tech}</span>
+              </TrueFocus>
             ))}
-          </StaggerChildren>
+          </div>
 
           {/* CTA Buttons */}
           <FadeInUp delay={0.7}>

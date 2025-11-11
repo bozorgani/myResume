@@ -4,53 +4,61 @@ import { SITE } from '@/lib/seo';
 export default function robots(): MetadataRoute.Robots {
   const baseUrl = SITE.domain.replace(/\/$/, '');
   
+  // Common disallow patterns for all crawlers
+  const commonDisallow = [
+    '/api/',
+    '/_next/',
+    '/admin/',
+    '/cms/',
+    '*.json$',
+    '/404',
+    '/500'
+  ];
+  
   return {
     rules: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: [
-          '/api/',
-          '/_next/static/chunks/',
-          '/_next/static/css/',
-          '/_next/static/pages/',
-          '/_next/static/runtime/',
-          '/_next/static/buildManifest.js',
-          '/_next/static/ssgManifest.js',
-          '/admin/'
-        ]
+        disallow: commonDisallow
       },
       {
         userAgent: 'Googlebot',
         allow: '/',
-        disallow: [
-          '/api/',
-          '/_next/static/chunks/',
-          '/_next/static/css/',
-          '/_next/static/pages/',
-          '/_next/static/runtime/',
-          '/_next/static/buildManifest.js',
-          '/_next/static/ssgManifest.js',
-          '/admin/'
-        ]
+        disallow: commonDisallow
+      },
+      {
+        userAgent: 'Googlebot-Image',
+        allow: '/',
+        disallow: commonDisallow
       },
       {
         userAgent: 'Bingbot',
         allow: '/',
-        disallow: [
-          '/api/',
-          '/_next/static/chunks/',
-          '/_next/static/css/',
-          '/_next/static/pages/',
-          '/_next/static/runtime/',
-          '/_next/static/buildManifest.js',
-          '/_next/static/ssgManifest.js',
-          '/admin/'
-        ]
+        disallow: commonDisallow
+      },
+      {
+        userAgent: 'Slurp',
+        allow: '/',
+        disallow: commonDisallow
+      },
+      {
+        userAgent: 'DuckDuckBot',
+        allow: '/',
+        disallow: commonDisallow
+      },
+      {
+        userAgent: 'Baiduspider',
+        allow: '/',
+        disallow: commonDisallow
+      },
+      {
+        userAgent: 'Yandex',
+        allow: '/',
+        disallow: commonDisallow
       }
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
-    // Allow access to media and font files
     host: baseUrl
   };
 }

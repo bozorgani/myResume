@@ -136,6 +136,7 @@ export function createPageMeta({
       canonical: fullUrl,
       languages: {
         'fa-IR': fullUrl,
+        'fa': fullUrl,
         'x-default': fullUrl
       }
     },
@@ -146,24 +147,32 @@ export function createPageMeta({
       siteName: SITE.name,
       type: type,
       locale: 'fa_IR',
+      alternateLocale: ['fa_IR', 'fa'],
       images: [{ 
         url: fullImageUrl, 
         alt: `${ogTitle || title} - ${SITE.name}`,
         width: 1200,
-        height: 630
+        height: 630,
+        type: 'image/png'
       }],
       ...(type === 'article' && publishedTime && {
         publishedTime,
         modifiedTime: modifiedTime || publishedTime,
         authors: [author || SITE.name],
-        section: section
+        section: section,
+        tags: keywords || []
       })
     },
     twitter: {
       card: 'summary_large_image',
       title: ogTitle || title,
       description: ogDescription || description,
-      images: [fullImageUrl],
+      images: [{
+        url: fullImageUrl,
+        alt: `${ogTitle || title} - ${SITE.name}`,
+        width: 1200,
+        height: 630
+      }],
       site: SITE.twitter,
       creator: SITE.twitter
     },
@@ -172,7 +181,9 @@ export function createPageMeta({
     other: {
       'twitter:image:alt': `${title} - ${SITE.name}`,
       'og:image:alt': `${title} - ${SITE.name}`,
-      'article:author': author || SITE.name
+      'article:author': author || SITE.name,
+      'language': 'fa-IR',
+      'geo.region': 'IR'
     }
   };
   

@@ -12,13 +12,29 @@ export const revalidate = 180; // 3 minutes
 
 // Generate metadata dynamically to handle canonical URLs properly
 export async function generateMetadata({ searchParams }: { searchParams?: { q?: string; page?: string; category?: string; tag?: string } }): Promise<Metadata> {
-  // For filtered pages (with query params), canonical should always point to base /blog URL
-  // This prevents duplicate content issues in Google Search Console
-  const hasFilters = !!(searchParams?.category || searchParams?.tag || searchParams?.q || searchParams?.page);
-  const canonicalUrl = hasFilters ? `${SITE.domain}/blog` : `${SITE.domain}/blog`;
+  // For filtered pages (with query params), canonical should point to the filtered page URL
+  // But for pagination, we should use rel="prev" and rel="next" instead
+  const hasFilters = !!(searchParams?.category || searchParams?.tag || searchParams?.q);
+  const currentPage = Math.max(1, parseInt(searchParams?.page || '1', 10) || 1);
+  const isFirstPage = currentPage === 1;
+  
+  // Build canonical URL - first page without filters uses base /blog
+  let canonicalUrl = `${SITE.domain}/blog`;
+  if (hasFilters || currentPage > 1) {
+    const params = new URLSearchParams();
+    if (searchParams?.category) params.set('category', searchParams.category);
+    if (searchParams?.tag) params.set('tag', searchParams.tag);
+    if (searchParams?.q) params.set('q', searchParams.q);
+    if (currentPage > 1) params.set('page', String(currentPage));
+    canonicalUrl = `${SITE.domain}/blog?${params.toString()}`;
+  }
+  
+  // For filtered/paginated pages, we want them indexed but with proper canonical
+  // Only set noindex for search queries to prevent low-quality content indexing
+  const shouldNoIndex = searchParams?.q && searchParams.q.length < 3;
   
   return createPageMeta({
-    title: `بلاگ | ${SITE.name}`,
+    title: `بلاگ | ${SITE.name}${currentPage > 1 ? ` - صفحه ${currentPage}` : ''}`,
     description: `مجموعه مقالات تخصصی ${SITE.name} درباره توسعه Full-Stack با Next.js و React، بهینه‌سازی عملکرد وب‌سایت‌ها، بهبود Core Web Vitals، و بهترین شیوه‌های سئو فنی. تجربیات عملی، راهنماهای گام‌به‌گام، و نکات پیشرفته در زمینه توسعه وب.`,
     url: canonicalUrl,
     keywords: [
@@ -31,8 +47,8 @@ export async function generateMetadata({ searchParams }: { searchParams?: { q?: 
       'توسعه Full-Stack',
       'مقالات برنامه‌نویسی'
     ],
-    // Set noindex for filtered pages to prevent duplicate content issues
-    robots: hasFilters ? 'noindex, follow' : undefined
+    // Only noindex for very short search queries
+    robots: shouldNoIndex ? 'noindex, follow' : undefined
   });
 }
 
@@ -171,6 +187,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
     });
   }
 
+  // Calculate pagination values
   const pageSize = 9;
   const currentPage = Math.max(1, parseInt(searchParams?.page || '1', 10) || 1);
   
@@ -195,19 +212,54 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
     '@type': 'Blog',
     name: `${SITE.name} Blog`,
     url: `${SITE.domain}/blog`,
-    blogPost: posts.map((p) => ({
+    description: `مجموعه مقالات تخصصی درباره توسعه Full-Stack، بهینه‌سازی عملکرد، و سئو فنی`,
+    inLanguage: 'fa-IR',
+    publisher: {
+      '@type': 'Person',
+      name: SITE.name,
+      url: SITE.domain
+    },
+    blogPost: posts.slice(0, 10).map((p) => ({
       '@type': 'BlogPosting',
       headline: p.title,
       description: p.description,
       datePublished: p.date,
+      dateModified: p.updatedAt || p.date,
       url: `${SITE.domain}${getPostUrl(p)}`,
-      image: p.image ? [p.image] : undefined
+      image: p.image ? (p.image.startsWith('http') ? p.image : `${SITE.domain}${p.image}`) : undefined,
+      author: {
+        '@type': 'Person',
+        name: SITE.name
+      }
     }))
+  } as const;
+
+  const collectionPageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `بلاگ ${SITE.name}`,
+    url: `${SITE.domain}/blog`,
+    description: `مجموعه مقالات تخصصی ${SITE.name}`,
+    inLanguage: 'fa-IR',
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: filtered.length,
+      itemListElement: paginatedRest.slice(0, 10).map((p, index) => ({
+        '@type': 'ListItem',
+        position: start + index + 1,
+        item: {
+          '@type': 'BlogPosting',
+          headline: p.title,
+          url: `${SITE.domain}${getPostUrl(p)}`
+        }
+      }))
+    }
   } as const;
 
   return (
     <div className="space-y-8 sm:space-y-10 lg:space-y-12 w-full">
       <Schema json={blogSchema} />
+      <Schema json={collectionPageSchema} />
 
       <header className="relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white via-gray-50/50 to-white dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 shadow-xl dark:shadow-2xl backdrop-blur-sm">
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-90"></div>
