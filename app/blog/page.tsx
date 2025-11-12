@@ -305,7 +305,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
   } as const;
 
   return (
-    <div className="space-y-8 sm:space-y-10 lg:space-y-12 w-full">
+    <div className="space-y-8 sm:space-y-10 lg:space-y-12 w-full relative">
       <Schema json={blogSchema} />
       <Schema json={collectionPageSchema} />
       
@@ -599,9 +599,6 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
           </nav>
         )}
         </section>
-
-        {/* Mobile Categories Drawer Button */}
-        <CategoriesDrawerButton categories={categories} activeCategory={categorySlug} />
         </div>
 
         {/* Sidebar - Desktop Only */}
@@ -609,6 +606,9 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
           <BlogSidebar categories={categories} />
         </aside>
       </div>
+
+      {/* Mobile Categories Drawer Button - Fixed at bottom right, outside page structure */}
+      <CategoriesDrawerButton categories={categories} activeCategory={categorySlug} />
     </div>
   );
 }

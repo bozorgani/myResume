@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { CategoriesDrawer } from './CategoriesDrawer';
 
 interface Category {
@@ -28,6 +29,11 @@ function flattenCategories(categories: Category[]): Category[] {
 
 export function CategoriesDrawerButton({ categories, activeCategory }: CategoriesDrawerButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
@@ -40,12 +46,13 @@ export function CategoriesDrawerButton({ categories, activeCategory }: Categorie
     return null;
   }
 
-  return (
+  const buttonContent = (
     <>
-      {/* Mobile Button - Only visible on mobile */}
+      {/* Mobile Button - Fixed at bottom right, visible on mobile */}
       <button
         onClick={handleOpen}
-        className="md:hidden fixed bottom-6 right-6 z-30 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-xl hover:shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center ring-4 ring-white/20 dark:ring-gray-900/20"
+        style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999 }}
+        className="md:hidden bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-xl hover:shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center ring-4 ring-white/20 dark:ring-gray-900/20 relative"
         aria-label="نمایش دسته‌بندی‌ها"
       >
         <span className="text-2xl">📂</span>
@@ -63,5 +70,12 @@ export function CategoriesDrawerButton({ categories, activeCategory }: Categorie
       />
     </>
   );
+
+  // Use portal to render directly in body to avoid parent container issues
+  if (mounted && typeof window !== 'undefined') {
+    return createPortal(buttonContent, document.body);
+  }
+
+  return buttonContent;
 }
 
