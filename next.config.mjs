@@ -22,6 +22,12 @@ const nextConfig = {
         port: '4000',
         pathname: '/uploads/**',
       },
+      // ImageKit CDN - for images uploaded to ImageKit
+      {
+        protocol: 'https',
+        hostname: 'ik.imagekit.io',
+        pathname: '/**',
+      },
       // Production: Add your production CMS API domain here
       // Example:
       // {
