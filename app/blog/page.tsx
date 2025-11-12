@@ -413,9 +413,9 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
         </section>
           )}
 
-          {/* Categories Section - Hidden on desktop (shown in sidebar), visible on mobile/tablet */}
+          {/* Categories Section - Hidden on mobile (use drawer instead), visible only on tablet */}
           {categories.length > 0 && (
-            <section className="lg:hidden rounded-2xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-sm p-4 sm:p-6 md:p-8 shadow-xl dark:shadow-2xl">
+            <section className="hidden md:block lg:hidden rounded-2xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-sm p-4 sm:p-6 md:p-8 shadow-xl dark:shadow-2xl">
               <h2 className="mb-4 sm:mb-5 md:mb-6 text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <span className="text-xl sm:text-2xl">📚</span>
                 <span>دسته‌بندی‌ها</span>

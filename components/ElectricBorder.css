@@ -1,1 +1,157 @@
- 
+/* Electric Border Component Styles */
+
+.electric-border {
+  position: relative;
+  isolation: isolate;
+  --electric-border-color: #5227FF;
+  --eb-border-width: 2px;
+  display: block;
+  width: 100%;
+  min-height: 200px;
+  overflow: visible;
+}
+
+.electric-border .eb-svg {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  visibility: hidden;
+  overflow: hidden;
+}
+
+.electric-border .eb-layers {
+  position: absolute;
+  inset: calc(-1 * var(--eb-border-width, 2px));
+  pointer-events: none;
+  border-radius: inherit;
+  overflow: visible;
+  z-index: 0;
+}
+
+.electric-border .eb-stroke {
+  position: absolute;
+  inset: 0;
+  border: var(--eb-border-width, 2px) solid var(--electric-border-color, #5227FF);
+  border-radius: inherit;
+  opacity: 0.9;
+  will-change: filter;
+  box-sizing: border-box;
+  /* Filter will be applied via inline style from component */
+  /* Border is positioned outside the content using negative inset on parent */
+}
+
+.electric-border .eb-glow-1 {
+  position: absolute;
+  inset: calc(-1 * var(--eb-border-width, 2px) - 2px);
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at 0% 0%,
+    var(--electric-border-color, #5227FF) 0%,
+    transparent 50%
+  );
+  opacity: 0.4;
+  filter: blur(8px);
+  animation: electric-glow-1 3s ease-in-out infinite;
+}
+
+.electric-border .eb-glow-2 {
+  position: absolute;
+  inset: calc(-1 * var(--eb-border-width, 2px) - 2px);
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at 100% 100%,
+    var(--electric-border-color, #5227FF) 0%,
+    transparent 50%
+  );
+  opacity: 0.4;
+  filter: blur(8px);
+  animation: electric-glow-2 3s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+.electric-border .eb-background-glow {
+  position: absolute;
+  inset: calc(-1 * var(--eb-border-width, 2px) - 4px);
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at center,
+    var(--electric-border-color, #5227FF) 0%,
+    transparent 70%
+  );
+  opacity: 0.1;
+  filter: blur(12px);
+  animation: electric-background-glow 4s ease-in-out infinite;
+}
+
+.electric-border .eb-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100%;
+  display: block;
+}
+
+/* Animations */
+@keyframes electric-glow-1 {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes electric-glow-2 {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes electric-background-glow {
+  0%, 100% {
+    opacity: 0.05;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.15;
+    transform: scale(1.05);
+  }
+}
+
+/* Hover effects */
+.electric-border:hover .eb-stroke {
+  opacity: 1;
+  /* Filter is applied via inline style from component */
+}
+
+.electric-border:hover .eb-glow-1,
+.electric-border:hover .eb-glow-2 {
+  opacity: 0.6;
+}
+
+.electric-border:hover .eb-background-glow {
+  opacity: 0.2;
+}
+
+/* Performance optimizations */
+.electric-border * {
+  will-change: auto;
+}
+
+.electric-border .eb-stroke {
+  will-change: filter, opacity;
+}
+
+.electric-border .eb-glow-1,
+.electric-border .eb-glow-2,
+.electric-border .eb-background-glow {
+  will-change: opacity, transform;
+}

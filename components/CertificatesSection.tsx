@@ -229,7 +229,7 @@ export function CertificatesSection() {
     <section 
       id="certificates" 
       aria-labelledby="certificates-title" 
-      className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 sm:p-8 md:p-10 lg:p-12 shadow-lg"
+      className="relative overflow-visible rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 sm:p-8 md:p-10 lg:p-12 shadow-lg"
       itemScope
       itemType="https://schema.org/ItemList"
     >
@@ -257,7 +257,7 @@ export function CertificatesSection() {
                   chaos={0.5}
                   thickness={2}
                   style={{ borderRadius: 16 }}
-                  className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                  className="group relative overflow-visible rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
                 >
                   {renderCertificateContent(c)}
                 </ElectricBorder>
