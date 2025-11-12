@@ -1,12 +1,39 @@
 'use client';
 
-import { useEffect, useRef, useMemo, ReactNode } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, useRef, useMemo, ReactNode, useState } from 'react';
 import { useIsMobile } from '@/hooks/useIsMobile';
-import './ScrollReveal.css';
+// ScrollReveal styles are now inlined in globals.css for better performance
 
-gsap.registerPlugin(ScrollTrigger);
+// Lazy load GSAP to reduce initial bundle size
+let gsapModule: typeof import('gsap') | null = null;
+let ScrollTriggerModule: typeof import('gsap/ScrollTrigger') | null = null;
+let gsapLoaded = false;
+
+const loadGSAP = async () => {
+  if (gsapLoaded) return;
+  try {
+    [gsapModule, ScrollTriggerModule] = await Promise.all([
+      import('gsap'),
+      import('gsap/ScrollTrigger')
+    ]);
+    
+    const { gsap } = gsapModule!;
+    const { ScrollTrigger } = ScrollTriggerModule!;
+    
+    gsap.registerPlugin(ScrollTrigger);
+    
+    // Optimize ScrollTrigger globally to batch refreshes and reduce forced reflows
+    if (typeof window !== 'undefined') {
+      ScrollTrigger.config({
+        autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load',
+      });
+    }
+    
+    gsapLoaded = true;
+  } catch (error) {
+    console.error('Failed to load GSAP:', error);
+  }
+};
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -60,9 +87,23 @@ const ScrollReveal = ({
     return null;
   }, [children, isTextOnly]);
 
+  const [gsapReady, setGsapReady] = useState(false);
+
   useEffect(() => {
+    // Lazy load GSAP only when component mounts
+    loadGSAP().then(() => {
+      setGsapReady(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!gsapReady || !gsapModule || !ScrollTriggerModule) return;
+    
     const el = containerRef.current;
     if (!el) return;
+
+    const { gsap } = gsapModule;
+    const { ScrollTrigger } = ScrollTriggerModule;
 
     // CRITICAL: Disable ALL animations and ScrollTriggers on mobile for better scroll performance
     // Mobile devices have limited processing power and scroll animations cause lag
@@ -100,12 +141,15 @@ const ScrollReveal = ({
         });
       }
       
-      // Kill any existing ScrollTriggers for this element immediately
-      ScrollTrigger.getAll().forEach(trigger => {
-        if (trigger.vars && (trigger.vars.trigger === el || trigger.trigger === el)) {
-          trigger.kill();
-        }
-      });
+      // Kill any existing ScrollTriggers for this element immediately (if GSAP is loaded)
+      if (ScrollTriggerModule) {
+        const { ScrollTrigger: ST } = ScrollTriggerModule;
+        ST.getAll().forEach(trigger => {
+          if (trigger.vars && (trigger.vars.trigger === el || trigger.trigger === el)) {
+            trigger.kill();
+          }
+        });
+      }
       
       // Return early to prevent any ScrollTrigger creation
       return;
@@ -113,14 +157,28 @@ const ScrollReveal = ({
 
     const scroller = scrollContainerRef?.current || window;
 
-    // Check if element is at top for immediate animation
-    const rect = el.getBoundingClientRect();
-    const windowHeight = typeof window !== 'undefined' ? window.innerHeight : 1000;
-    const isAtTop = rect.top < windowHeight * 0.3;
-    const isInViewport = rect.top < windowHeight && rect.bottom > 0;
+    // Use requestAnimationFrame to batch DOM reads and avoid forced reflows
+    requestAnimationFrame(() => {
+      if (!el) return;
+      
+      // Batch all DOM reads together to avoid multiple forced reflows
+      const rect = el.getBoundingClientRect();
+      const windowHeight = typeof window !== 'undefined' ? window.innerHeight : 1000;
+      const isAtTop = rect.top < windowHeight * 0.3;
+      const isInViewport = rect.top < windowHeight && rect.bottom > 0;
+      
+      // Continue with animations in next frame to avoid blocking
+      requestAnimationFrame(() => {
+        if (!el) return;
+        setupAnimations(rect, windowHeight, isAtTop, isInViewport, gsap, ScrollTrigger);
+      });
+    });
 
-    // Rotation animation for the container
-    if (isAtTop && isInViewport) {
+    const setupAnimations = (rect: DOMRect, windowHeight: number, isAtTop: boolean, isInViewport: boolean, gsap: any, ScrollTrigger: any) => {
+      if (!el) return;
+
+      // Rotation animation for the container
+      if (isAtTop && isInViewport) {
       // If at top, animate immediately
       gsap.fromTo(
         el,
@@ -156,153 +214,162 @@ const ScrollReveal = ({
             start: 'top bottom',
             end: rotationEnd,
             scrub: 1,
-            invalidateOnRefresh: true
+            invalidateOnRefresh: false // Disable to prevent forced reflows
           }
         }
       );
     }
 
-    const wordElements = el.querySelectorAll('.word');
-    
-    if (wordElements.length > 0 && isTextOnly) {
-      // Use the rect and checks already defined above
+      const wordElements = el.querySelectorAll('.word');
       
-      // Set initial state for all words
-      // If already in viewport and at top, show immediately with animation
-      const initialOpacity = baseOpacity;
-      const initialY = 20;
-      const initialBlur = enableBlur ? `blur(${blurStrength}px)` : 'none';
-      
-      gsap.set(wordElements, {
-        opacity: initialOpacity,
-        filter: initialBlur,
-        y: initialY,
-        willChange: 'opacity, filter, transform'
-      });
-
-      // If element is at top of page, animate immediately without scroll trigger
-      if (isAtTop && isInViewport) {
-        gsap.to(wordElements, {
-          opacity: 1,
-          y: 0,
-          filter: 'blur(0px)',
-          duration: 1.2,
-          stagger: {
-            amount: 0.8,
-            from: 'start'
-          },
-          ease: 'power2.out',
-          delay: 0.2
+      if (wordElements.length > 0 && isTextOnly) {
+        // Set initial state for all words
+        // If already in viewport and at top, show immediately with animation
+        const initialOpacity = baseOpacity;
+        const initialY = 20;
+        const initialBlur = enableBlur ? `blur(${blurStrength}px)` : 'none';
+        
+        gsap.set(wordElements, {
+          opacity: initialOpacity,
+          filter: initialBlur,
+          y: initialY,
+          willChange: 'opacity, filter, transform'
         });
-      } else {
-        // Create a timeline for smoother animation with scroll trigger
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: el,
-            scroller: scroller as any,
-            start: 'top bottom-=20%',
-            end: wordAnimationEnd,
-            scrub: 1.5,
-            invalidateOnRefresh: true,
-            // If already past the start point, complete immediately
-            onEnter: () => {
-              gsap.to(wordElements, {
-                opacity: 1,
-                y: 0,
-                filter: 'blur(0px)',
-                duration: 0.5,
-                stagger: 0.05,
-                ease: 'power2.out'
-              });
+
+        // If element is at top of page, animate immediately without scroll trigger
+        if (isAtTop && isInViewport) {
+          requestAnimationFrame(() => {
+            if (!el) return;
+            gsap.to(wordElements, {
+              opacity: 1,
+              y: 0,
+              filter: 'blur(0px)',
+              duration: 1.2,
+              stagger: {
+                amount: 0.8,
+                from: 'start'
+              },
+              ease: 'power2.out',
+              delay: 0.2
+            });
+          });
+        } else {
+          // Create a timeline for smoother animation with scroll trigger
+          const tl = gsap.timeline({
+                    scrollTrigger: {
+                      trigger: el,
+                      scroller: scroller as any,
+                      start: 'top bottom-=20%',
+                      end: wordAnimationEnd,
+                      scrub: 1.5,
+                      invalidateOnRefresh: false, // Disable to prevent forced reflows
+                      // If already past the start point, complete immediately
+                      onEnter: () => {
+                requestAnimationFrame(() => {
+                  if (!el) return;
+                  gsap.to(wordElements, {
+                    opacity: 1,
+                    y: 0,
+                    filter: 'blur(0px)',
+                    duration: 0.5,
+                    stagger: 0.05,
+                    ease: 'power2.out'
+                  });
+                });
+              }
             }
-          }
-        });
+          });
 
-        // Animate words with stagger
-        tl.to(wordElements, {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          stagger: {
-            amount: 0.8,
-            from: 'start'
-          },
-          ease: 'power2.out'
-        });
-
-        // Blur animation with stagger
-        if (enableBlur) {
+          // Animate words with stagger
           tl.to(wordElements, {
-            filter: 'blur(0px)',
+            opacity: 1,
+            y: 0,
             duration: 1,
             stagger: {
               amount: 0.8,
               from: 'start'
             },
             ease: 'power2.out'
-          }, 0); // Start at the same time as opacity
+          });
+
+          // Blur animation with stagger
+          if (enableBlur) {
+            tl.to(wordElements, {
+              filter: 'blur(0px)',
+              duration: 1,
+              stagger: {
+                amount: 0.8,
+                from: 'start'
+              },
+              ease: 'power2.out'
+            }, 0); // Start at the same time as opacity
+          }
         }
       }
-    } else if (!isTextOnly) {
-      // For JSX content, animate the whole element
-      const rect = el.getBoundingClientRect();
-      const windowHeight = typeof window !== 'undefined' ? window.innerHeight : 1000;
-      const isInViewport = rect.top < windowHeight && rect.bottom > 0;
-      const initialOpacity = (isInViewport && rect.top < windowHeight * 0.5) ? 1 : baseOpacity;
-      const initialY = (isInViewport && rect.top < windowHeight * 0.5) ? 0 : 50;
-      const initialBlur = (isInViewport && rect.top < windowHeight * 0.5) ? 'blur(0px)' : (enableBlur ? `blur(${blurStrength}px)` : 'none');
       
-      gsap.set(el, {
-        opacity: initialOpacity,
-        filter: initialBlur,
-        y: initialY
-      });
-      
-      gsap.fromTo(
-        el,
-        { 
+      if (!isTextOnly) {
+        // For JSX content, animate the whole element
+        // Use cached rect values from parameters
+        const initialOpacity = (isInViewport && rect.top < windowHeight * 0.5) ? 1 : baseOpacity;
+        const initialY = (isInViewport && rect.top < windowHeight * 0.5) ? 0 : 50;
+        const initialBlur = (isInViewport && rect.top < windowHeight * 0.5) ? 'blur(0px)' : (enableBlur ? `blur(${blurStrength}px)` : 'none');
+        
+        gsap.set(el, {
           opacity: initialOpacity,
           filter: initialBlur,
           y: initialY
-        },
-        {
-          ease: 'power2.out',
-          opacity: 1,
-          filter: 'blur(0px)',
-          y: 0,
-          scrollTrigger: {
-            trigger: el,
-            scroller: scroller as any,
-            start: 'top bottom-=20%',
-            end: wordAnimationEnd,
-            scrub: 1.5,
-            invalidateOnRefresh: true
-          }
-        }
-      );
-      
-      // Fallback for JSX content
-      if (isInViewport && rect.top < windowHeight * 0.3) {
-        setTimeout(() => {
-          gsap.to(el, {
+        });
+        
+        gsap.fromTo(
+          el,
+          { 
+            opacity: initialOpacity,
+            filter: initialBlur,
+            y: initialY
+          },
+          {
+            ease: 'power2.out',
             opacity: 1,
             filter: 'blur(0px)',
             y: 0,
-            duration: 0.6,
-            ease: 'power2.out'
+                    scrollTrigger: {
+                      trigger: el,
+                      scroller: scroller as any,
+                      start: 'top bottom-=20%',
+                      end: wordAnimationEnd,
+                      scrub: 1.5,
+                      invalidateOnRefresh: false // Disable to prevent forced reflows
+                    }
+          }
+        );
+        
+        // Fallback for JSX content
+        if (isInViewport && rect.top < windowHeight * 0.3) {
+          requestAnimationFrame(() => {
+            if (!el) return;
+            gsap.to(el, {
+              opacity: 1,
+              filter: 'blur(0px)',
+              y: 0,
+              duration: 0.6,
+              ease: 'power2.out'
+            });
           });
-        }, 100);
+        }
       }
-    }
+    };
 
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => {
-        if (trigger.vars && trigger.vars.trigger === el) {
-          trigger.kill();
-        }
-      });
+      if (ScrollTriggerModule && el) {
+        const { ScrollTrigger: ST } = ScrollTriggerModule;
+        ST.getAll().forEach(trigger => {
+          if (trigger.vars && trigger.vars.trigger === el) {
+            trigger.kill();
+          }
+        });
+      }
     };
-  }, [scrollContainerRef, enableBlur, baseRotation, baseOpacity, rotationEnd, wordAnimationEnd, blurStrength, isTextOnly, isMobile]);
+  }, [scrollContainerRef, enableBlur, baseRotation, baseOpacity, rotationEnd, wordAnimationEnd, blurStrength, isTextOnly, isMobile, gsapReady]);
 
   const Component = as;
 

@@ -10,6 +10,7 @@ const config: Config = {
     './components/**/*.{ts,tsx}',
     './lib/**/*.{ts,tsx}'
   ],
+  // Optimize CSS output by removing unused styles (Tailwind v3+ automatically purges)
   theme: {
     extend: {
       colors: {
@@ -20,7 +21,12 @@ const config: Config = {
       }
     }
   },
-  plugins: []
+  plugins: [],
+  // Minimal safelist - only classes that are dynamically generated and can't be detected
+  safelist: [
+    'dark', // Required for dark mode class toggle
+    'blog-content', // Used in blog posts with dangerouslySetInnerHTML
+  ]
 };
 
 export default config;

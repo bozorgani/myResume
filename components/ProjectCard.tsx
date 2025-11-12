@@ -20,19 +20,48 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
   const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['5deg', '-5deg']);
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-5deg', '5deg']);
 
+  // Cache rect to avoid repeated getBoundingClientRect calls
+  const rectRef = useRef<DOMRect | null>(null);
+  const rafRef = useRef<number | null>(null);
+
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    const xPct = mouseX / rect.width - 0.5;
-    const yPct = mouseY / rect.height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
-    setMousePosition({ x: (mouseX / rect.width) * 100, y: (mouseY / rect.height) * 100 });
+    
+    // Throttle DOM reads using requestAnimationFrame
+    if (rafRef.current === null) {
+      rafRef.current = requestAnimationFrame(() => {
+        if (!ref.current) return;
+        
+        // Batch DOM read - only read once per frame
+        if (!rectRef.current) {
+          rectRef.current = ref.current.getBoundingClientRect();
+        }
+        
+        const rect = rectRef.current;
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const xPct = mouseX / rect.width - 0.5;
+        const yPct = mouseY / rect.height - 0.5;
+        
+        x.set(xPct);
+        y.set(yPct);
+        setMousePosition({ x: (mouseX / rect.width) * 100, y: (mouseY / rect.height) * 100 });
+        
+        rafRef.current = null;
+      });
+    }
   };
 
   const handleMouseLeave = () => {
+    // Cancel pending animation frame
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    
+    // Invalidate cached rect
+    rectRef.current = null;
+    
     x.set(0);
     y.set(0);
     setIsHovered(false);

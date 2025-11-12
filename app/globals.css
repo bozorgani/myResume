@@ -2,7 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ScrollReveal Styles - Inlined for better performance and optimized with @layer */
+@layer components {
+.scroll-reveal {
+  margin: 0;
+  overflow: visible;
+  position: relative;
+  display: block;
+}
 
+.scroll-reveal-text {
+  line-height: inherit;
+  font-weight: inherit;
+  display: inline-block;
+  width: 100%;
+}
+
+.scroll-reveal .word {
+  display: inline-block;
+  will-change: opacity, filter, transform;
+  white-space: pre-wrap;
+  position: relative;
+}
+
+/* Ensure text doesn't break layout */
+.scroll-reveal h1,
+.scroll-reveal h2,
+.scroll-reveal h3,
+.scroll-reveal h4,
+.scroll-reveal h5,
+.scroll-reveal h6,
+.scroll-reveal p,
+.scroll-reveal div,
+.scroll-reveal span {
+  margin: 0;
+  padding: 0;
+}
+
+/* Dark mode support */
+.dark .scroll-reveal-text {
+  color: inherit;
+}
+
+/* Performance optimization */
+.scroll-reveal * {
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  transform: translateZ(0);
+}
+
+/* Smooth transitions */
+.scroll-reveal .word {
+  transition: opacity 0.1s ease-out, filter 0.1s ease-out, transform 0.1s ease-out;
+}
+}
+
+@layer base {
 /* Better default focus styles for a11y */
 :focus-visible {
   outline: 2px solid theme('colors.brand.DEFAULT');
@@ -31,8 +86,9 @@ button,
 a {
   transition-duration: 150ms;
 }
+}
 
-/* Theme menu animations */
+/* Theme menu animations - @keyframes must be outside @layer */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -53,6 +109,7 @@ a {
   }
 }
 
+@layer utilities {
 .animate-in {
   animation: fade-in 0.2s ease-out;
 }
@@ -63,6 +120,7 @@ a {
 
 .slide-in-from-top-2 {
   animation: slide-in-from-top 0.2s ease-out;
+}
 }
 
 /* Typography defaults for readability */
@@ -78,42 +136,22 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
   color: #d1d5db; /* Better contrast ratio (4.5:1 on dark) */
 }
 
-/* Blog Content Styles - Matching Editor Appearance */
+/* Blog Content Styles - Optimized and Consolidated */
 .blog-content {
   color: #374151;
   font-size: 0.95rem;
   line-height: 1.75;
   max-width: 100%;
-  /* Optimal reading width for Persian text: 65-75 characters per line */
-  /* This ensures comfortable reading experience */
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
 
-@media (min-width: 640px) {
-  .blog-content {
-    font-size: 1rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .blog-content {
-    font-size: 1.0625rem;
-  }
-}
-
-/* Improve mobile responsiveness for blog content */
 .blog-content h1,
 .blog-content h2,
 .blog-content h3,
 .blog-content h4,
 .blog-content h5,
-.blog-content h6 {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-}
-
+.blog-content h6,
 .blog-content p,
 .blog-content li,
 .blog-content blockquote {
@@ -137,21 +175,40 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
 }
 
 @media (min-width: 640px) {
+  .blog-content {
+    font-size: 1rem;
+  }
   .blog-content table {
     display: table;
   }
 }
 
-/* Dark mode overrides for blog content */
-.dark .blog-content { color: #e5e7eb; }
-.dark .blog-content p { color: #e5e7eb; }
+@media (min-width: 1024px) {
+  .blog-content {
+    font-size: 1.0625rem;
+    line-height: 1.8;
+  }
+}
+
+/* Dark mode overrides for blog content - Consolidated */
+.dark .blog-content,
+.dark .blog-content p {
+  color: #e5e7eb;
+}
+
 .dark .blog-content h1,
 .dark .blog-content h2,
 .dark .blog-content h3,
 .dark .blog-content h4,
 .dark .blog-content h5,
-.dark .blog-content h6 { color: #f3f4f6; }
-.dark .blog-content h2 { border-bottom-color: #374151; }
+.dark .blog-content h6 {
+  color: #f3f4f6;
+}
+
+.dark .blog-content h2 {
+  border-bottom-color: #374151;
+}
+
 .dark .blog-content a,
 .dark .blog-content p a,
 .dark .blog-content li a,
@@ -161,11 +218,12 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
 .dark .blog-content h3 a,
 .dark .blog-content h4 a,
 .dark .blog-content h5 a,
-.dark .blog-content h6 a { 
-  color: #60a5fa !important; 
+.dark .blog-content h6 a {
+  color: #60a5fa !important;
   text-decoration: underline !important;
   cursor: pointer;
 }
+
 .dark .blog-content a:hover,
 .dark .blog-content p a:hover,
 .dark .blog-content li a:hover,
@@ -175,41 +233,64 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
 .dark .blog-content h3 a:hover,
 .dark .blog-content h4 a:hover,
 .dark .blog-content h5 a:hover,
-.dark .blog-content h6 a:hover { 
-  color: #93c5fd !important; 
+.dark .blog-content h6 a:hover {
+  color: #93c5fd !important;
   text-decoration-thickness: 2px;
 }
+
 .dark .blog-content a:visited,
 .dark .blog-content p a:visited,
 .dark .blog-content li a:visited,
 .dark .blog-content blockquote a:visited {
   color: #a78bfa !important;
 }
+
 .dark .blog-content a:visited:hover,
 .dark .blog-content p a:visited:hover,
 .dark .blog-content li a:visited:hover,
 .dark .blog-content blockquote a:visited:hover {
   color: #c4b5fd !important;
 }
-.dark .blog-content strong { color: #f9fafb; }
+
+.dark .blog-content strong {
+  color: #f9fafb;
+}
+
 .dark .blog-content blockquote {
   color: #e5e7eb;
   border-right-color: #374151;
   background-color: #0b1220;
 }
-.dark .blog-content hr { border-top-color: #374151; }
+
+.dark .blog-content hr {
+  border-top-color: #374151;
+}
+
 .dark .blog-content code {
   background-color: #111827;
   color: #fca5a5;
 }
+
 .dark .blog-content pre {
   background-color: #0b1220;
   color: #e5e7eb;
 }
-.dark .blog-content thead { border-bottom-color: #374151; }
-.dark .blog-content thead th { color: #e5e7eb; }
-.dark .blog-content tbody tr { border-bottom-color: #374151; }
-.dark .blog-content tbody tr:nth-child(even) { background-color: #0f172a; }
+
+.dark .blog-content thead {
+  border-bottom-color: #374151;
+}
+
+.dark .blog-content thead th {
+  color: #e5e7eb;
+}
+
+.dark .blog-content tbody tr {
+  border-bottom-color: #374151;
+}
+
+.dark .blog-content tbody tr:nth-child(even) {
+  background-color: #0f172a;
+}
 
 /* Paragraphs */
 .blog-content p {
@@ -279,7 +360,7 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
   color: #111827;
 }
 
-/* Links - Ensure visibility with high specificity */
+/* Links - Consolidated selectors */
 .blog-content a,
 .blog-content p a,
 .blog-content li a,
@@ -524,57 +605,41 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
   margin-top: 1.6em;
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments - Consolidated */
 @media (min-width: 640px) {
   .blog-content {
     font-size: 1.125rem;
   }
-  
   .blog-content h1 {
     font-size: 2.5em;
   }
-  
   .blog-content h2 {
     font-size: 1.75em;
   }
-  
   .blog-content h3 {
     font-size: 1.375em;
   }
 }
 
 @media (min-width: 1024px) {
-  .blog-content {
-    font-size: 1.125rem;
-    line-height: 1.8;
-  }
-  
-  /* Wider content for better readability with larger text */
   .blog-content > p,
   .blog-content > ul > li,
   .blog-content > ol > li,
   .blog-content > blockquote {
-    max-width: 100ch; /* Much wider for better readability with larger text */
+    max-width: 100ch;
   }
-  
   .blog-content h1,
   .blog-content h2,
   .blog-content h3,
   .blog-content h4,
   .blog-content h5,
   .blog-content h6 {
-    max-width: 105ch; /* Wider for headings */
+    max-width: 105ch;
   }
-  
-  /* Allow code blocks, images, and tables to be full width of container */
   .blog-content pre,
   .blog-content code,
   .blog-content img,
-  .blog-content table {
-    max-width: 100%;
-  }
-  
-  /* Nested paragraphs and lists should also respect max-width */
+  .blog-content table,
   .blog-content blockquote p,
   .blog-content li p {
     max-width: 100%;
@@ -715,13 +780,18 @@ body {
     -webkit-overflow-scrolling: touch;
   }
   
-  /* Disable or reduce backdrop-blur on mobile for better performance in Chrome */
+  /* Disable backdrop-blur on mobile for better performance */
   .backdrop-blur-sm,
-  .backdrop-blur-md {
-    /* Disable backdrop-filter on mobile Chrome to prevent scroll jank */
+  .backdrop-blur-md,
+  [class*="backdrop-blur"],
+  [class*="blur-"] {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    /* Use solid background instead */
+    filter: none !important;
+  }
+  
+  .backdrop-blur-sm,
+  .backdrop-blur-md {
     background-color: rgba(255, 255, 255, 0.98) !important;
   }
   
@@ -747,78 +817,61 @@ body {
   }
 }
 
-/* Additional mobile optimizations for blog pages */
+/* Additional mobile optimizations for small screens */
 @media (max-width: 767px) {
-  /* Completely disable backdrop blur on small mobile devices for Chrome */
-  article .backdrop-blur-sm,
-  article .backdrop-blur-md {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-  
-  /* Remove backdrop-blur from ScrollToTop button on mobile */
   button[aria-label="بازگشت به بالا"] {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     background: linear-gradient(to bottom right, #3b82f6, #8b5cf6, #ec4899) !important;
   }
   
-  /* Ensure smooth scrolling - disable smooth scroll on mobile Chrome to prevent jank */
-  article {
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: auto; /* Changed from smooth to auto for better performance */
-    /* Prevent scroll chaining issues */
-    overscroll-behavior-y: contain;
-  }
-  
-  .blog-content {
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: auto;
-    /* Prevent layout thrashing */
-    contain: layout style;
-  }
-  
-  /* Disable smooth scroll for anchor links on mobile Chrome to prevent jank */
   html {
     scroll-behavior: auto !important;
   }
   
-  /* Fix for grid layout on mobile - prevent layout shifts */
+  article,
+  .blog-content {
+    scroll-behavior: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  article {
+    overscroll-behavior-y: contain;
+  }
+  
+  .blog-content {
+    contain: layout style;
+  }
+  
   .grid {
-    /* Ensure grid doesn't cause reflow issues */
     contain: layout;
   }
   
-  /* Optimize all fixed/sticky elements for mobile */
   [class*="fixed"],
   [class*="sticky"] {
-    /* Enable hardware acceleration without transform conflicts */
     will-change: scroll-position;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
   }
   
-  /* Prevent pointer events from blocking scroll */
   header.sticky {
     pointer-events: auto;
-    /* Allow touch interactions but prevent scroll blocking */
     touch-action: pan-y pinch-zoom;
+    transform: translateZ(0);
+    will-change: transform;
   }
   
-  /* Allow scrolling on main content */
+  header.sticky a,
+  header.sticky button {
+    touch-action: manipulation;
+  }
+  
   main,
   article {
     touch-action: pan-y;
     pointer-events: auto;
   }
   
-  /* Ensure header links are clickable */
-  header.sticky a,
-  header.sticky button {
-    touch-action: manipulation;
-  }
-  
-  /* Prevent horizontal scroll on blog content elements */
   .blog-content img,
   .blog-content table,
   .blog-content pre,
@@ -828,84 +881,44 @@ body {
     height: auto;
   }
   
-  /* Fix for header sticky positioning */
-  header.sticky {
-    transform: translateZ(0);
-    will-change: transform;
-  }
-  
-  /* Ensure containers don't cause horizontal scroll */
   article > div {
     overflow-x: hidden;
   }
   
-  /* Additional TOC optimizations for mobile */
-  /* Ensure TOC container doesn't create scroll conflicts */
   aside.not-sticky-mobile > div {
-    /* Remove any potential scroll blocking */
     overflow: visible !important;
     position: relative !important;
   }
   
-  /* Ensure TOC links are easily tappable on mobile */
   aside.not-sticky-mobile nav a {
-    /* Improve touch target size for better accessibility */
     min-height: 40px;
     display: flex;
     align-items: center;
-    /* Improve tap highlight for better UX */
     -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
-    /* Allow text selection but prevent accidental selection during scroll */
     -webkit-touch-callout: default;
   }
   
-  /* Prevent scroll chaining issues */
   aside.not-sticky-mobile {
-    /* Ensure no scroll containment */
     contain: none !important;
     isolation: auto !important;
   }
   
-  /* CRITICAL: Optimize scroll performance on mobile */
-  /* Disable all blur filters on mobile for better performance */
-  [class*="blur"] {
-    filter: none !important;
-    -webkit-filter: none !important;
-  }
-  
-  /* Disable complex animations that can cause scroll lag */
   .scroll-reveal,
   .scroll-reveal * {
-    /* Remove any transform or filter that might cause repaint */
     transform: none !important;
     filter: none !important;
     will-change: auto !important;
-    /* Ensure elements are immediately visible */
     opacity: 1 !important;
   }
   
-  /* Optimize sections for smooth scrolling */
   section {
-    /* Enable hardware acceleration for sections */
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-    /* Prevent layout shifts */
     contain: layout style;
-    /* Improve scroll performance */
     will-change: scroll-position;
   }
   
-  /* Disable expensive CSS effects on mobile */
-  [class*="backdrop-blur"],
-  [class*="blur-"] {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    filter: none !important;
-  }
-  
-  /* Optimize gradient backgrounds - reduce complexity on mobile */
   [class*="gradient-to"] {
-    /* Simplify gradients on mobile */
     background-attachment: scroll !important;
   }
 }

@@ -1,15 +1,37 @@
 import type { Metadata } from 'next';
 import { SITE, createPageMeta } from '@/lib/seo';
 import { Schema } from '@/components/Schema';
+import dynamic from 'next/dynamic';
 import { HeroSection } from '@/components/HeroSection';
 import { AboutSection } from '@/components/AboutSection';
 import { SkillsSection } from '@/components/SkillsSection';
-import { ExperienceSection } from '@/components/ExperienceSection';
-import { EducationSection } from '@/components/EducationSection';
-import { CertificatesSection } from '@/components/CertificatesSection';
 import { HomeProjectsSection } from '@/components/HomeProjectsSection';
-import { HomeBlogSection } from '@/components/HomeBlogSection';
-import { ContactSection } from '@/components/ContactSection';
+
+// Lazy load below-the-fold components to reduce initial bundle size
+const ExperienceSection = dynamic(() => import('@/components/ExperienceSection').then(mod => ({ default: mod.ExperienceSection })), {
+  ssr: true,
+  loading: () => <div className="min-h-[400px] animate-pulse bg-gray-100 dark:bg-gray-800 rounded-xl" />
+});
+
+const EducationSection = dynamic(() => import('@/components/EducationSection').then(mod => ({ default: mod.EducationSection })), {
+  ssr: true,
+  loading: () => <div className="min-h-[300px] animate-pulse bg-gray-100 dark:bg-gray-800 rounded-xl" />
+});
+
+const CertificatesSection = dynamic(() => import('@/components/CertificatesSection').then(mod => ({ default: mod.CertificatesSection })), {
+  ssr: true,
+  loading: () => <div className="min-h-[300px] animate-pulse bg-gray-100 dark:bg-gray-800 rounded-xl" />
+});
+
+const HomeBlogSection = dynamic(() => import('@/components/HomeBlogSection').then(mod => ({ default: mod.HomeBlogSection })), {
+  ssr: true,
+  loading: () => <div className="min-h-[400px] animate-pulse bg-gray-100 dark:bg-gray-800 rounded-xl" />
+});
+
+const ContactSection = dynamic(() => import('@/components/ContactSection').then(mod => ({ default: mod.ContactSection })), {
+  ssr: true,
+  loading: () => <div className="min-h-[300px] animate-pulse bg-gray-100 dark:bg-gray-800 rounded-xl" />
+});
 
 // بهینه‌سازی: استفاده از ISR برای بهتر شدن performance
 export const revalidate = 300; // 5 minutes

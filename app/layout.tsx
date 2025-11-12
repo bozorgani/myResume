@@ -127,8 +127,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fa" dir="rtl" className="scroll-smooth" suppressHydrationWarning>
       <head>
-        {/* Font optimization - Next.js automatically handles font loading */}
+        {/* Font optimization - Next.js automatically handles font loading and preconnect */}
         <ThemeScript />
+        {/* Resource hints for faster CSS loading */}
+        <link rel="preconnect" href={SITE.domain} crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href={SITE.domain} />
       </head>
       <body className={`antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 ${vazirmatn.className}`}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:shadow">پرش به محتوای اصلی</a>

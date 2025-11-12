@@ -1,7 +1,8 @@
 import Link from 'next/link';
+import { memo, useMemo } from 'react';
 
-export function Footer() {
-  const year = new Date().getFullYear();
+function FooterComponent() {
+  const year = useMemo(() => new Date().getFullYear(), []);
   return (
     <footer className="mt-16 border-t bg-gray-50 dark:bg-gray-900">
       <div className="mx-auto max-w-5xl px-4 py-10">
@@ -39,5 +40,8 @@ export function Footer() {
     </footer>
   );
 }
+
+// Memoize Footer to prevent unnecessary re-renders
+export const Footer = memo(FooterComponent);
 
 

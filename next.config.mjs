@@ -85,6 +85,20 @@ const nextConfig = {
         ],
       },
       {
+        // Cache CSS files with proper headers
+        source: '/_next/static/css/:path*.css',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          },
+          {
+            key: 'Content-Type',
+            value: 'text/css; charset=utf-8'
+          }
+        ],
+      },
+      {
         // Cache API responses
         source: '/api/:path*',
         headers: [
@@ -105,6 +119,69 @@ const nextConfig = {
   
   // Enable SWC minification for better performance
   swcMinify: true,
+  
+  // Optimize package imports to reduce bundle size
+  experimental: {
+    optimizePackageImports: ['gsap', 'framer-motion'],
+    // Reduce JavaScript execution time by optimizing server components
+    serverComponentsExternalPackages: [],
+  },
+  
+  // Webpack configuration for better code splitting
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Optimize client-side bundle
+      config.optimization = {
+        ...config.optimization,
+        moduleIds: 'deterministic',
+        runtimeChunk: 'single',
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            // Separate vendor chunks
+            framerMotion: {
+              name: 'framer-motion',
+              test: /[\\/]node_modules[\\/]framer-motion[\\/]/,
+              chunks: 'all',
+              priority: 30,
+            },
+            gsap: {
+              name: 'gsap',
+              test: /[\\/]node_modules[\\/]gsap[\\/]/,
+              chunks: 'all',
+              priority: 30,
+            },
+            react: {
+              name: 'react',
+              test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+              chunks: 'all',
+              priority: 40,
+            },
+            // Common vendor chunk
+            vendor: {
+              name: 'vendor',
+              test: /[\\/]node_modules[\\/]/,
+              chunks: 'all',
+              priority: 20,
+              minChunks: 2,
+            },
+          },
+        },
+      };
+    }
+    return config;
+  },
+  
+  // Compiler options for better performance
+  compiler: {
+    // Remove console.log in production
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
+  
 };
 
 export default nextConfig;
