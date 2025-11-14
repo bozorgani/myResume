@@ -5,7 +5,7 @@ export const SITE = {
   twitter: '@bozorgani',
   github: 'https://github.com/bozorgani',
   linkedin: 'https://www.linkedin.com/in/bozorgani/',
-  email: 'hello@bozorgani.ir',
+  email: 'bozorgani.0312@gmail.com',
   description:
     'محمد امین بزرگانی - توسعه‌دهنده فول‌استک جاوااسکریپت و متخصص SEO فنی / PWA با تخصص در Node.js، Express.js، Next.js، React.js، MongoDB و توسعه Progressive Web Apps. متخصص در بهینه‌سازی Core Web Vitals، SSR، متاتگ‌های داینامیک و داده‌های ساختاریافته. تسلط بر Docker، Linux و DevOps.',
   ogImage: '/images/og-default.png',

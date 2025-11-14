@@ -38,14 +38,14 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
         }
         
         const rect = rectRef.current;
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        const xPct = mouseX / rect.width - 0.5;
-        const yPct = mouseY / rect.height - 0.5;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / rect.width - 0.5;
+    const yPct = mouseY / rect.height - 0.5;
         
-        x.set(xPct);
-        y.set(yPct);
-        setMousePosition({ x: (mouseX / rect.width) * 100, y: (mouseY / rect.height) * 100 });
+    x.set(xPct);
+    y.set(yPct);
+    setMousePosition({ x: (mouseX / rect.width) * 100, y: (mouseY / rect.height) * 100 });
         
         rafRef.current = null;
       });

@@ -97,8 +97,8 @@ export default function ResumePage() {
           {/* Row 2: Name */}
           <div className="flex justify-center w-full">
             <h1 id="resume-title" className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight text-gray-900 dark:text-gray-100 break-words text-center w-full">
-              {SITE.name}
-            </h1>
+                {SITE.name}
+              </h1>
           </div>
           
           {/* Row 3: Description */}

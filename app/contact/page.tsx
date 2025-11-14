@@ -135,8 +135,8 @@ export default function ContactPage() {
       <div className="mt-8 text-center sm:text-right">
         <p className="text-sm text-gray-600 dark:text-gray-400">
           همچنین می‌توانید از طریق{' '}
-          <a href="mailto:webmaster.js@gmail.com" className="text-brand hover:underline font-medium" dir="ltr">
-            ایمیل (webmaster.js@gmail.com)
+          <a href="mailto:bozorgani.0312@gmail.com" className="text-brand hover:underline font-medium" dir="ltr">
+            ایمیل (bozorgani.0312@gmail.com)
           </a>
           {' '}یا{' '}
           <a href={SITE.linkedin} target="_blank" rel="noopener noreferrer" className="text-brand hover:underline font-medium">

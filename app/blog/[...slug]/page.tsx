@@ -240,14 +240,15 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05] bg-[radial-gradient(circle_at_1px_1px,_currentColor_1px,_transparent_0)] bg-[length:24px_24px]"></div>
           
           {post.image && (
-            <div className="relative mb-4 sm:mb-6 md:mb-8 lg:mb-10 overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl ring-2 ring-gray-200/50 dark:ring-gray-700/50 group">
-              <div className="relative aspect-[16/9] w-full overflow-hidden">
+            <div className="relative mb-4 sm:mb-6 md:mb-8 lg:mb-10 rounded-xl sm:rounded-2xl shadow-2xl ring-2 ring-gray-200/50 dark:ring-gray-700/50 group bg-gray-100 dark:bg-gray-900 overflow-hidden">
+              <div className="relative w-full flex items-center justify-center py-4 sm:py-6" style={{ minHeight: '300px' }}>
                 <Image
                   src={post.image}
                   alt={`کاور ${post.title}`}
-                  fill
+                  width={1200}
+                  height={675}
                   sizes="(min-width: 1024px) 1200px, 100vw"
-                  className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-105"
+                  className="max-w-full h-auto max-h-[700px] sm:max-h-[800px] object-contain transition-all duration-700 group-hover:scale-105 group-hover:brightness-105"
                   priority
                 />
               </div>

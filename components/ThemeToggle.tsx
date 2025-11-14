@@ -182,9 +182,9 @@ export function ThemeToggle() {
             aria-hidden="true"
           />
           {/* Menu */}
-          {/* در موبایل: استفاده از fixed positioning و قرار دادن منو در سمت راست صفحه */}
-          {/* در دسکتاپ: استفاده از absolute positioning و قرار دادن منو در سمت راست دکمه */}
-          <div className="md:absolute fixed md:left-0 md:right-auto md:mt-2 mt-14 right-4 left-auto w-44 md:w-48 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl z-[70] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          {/* در موبایل: استفاده از absolute positioning و قرار دادن منو در سمت چپ دکمه با فاصله از لبه */}
+          {/* در دسکتاپ: استفاده از absolute positioning و قرار دادن منو در سمت چپ دکمه */}
+          <div className="absolute left-0 right-auto mt-2 md:mt-2 w-44 md:w-48 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl z-[70] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200" style={{ maxWidth: 'calc(100vw - 2rem)' }}>
             {themes.map((themeOption) => (
               <button
                 key={themeOption.value}
