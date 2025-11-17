@@ -23,11 +23,6 @@ const CertificatesSection = dynamic(() => import('@/components/CertificatesSecti
   loading: () => <div className="min-h-[300px] animate-pulse bg-gray-100 dark:bg-gray-800 rounded-xl" />
 });
 
-const HomeBlogSection = dynamic(() => import('@/components/HomeBlogSection').then(mod => ({ default: mod.HomeBlogSection })), {
-  ssr: true,
-  loading: () => <div className="min-h-[400px] animate-pulse bg-gray-100 dark:bg-gray-800 rounded-xl" />
-});
-
 const ContactSection = dynamic(() => import('@/components/ContactSection').then(mod => ({ default: mod.ContactSection })), {
   ssr: true,
   loading: () => <div className="min-h-[300px] animate-pulse bg-gray-100 dark:bg-gray-800 rounded-xl" />
@@ -97,9 +92,6 @@ export default function HomePage() {
 
       {/* Projects Section */}
       <HomeProjectsSection />
-
-      {/* Blog Section */}
-      <HomeBlogSection />
 
       {/* Experience Section */}
       <ExperienceSection />
