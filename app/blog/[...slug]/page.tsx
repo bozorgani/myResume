@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { SITE, createPageMeta } from '@/lib/seo';
 import { getAllPosts, getPostBySlug, getAllCategories, getPostUrl, type Post } from '@/lib/posts';
 import Image from 'next/image';
@@ -122,10 +122,90 @@ export default async function BlogPostPage({ params }: { params: Params }) {
   const { categorySlug: urlCategorySlug, postSlug } = parseSlug(params.slug);
   
   const post = await getPostBySlug(postSlug);
-  if (!post) return notFound();
+  if (!post) {
+    // SEO Fix: Check if slug is a known category slug before returning 404
+    // This handles cases where old category URLs are accessed directly
+    const categorySlugMap: Record<string, string> = {
+      'node-js': 'nodejs',
+      'next-js': 'nextjs',
+      'tailwind-css': 'tailwind',
+      'ui-ux': 'ui-ux',
+      'api-design': 'api-design',
+      'technical-seo': 'technical-seo',
+      'performance-optimization': 'performance',
+      'content-seo': 'content-seo',
+      'google-search-console': 'search-console',
+      'ai-tools': 'ai-tools',
+      'github-copilot': 'github-copilot',
+      'chatgpt-for-developers': 'chatgpt',
+      'trends-2025': 'trends-2025',
+      'edge-runtime': 'edge-runtime',
+      'web-frameworks': 'web-frameworks',
+    };
+    
+    // Check if the slug matches a known category slug
+    const normalizedSlug = postSlug.toLowerCase();
+    const mappedCategory = categorySlugMap[normalizedSlug];
+    
+    if (mappedCategory) {
+      // Redirect to category page (301 permanent redirect)
+      redirect(`/blog?category=${mappedCategory}`);
+    }
+    
+    // Also check if it's a direct category slug match
+    try {
+      const categories = await getAllCategories();
+      const flattenCategories = (cats: typeof categories): Array<{ slug: string; name: string }> => {
+        const result: Array<{ slug: string; name: string }> = [];
+        cats.forEach(cat => {
+          result.push({ slug: cat.slug, name: cat.name });
+          if (cat.children && cat.children.length > 0) {
+            result.push(...flattenCategories(cat.children));
+          }
+        });
+        return result;
+      };
+      
+      const allCategoriesFlat = flattenCategories(categories);
+      const foundCategory = allCategoriesFlat.find(cat => 
+        cat.slug === normalizedSlug || cat.slug === postSlug
+      );
+      
+      if (foundCategory) {
+        // Redirect to category page (301 permanent redirect)
+        redirect(`/blog?category=${foundCategory.slug}`);
+      }
+    } catch (error) {
+      // If category fetch fails, continue to 404
+      console.error('[BlogPostPage] Error fetching categories for redirect check:', error);
+    }
+    
+    // SEO: If post not found and not a category slug, return 404 (notFound() returns 404 with proper headers)
+    // The middleware handles known redirects like /blog/node-js → /blog?category=nodejs
+    // For posts that don't exist, 404 is the correct response
+    return notFound();
+  }
   
   // Get the correct URL for this post (with English category slug)
   const postUrl = getPostUrl(post);
+  
+  // SEO Fix: If the requested URL doesn't match the correct post URL, redirect to correct URL
+  // This handles cases where old URLs or incorrect category slugs are used
+  const requestedPath = params.slug.length === 1 
+    ? `/blog/${params.slug[0]}`
+    : params.slug.length === 2
+    ? `/blog/${params.slug[0]}/${params.slug[1]}`
+    : `/blog/${params.slug.join('/')}`;
+  
+  // Normalize both URLs for comparison (remove trailing slashes, handle encoding)
+  const normalizeUrl = (url: string) => url.replace(/\/$/, '').toLowerCase();
+  const requestedNormalized = normalizeUrl(requestedPath);
+  const correctNormalized = normalizeUrl(postUrl);
+  
+  // If URLs don't match, redirect to correct URL (301 permanent redirect)
+  if (requestedNormalized !== correctNormalized) {
+    redirect(postUrl);
+  }
 
   // Extract keywords from categories and tags
   const keywords = [

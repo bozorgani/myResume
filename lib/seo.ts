@@ -74,7 +74,13 @@ export function createPageMeta({
 }) {
   const ogImage = image ?? SITE.ogImage;
   const fullImageUrl = ogImage.startsWith('http') ? ogImage : `${SITE.domain}${ogImage}`;
-  const fullUrl = url.startsWith('http') ? url : `${SITE.domain}${url}`;
+  // Ensure canonical URL is properly formatted
+  // Remove trailing slashes and normalize URL
+  let fullUrl = url.startsWith('http') ? url : `${SITE.domain}${url}`;
+  // Normalize URL: remove trailing slash (except for root)
+  if (fullUrl.endsWith('/') && fullUrl !== `${SITE.domain}/`) {
+    fullUrl = fullUrl.slice(0, -1);
+  }
   
   // Parse robots string (e.g., "index, follow" or "noindex, nofollow")
   const parseRobots = (robotsStr?: string): import('next').Metadata['robots'] => {

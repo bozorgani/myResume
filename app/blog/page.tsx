@@ -28,28 +28,53 @@ export async function generateMetadata({
   const currentPage = Math.max(1, parseInt(searchParams?.page || '1', 10) || 1);
   const hasTag = !!searchParams?.tag;
   const hasCategory = !!searchParams?.category;
-  const hasSearchQuery = !!searchParams?.q && searchParams.q.trim().length > 0;
+  const searchQuery = searchParams?.q?.trim() || '';
+  // Check if search query is a real query (not a placeholder like {search_term_string})
+  const isPlaceholderQuery = searchQuery.includes('{') && searchQuery.includes('}');
+  const hasSearchQuery = searchQuery.length > 0 && !isPlaceholderQuery;
+  
+  // SEO Fix: For placeholder queries, canonicalize to /blog to prevent indexing
+  // This ensures Google doesn't try to index test URLs from SearchAction schema
+  if (isPlaceholderQuery) {
+    const canonicalUrl = `${SITE.domain}/blog`;
+    return createPageMeta({
+      title: `بلاگ | ${SITE.name}`,
+      description: `مجموعه مقالات تخصصی ${SITE.name} درباره توسعه Full-Stack با Next.js و React، بهینه‌سازی عملکرد وب‌سایت‌ها، بهبود Core Web Vitals، و بهترین شیوه‌های سئو فنی.`,
+      url: canonicalUrl,
+      robots: 'noindex, follow' // Don't index placeholder queries
+    });
+  }
   
   // Build canonical URL with consistent parameter ordering
-  // Order: category, tag, q, page (alphabetical order for consistency)
+  // IMPORTANT: Order must be consistent (alphabetical: category, page, q, tag)
+  // This ensures canonical URL matches the actual page URL exactly
+  // Google requires canonical URL to match the actual URL to avoid "Duplicate" errors
+  // 
+  // CRITICAL: URLSearchParams.toString() automatically sorts parameters alphabetically
+  // This matches the middleware normalization, ensuring canonical URL matches the actual URL
   const canonicalParams = new URLSearchParams();
   
+  // Add parameters in alphabetical order for consistency
+  // This ensures canonical URL matches regardless of parameter order in request
+  // Order: category, page, q, tag (alphabetical)
   if (hasCategory && searchParams?.category) {
     canonicalParams.set('category', searchParams.category);
   }
-  if (hasTag && searchParams?.tag) {
-    canonicalParams.set('tag', searchParams.tag);
+  // Only include page parameter if it's greater than 1
+  // Page 1 should not include page parameter in canonical URL
+  if (currentPage > 1) {
+    canonicalParams.set('page', String(currentPage));
   }
   if (hasSearchQuery && searchParams?.q) {
     canonicalParams.set('q', searchParams.q.trim());
   }
-  // Only include page parameter if it's greater than 1
-  // Page 1 of any filtered/unfiltered results should not include page parameter
-  if (currentPage > 1) {
-    canonicalParams.set('page', String(currentPage));
+  if (hasTag && searchParams?.tag) {
+    canonicalParams.set('tag', searchParams.tag);
   }
   
-  // Build canonical URL - MUST match the actual page URL
+  // Build canonical URL - MUST match the actual page URL exactly
+  // URLSearchParams.toString() automatically sorts parameters alphabetically
+  // This matches the middleware normalization, ensuring consistency
   const canonicalUrl = canonicalParams.toString()
     ? `${SITE.domain}/blog?${canonicalParams.toString()}`
     : `${SITE.domain}/blog`;
@@ -62,41 +87,92 @@ export async function generateMetadata({
   // - Paginated pages: Index them (they show different content)
   const shouldNoIndex = hasSearchQuery; // Don't index search query pages
   
+  // Fetch categories to get real category names for better SEO
+  let categoryName: string | undefined;
+  let tagName: string | undefined;
+  
+  if (hasCategory || hasTag) {
+    try {
+      const [posts, categories] = await Promise.all([
+        getAllPosts().catch(() => []),
+        getAllCategories().catch(() => [])
+      ]);
+      
+      // Helper to flatten categories
+      const flattenCategories = (cats: typeof categories): Array<{ slug: string; name: string }> => {
+        const result: Array<{ slug: string; name: string }> = [];
+        cats.forEach(cat => {
+          result.push({ slug: cat.slug, name: cat.name });
+          if (cat.children && cat.children.length > 0) {
+            result.push(...flattenCategories(cat.children));
+          }
+        });
+        return result;
+      };
+      
+      if (hasCategory && searchParams?.category) {
+        const allCategoriesFlat = flattenCategories(categories);
+        const foundCategory = allCategoriesFlat.find(cat => cat.slug === searchParams.category);
+        categoryName = foundCategory?.name || searchParams.category;
+      }
+      
+      if (hasTag && searchParams?.tag) {
+        // Find tag name from posts
+        const foundPost = posts.find(p => p.tags?.some(tag => tag.slug === searchParams.tag));
+        const foundTag = foundPost?.tags?.find(tag => tag.slug === searchParams.tag);
+        tagName = foundTag?.name || searchParams.tag;
+      }
+    } catch (error) {
+      // If fetch fails, use slug as fallback
+      if (hasCategory) categoryName = searchParams?.category;
+      if (hasTag) tagName = searchParams?.tag;
+    }
+  }
+  
   // Build descriptive title and description based on filters
   // This improves SEO and helps Google understand the page content
   let pageTitle = `بلاگ | ${SITE.name}`;
   let pageDescription = `مجموعه مقالات تخصصی ${SITE.name} درباره توسعه Full-Stack با Next.js و React، بهینه‌سازی عملکرد وب‌سایت‌ها، بهبود Core Web Vitals، و بهترین شیوه‌های سئو فنی. تجربیات عملی، راهنماهای گام‌به‌گام، و نکات پیشرفته در زمینه توسعه وب.`;
   
-  if (hasTag) {
-    pageTitle = `مقالات با برچسب ${searchParams.tag} | بلاگ ${SITE.name}`;
-    pageDescription = `مقالات مرتبط با برچسب "${searchParams.tag}" از بلاگ ${SITE.name}. مجموعه مقالات تخصصی درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
-  } else if (hasCategory) {
-    // Category name will be fetched in component, but we can provide a generic description
-    pageTitle = `مقالات دسته‌بندی ${searchParams.category} | بلاگ ${SITE.name}`;
-    pageDescription = `مقالات دسته‌بندی "${searchParams.category}" از بلاگ ${SITE.name}. مجموعه مقالات تخصصی درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
+  if (hasTag && tagName) {
+    pageTitle = `مقالات با برچسب ${tagName} | بلاگ ${SITE.name}`;
+    pageDescription = `مقالات و مطالب تخصصی با برچسب "${tagName}" از بلاگ ${SITE.name}. مجموعه مقالات تخصصی درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
+  } else if (hasCategory && categoryName) {
+    pageTitle = `مقالات دسته‌بندی ${categoryName} | بلاگ ${SITE.name}`;
+    pageDescription = `مقالات و مطالب تخصصی دسته‌بندی "${categoryName}" از بلاگ ${SITE.name}. مجموعه مقالات تخصصی درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
   } else if (currentPage > 1) {
     pageTitle = `بلاگ | ${SITE.name} - صفحه ${currentPage}`;
     pageDescription = `صفحه ${currentPage} از بلاگ ${SITE.name}. مجموعه مقالات تخصصی درباره توسعه Full-Stack با Next.js و React.`;
+  }
+  
+  // Build keywords array with category/tag specific keywords
+  const baseKeywords = [
+    'مقالات توسعه وب',
+    'بلاگ Next.js',
+    'مقالات React',
+    'مقالات سئو فنی',
+    'بهینه‌سازی عملکرد',
+    'Core Web Vitals',
+    'توسعه Full-Stack',
+    'مقالات برنامه‌نویسی'
+  ];
+  
+  if (categoryName) {
+    baseKeywords.unshift(categoryName, `مقالات ${categoryName}`);
+  }
+  if (tagName) {
+    baseKeywords.unshift(tagName, `مقالات ${tagName}`);
   }
   
   return createPageMeta({
     title: pageTitle,
     description: pageDescription,
     url: canonicalUrl, // Canonical URL that matches the actual page URL
-    keywords: [
-      'مقالات توسعه وب',
-      'بلاگ Next.js',
-      'مقالات React',
-      'مقالات سئو فنی',
-      'بهینه‌سازی عملکرد',
-      'Core Web Vitals',
-      'توسعه Full-Stack',
-      'مقالات برنامه‌نویسی'
-    ],
-    // IMPORTANT: Only set noindex for search query pages
-    // Category and tag pages should be indexed as they have unique content
-    // Don't set robots if we want to index (let it default to index, follow)
-    robots: shouldNoIndex ? 'noindex, follow' : undefined
+    keywords: baseKeywords,
+    // SEO Fix: Explicitly set robots to "index, follow" for category/tag pages
+    // This ensures Google indexes these pages even if they have no content yet
+    // For search query pages, use "noindex, follow"
+    robots: shouldNoIndex ? 'noindex, follow' : 'index, follow'
   });
 }
 
@@ -282,12 +358,31 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
     }))
   } as const;
 
+  // Build CollectionPage schema with category/tag specific information
+  const collectionPageName = categorySlug 
+    ? `مقالات دسته‌بندی ${allCategoriesFlat.find(cat => cat.slug === categorySlug)?.name || categorySlug}`
+    : tagSlug
+    ? `مقالات با برچسب ${posts.find((p) => p.tags?.some((tag) => tag.slug === tagSlug))?.tags?.find((tag) => tag.slug === tagSlug)?.name || tagSlug}`
+    : `بلاگ ${SITE.name}`;
+  
+  const collectionPageUrl = categorySlug
+    ? `${SITE.domain}/blog?category=${categorySlug}`
+    : tagSlug
+    ? `${SITE.domain}/blog?tag=${tagSlug}`
+    : `${SITE.domain}/blog`;
+  
+  const collectionPageDescription = categorySlug
+    ? `مقالات و مطالب تخصصی دسته‌بندی "${allCategoriesFlat.find(cat => cat.slug === categorySlug)?.name || categorySlug}" از بلاگ ${SITE.name}`
+    : tagSlug
+    ? `مقالات و مطالب تخصصی با برچسب "${posts.find((p) => p.tags?.some((tag) => tag.slug === tagSlug))?.tags?.find((tag) => tag.slug === tagSlug)?.name || tagSlug}" از بلاگ ${SITE.name}`
+    : `مجموعه مقالات تخصصی ${SITE.name}`;
+
   const collectionPageSchema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: `بلاگ ${SITE.name}`,
-    url: `${SITE.domain}/blog`,
-    description: `مجموعه مقالات تخصصی ${SITE.name}`,
+    name: collectionPageName,
+    url: collectionPageUrl,
+    description: collectionPageDescription,
     inLanguage: 'fa-IR',
     mainEntity: {
       '@type': 'ItemList',
@@ -301,7 +396,18 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
           url: `${SITE.domain}${getPostUrl(p)}`
         }
       }))
-    }
+    },
+    // Add about property for category pages to help Google understand the topic
+    ...(categorySlug && {
+      about: {
+        '@type': 'Thing',
+        name: allCategoriesFlat.find(cat => cat.slug === categorySlug)?.name || categorySlug
+      }
+    }),
+    // Add keywords for tag pages
+    ...(tagSlug && {
+      keywords: posts.find((p) => p.tags?.some((tag) => tag.slug === tagSlug))?.tags?.find((tag) => tag.slug === tagSlug)?.name || tagSlug
+    })
   } as const;
 
   return (
@@ -554,13 +660,42 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
           </div>
         )}
         {paginatedRest.length === 0 ? (
-          <div className="rounded-xl border bg-white p-8 text-center">
-            <p className="text-gray-700 dark:text-gray-300">مقاله‌ای یافت نشد.</p>
-            {posts.length === 0 && (
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                در حال حاضر مقاله‌ای در دسترس نیست. لطفاً بعداً دوباره تلاش کنید.
+          <div className="rounded-xl border bg-white dark:bg-gray-900 p-8 sm:p-10 md:p-12 text-center">
+            <div className="max-w-2xl mx-auto space-y-4">
+              <div className="text-6xl mb-4">📝</div>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+                {categorySlug 
+                  ? `مقاله‌ای در دسته‌بندی "${allCategoriesFlat.find(cat => cat.slug === categorySlug)?.name || categorySlug}" یافت نشد`
+                  : tagSlug
+                  ? `مقاله‌ای با برچسب "${posts.find((p) => p.tags?.some((tag) => tag.slug === tagSlug))?.tags?.find((tag) => tag.slug === tagSlug)?.name || tagSlug}" یافت نشد`
+                  : 'مقاله‌ای یافت نشد'}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                {categorySlug 
+                  ? `در حال حاضر مقاله‌ای در دسته‌بندی "${allCategoriesFlat.find(cat => cat.slug === categorySlug)?.name || categorySlug}" منتشر نشده است. به زودی مقالات جدیدی در این دسته‌بندی منتشر خواهند شد.`
+                  : tagSlug
+                  ? `در حال حاضر مقاله‌ای با برچسب "${posts.find((p) => p.tags?.some((tag) => tag.slug === tagSlug))?.tags?.find((tag) => tag.slug === tagSlug)?.name || tagSlug}" منتشر نشده است. به زودی مقالات جدیدی با این برچسب منتشر خواهند شد.`
+                  : posts.length === 0 
+                  ? 'در حال حاضر مقاله‌ای در دسترس نیست. لطفاً بعداً دوباره تلاش کنید.'
+                  : 'مقاله‌ای با فیلترهای انتخابی شما یافت نشد. لطفاً فیلترها را تغییر دهید یا از جستجو استفاده کنید.'}
               </p>
-            )}
+              <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
+                <a 
+                  href="/blog"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-sm font-semibold text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  مشاهده همه مقالات
+                </a>
+                {categorySlug && (
+                  <a 
+                    href="/blog"
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300"
+                  >
+                    حذف فیلتر
+                  </a>
+                )}
+              </div>
+            </div>
           </div>
         ) : (
           <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
