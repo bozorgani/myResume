@@ -9,6 +9,10 @@ import { Breadcrumbs, type Crumb } from '@/components/Breadcrumbs';
 import { ScrollToTop } from '@/components/ScrollToTop';
 import { Comments } from '@/components/Comments';
 import { TableOfContentsHighlight } from '@/components/TableOfContentsHighlight';
+import { ReadingProgress } from '@/components/ReadingProgress';
+import { ShareButtons } from '@/components/ShareButtons';
+import { HeadingAnchors } from '@/components/HeadingAnchors';
+import { RelatedPosts } from '@/components/RelatedPosts';
 
 // بهینه‌سازی: استفاده از ISR برای بهتر شدن performance
 export const revalidate = 300; // 5 minutes
@@ -307,8 +311,11 @@ export default async function BlogPostPage({ params }: { params: Params }) {
   breadcrumbItems.push({ name: post.title });
 
   return (
-    <article className="max-w-none">
-      <Schema json={articleSchema} />
+    <>
+      <ReadingProgress />
+      <HeadingAnchors />
+      <article className="max-w-none">
+        <Schema json={articleSchema} />
       <Schema json={breadcrumbSchema} />
       <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8">
         <Breadcrumbs items={breadcrumbItems} />
@@ -430,6 +437,8 @@ export default async function BlogPostPage({ params }: { params: Params }) {
               className="blog-content rounded-2xl sm:rounded-3xl border border-gray-200/80 dark:border-gray-800/80 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 shadow-xl dark:shadow-2xl"
               dangerouslySetInnerHTML={{ __html: contentWithIds }} 
             />
+            
+            <ShareButtons url={postUrl} title={post.title} />
           </div>
         
         {toc.length > 0 && (
@@ -506,10 +515,12 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           </nav>
         )}
 
+        <RelatedPosts currentPost={post} allPosts={await getAllPosts()} />
         <Comments />
         <ScrollToTop />
       </div>
     </article>
+    </>
   );
 }
 
