@@ -216,6 +216,20 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
   };
 
   const allCategoriesFlat = flattenCategories(categories);
+  
+  // Find category and tag names for smart filtering
+  let categoryName = '';
+  if (categorySlug) {
+    const foundCategory = allCategoriesFlat.find(cat => cat.slug === categorySlug);
+    categoryName = foundCategory?.name || '';
+  }
+  
+  let tagName = '';
+  if (tagSlug) {
+    const foundPost = posts.find(p => p.tags?.some(tag => tag.slug === tagSlug));
+    const foundTag = foundPost?.tags?.find(tag => tag.slug === tagSlug);
+    tagName = foundTag?.name || '';
+  }
 
   // Helper function to find a category by slug in the hierarchical structure
   const findCategoryBySlug = (cats: typeof categories, targetSlug: string): typeof categories[0] | null => {
