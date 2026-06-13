@@ -219,8 +219,23 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
 
   // Helper function to find a category by slug in the hierarchical structure
   const findCategoryBySlug = (cats: typeof categories, targetSlug: string): typeof categories[0] | null => {
+    if (!targetSlug) return null;
+    
+    // Normalization helper: lowercase, decode URI, and remove hyphens/spaces for fuzzy matching
+    const normalize = (s: string) => {
+      if (!s) return '';
+      try {
+        return decodeURIComponent(s).toLowerCase().replace(/[-\s_]+/g, '').trim();
+      } catch (e) {
+        return s.toLowerCase().replace(/[-\s_]+/g, '').trim();
+      }
+    };
+    
+    const normalizedTarget = normalize(targetSlug);
+
+    // Level 1: Exact normalized match
     for (const cat of cats) {
-      if (cat.slug === targetSlug) {
+      if (normalize(cat.slug) === normalizedTarget) {
         return cat;
       }
       if (cat.children && cat.children.length > 0) {
@@ -228,6 +243,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
         if (found) return found;
       }
     }
+    
     return null;
   };
 
@@ -254,12 +270,18 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
     // Get all slugs to match (category itself + its children if it's a main category)
     const slugsToMatch = getCategorySlugsIncludingChildren(categorySlug);
     
-    // Debug log (only in development)
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[BlogPage] Filtering by category:', categorySlug);
-      console.log('[BlogPage] Slugs to match:', slugsToMatch);
-      console.log('[BlogPage] Total posts before filter:', posts.length);
-    }
+    // Normalization helper
+    const normalize = (s: string) => {
+      if (!s) return '';
+      try {
+        return decodeURIComponent(s).toLowerCase().replace(/[-\s_]+/g, '').trim();
+      } catch (e) {
+        return s.toLowerCase().replace(/[-\s_]+/g, '').trim();
+      }
+    };
+    
+    const normalizedSlugsToMatch = slugsToMatch.map(normalize);
+    const normalizedCategorySlug = normalize(categorySlug);
     
     filtered = filtered.filter((p) => {
       let matches = false;
@@ -267,33 +289,55 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
       // Check if category matches in categories array
       if (p.categories && p.categories.length > 0) {
         matches = p.categories.some((cat) => {
-          const catSlug = cat.slug;
-          const isMatch = slugsToMatch.includes(catSlug);
-          if (process.env.NODE_ENV === 'development' && isMatch) {
-            console.log('[BlogPage] Post matched:', p.title, 'via category:', catSlug);
-          }
-          return isMatch;
+          const normCat = normalize(cat.slug);
+          return normalizedSlugsToMatch.includes(normCat) || normCat.includes(normalizedCategorySlug) || normalizedCategorySlug.includes(normCat);
         });
       }
       
       // Fallback to single category if not matched yet
       if (!matches && p.category?.slug) {
-        matches = slugsToMatch.includes(p.category.slug);
-        if (process.env.NODE_ENV === 'development' && matches) {
-          console.log('[BlogPage] Post matched:', p.title, 'via single category:', p.category.slug);
-        }
+        const normCat = normalize(p.category.slug);
+        matches = normalizedSlugsToMatch.includes(normCat) || normCat.includes(normalizedCategorySlug) || normalizedCategorySlug.includes(normCat);
       }
       
+      // Smart Fallback: Check if category name matches (to handle slug mismatches like "pwa-چیست" vs "pwa-chyst")
+      if (!matches && categoryName) {
+        const normCatName = normalize(categoryName);
+        if (p.categories && p.categories.length > 0) {
+          matches = p.categories.some(cat => normalize(cat.name).includes(normCatName) || normCatName.includes(normalize(cat.name)));
+        }
+        if (!matches && p.category?.name) {
+          matches = normalize(p.category.name).includes(normCatName) || normCatName.includes(normalize(p.category.name));
+        }
+      }
+
       return matches;
     });
-    
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[BlogPage] Total posts after filter:', filtered.length);
-    }
   }
   
   if (tagSlug) {
-    filtered = filtered.filter((p) => p.tags?.some((tag) => tag.slug === tagSlug));
+    const normalize = (s: string) => {
+      if (!s) return '';
+      try {
+        return decodeURIComponent(s).toLowerCase().replace(/[-\s_]+/g, '').trim();
+      } catch (e) {
+        return s.toLowerCase().replace(/[-\s_]+/g, '').trim();
+      }
+    };
+    const normalizedTagSlug = normalize(tagSlug);
+    const normTagName = tagName ? normalize(tagName) : '';
+    
+    filtered = filtered.filter((p) => p.tags?.some((tag) => {
+      const normTag = normalize(tag.slug);
+      let isMatch = normTag === normalizedTagSlug || normTag.includes(normalizedTagSlug) || normalizedTagSlug.includes(normTag);
+      
+      // Smart Fallback for Tags
+      if (!isMatch && normTagName && tag.name) {
+        const normTagCatName = normalize(tag.name);
+        isMatch = normTagCatName.includes(normTagName) || normTagName.includes(normTagCatName);
+      }
+      return isMatch;
+    }));
   }
 
   if (query) {
