@@ -8,6 +8,7 @@ import { Schema } from '@/components/Schema';
 import { Breadcrumbs, type Crumb } from '@/components/Breadcrumbs';
 import { ScrollToTop } from '@/components/ScrollToTop';
 import { Comments } from '@/components/Comments';
+import { TableOfContentsHighlight } from '@/components/TableOfContentsHighlight';
 
 // بهینه‌سازی: استفاده از ISR برای بهتر شدن performance
 export const revalidate = 300; // 5 minutes
@@ -432,7 +433,8 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           </div>
         
         {toc.length > 0 && (
-          <aside className="lg:sticky lg:top-6 h-max order-1 lg:order-2 mb-6 lg:mb-0 not-sticky-mobile">
+          <aside className="lg:sticky lg:top-6 h-max order-1 lg:order-2 mb-6 lg:mb-0 not-sticky-mobile no-print">
+            <TableOfContentsHighlight />
             <div className="rounded-xl sm:rounded-2xl border-2 border-gray-200/80 dark:border-gray-800/80 bg-gradient-to-br from-white/90 via-gray-50/90 to-white/90 dark:from-gray-900/90 dark:via-gray-950/90 dark:to-gray-900/90 backdrop-blur-md p-4 sm:p-6 shadow-xl dark:shadow-2xl">
               <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b-2 border-gray-200/80 dark:border-gray-700/80">
                 <span className="text-xl sm:text-2xl leading-none">📑</span>
