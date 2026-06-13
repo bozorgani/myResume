@@ -698,10 +698,10 @@ body { @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100; }
 /* Ensure proper scrolling on mobile devices - enhance existing styles */
 html {
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
+  overscroll-behavior-y: auto;
   overflow-x: hidden;
-  overflow-y: auto;
-  height: 100%;
+  overflow-y: visible;
+  height: auto;
   position: relative;
   /* Prevent scroll bouncing on mobile Chrome */
   overscroll-behavior-block: contain;
@@ -709,10 +709,10 @@ html {
 
 body {
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
+  overscroll-behavior-y: auto;
   overflow-x: hidden;
-  overflow-y: auto;
-  min-height: 100%;
+  overflow-y: visible;
+  min-height: auto;
   position: relative;
   /* Prevent scroll jank on mobile */
   -webkit-font-smoothing: antialiased;
@@ -839,7 +839,7 @@ body {
   }
   
   article {
-    overscroll-behavior-y: contain;
+    overscroll-behavior-y: auto;
   }
   
   .blog-content {
