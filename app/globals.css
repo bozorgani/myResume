@@ -927,3 +927,54 @@ body {
 }
 
 
+
+/* Print Styles for PDF Export */
+@media print {
+  /* Hide non-essential elements */
+  header, footer, nav, button, .no-print, [aria-hidden="true"] {
+    display: none !important;
+  }
+  
+  /* Make sure background colors and gradients are printed */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Resume Page specific print styles */
+  article {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .dark {
+    /* Reset dark mode styles for printing */
+    background: white !important;
+    color: black !important;
+  }
+  
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+  
+  /* Avoid page breaks inside sections */
+  section, .break-inside-avoid {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  h1, h2, h3 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+}

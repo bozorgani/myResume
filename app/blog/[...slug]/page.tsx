@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Schema } from '@/components/Schema';
 import { Breadcrumbs, type Crumb } from '@/components/Breadcrumbs';
 import { ScrollToTop } from '@/components/ScrollToTop';
+import { Comments } from '@/components/Comments';
 
 // بهینه‌سازی: استفاده از ISR برای بهتر شدن performance
 export const revalidate = 300; // 5 minutes
@@ -503,6 +504,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           </nav>
         )}
 
+        <Comments />
         <ScrollToTop />
       </div>
     </article>
