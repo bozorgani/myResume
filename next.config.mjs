@@ -17,6 +17,12 @@ const nextConfig = {
     minimumCacheTTL: 60,
     // Remote patterns for images
     remotePatterns: [
+      // Vercel Blob Storage
+      {
+        protocol: 'https',
+        hostname: 's6q6c5mhgszgcccf.public.blob.vercel-storage.com',
+        pathname: '/**',
+      },
       // Development: localhost:4000 (CMS API)
       {
         protocol: 'http',
