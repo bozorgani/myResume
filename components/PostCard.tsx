@@ -126,13 +126,13 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
           />
         </motion.div>
       )}
-      <div className="relative" style={{ transform: 'translateZ(10px)' }}>
+      <div className="relative z-10" style={{ transform: 'translateZ(10px)' }}>
         <motion.h3 
           id={`${post.slug}-title`} 
           className="mt-0 sm:mt-1 text-base sm:text-lg md:text-xl font-semibold line-clamp-2 leading-snug"
           whileHover={{ x: 4 }}
         >
-          <Link href={getPostUrl(post) as any} className="hover:underline text-gray-900 dark:text-gray-100 focus:outline-none before:absolute before:inset-0 before:z-10">{post.title}</Link>
+          <Link href={getPostUrl(post) as any} className="hover:underline text-gray-900 dark:text-gray-100 focus:outline-none before:absolute before:-inset-4 before:z-10 before:cursor-pointer">{post.title}</Link>
         </motion.h3>
         <p className="mt-2 sm:mt-3 text-sm sm:text-base line-clamp-3 text-gray-700 dark:text-gray-300 flex-grow">{post.description}</p>
       </div>
