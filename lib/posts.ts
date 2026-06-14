@@ -663,7 +663,15 @@ export async function getPostBySlug(slug: string): Promise<Post | undefined> {
       }
       
       const data = await res.json();
-      return mapCmsPostToSitePost(data);
+      
+      // Handle the case where the API wraps the post in a 'post' property
+      const postData = data && data.post ? data.post : data;
+      
+      if (!postData || Object.keys(postData).length === 0) {
+        return undefined;
+      }
+      
+      return mapCmsPostToSitePost(postData);
     } catch (fetchError) {
       // Suppress connection error logs during build time
       if (buildTime && isConnectionError(fetchError)) {
