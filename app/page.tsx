@@ -6,6 +6,7 @@ import { HeroSection } from '@/components/HeroSection';
 import { AboutSection } from '@/components/AboutSection';
 import { SkillsSection } from '@/components/SkillsSection';
 import { HomeProjectsSection } from '@/components/HomeProjectsSection';
+import { FeaturedDeveloper } from '@/components/FeaturedDeveloper';
 
 // Lazy load below-the-fold components to reduce initial bundle size
 const ExperienceSection = dynamic(() => import('@/components/ExperienceSection').then(mod => ({ default: mod.ExperienceSection })), {
@@ -32,24 +33,25 @@ const ContactSection = dynamic(() => import('@/components/ContactSection').then(
 export const revalidate = 300; // 5 minutes
 
 export const metadata: Metadata = createPageMeta({
-  title: `${SITE.name} | ${SITE.role}`,
-  description: SITE.description,
+  title: `Mohammad Amin Bozorgani (محمد امین بزرگانی) | ${SITE.role}`,
+  description: `Mohammad Amin Bozorgani (محمد امین بزرگانی) is a Full Stack Engineer and Technical SEO Expert specializing in Next.js, React, and Node.js. ${SITE.description}`,
   url: `${SITE.domain}/`, // Explicit canonical for homepage
-  keywords: [...SITE.keywords]
+  keywords: ['Mohammad Amin Bozorgani', 'محمد امین بزرگانی', ...SITE.keywords]
 });
 
 export default function HomePage() {
   const webPageJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: `${SITE.name} | ${SITE.role}`,
+    name: `Mohammad Amin Bozorgani | ${SITE.role}`,
     url: SITE.domain,
     inLanguage: 'fa-IR',
-    description: SITE.description,
+    description: `Mohammad Amin Bozorgani (محمد امین بزرگانی) is a Full Stack Engineer and Technical SEO Expert specializing in Next.js, React, and Node.js. ${SITE.description}`,
     mainEntity: {
       '@type': 'Person',
-      name: SITE.name,
-      jobTitle: SITE.role
+      name: 'Mohammad Amin Bozorgani',
+      alternateName: 'محمد امین بزرگانی',
+      jobTitle: 'Full Stack Engineer & SEO Expert'
     }
   } as const;
 
@@ -86,6 +88,9 @@ export default function HomePage() {
 
       {/* About Section */}
       <AboutSection />
+
+      {/* Featured Developer Section (SEO & Entity Recognition) */}
+      <FeaturedDeveloper />
 
       {/* Skills Section */}
       <SkillsSection />

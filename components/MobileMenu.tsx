@@ -9,7 +9,7 @@ interface MobileMenuProps {
   onClose: () => void;
 }
 
-type Route = '/' | '/projects' | '/blog' | '/resume' | '/contact';
+type Route = '/' | '/about-mohammad-amin-bozorgani' | '/projects' | '/blog' | '/resume' | '/contact';
 
 interface MenuItem {
   href: Route;
@@ -19,6 +19,7 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   { href: '/', label: 'خانه', icon: '🏠' },
+  { href: '/about-mohammad-amin-bozorgani', label: 'درباره من', icon: '👤' },
   { href: '/projects', label: 'پروژه‌ها', icon: '💼' },
   { href: '/blog', label: 'بلاگ', icon: '📝' },
   { href: '/resume', label: 'رزومه', icon: '📄' },

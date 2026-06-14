@@ -16,6 +16,7 @@ function HeaderComponent() {
   };
 
   const navItems = useMemo(() => [
+    { href: '/about-mohammad-amin-bozorgani', label: 'درباره من', emoji: '👤' },
     { href: '/projects', label: 'پروژه‌ها', emoji: '💼' },
     { href: '/blog', label: 'بلاگ', emoji: '📝' },
     { href: '/resume', label: 'رزومه', emoji: '📄' },
@@ -38,11 +39,11 @@ function HeaderComponent() {
             <div className="transition-transform hover:scale-105 active:scale-95">
               <Link 
                 href="/" 
-                className="font-semibold text-gray-900 dark:text-gray-100 hover:text-brand transition-colors text-base sm:text-lg" 
-                aria-label="رفتن به صفحه اصلی"
+                className="font-semibold text-gray-900 dark:text-gray-100 hover:text-brand transition-colors text-base sm:text-lg flex flex-col" 
+                aria-label="Mohammad Amin Bozorgani - محمد امین بزرگانی"
               >
-                <span className="hidden sm:inline">M.A. Bozorgani</span>
-                <span className="sm:hidden">M.A.B.</span>
+                <span className="hidden sm:inline">Mohammad Amin Bozorgani</span>
+                <span className="sm:hidden">M.A. Bozorgani</span>
               </Link>
             </div>
             

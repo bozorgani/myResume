@@ -213,11 +213,16 @@ export function createPageMeta({
 export const personSchema = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: SITE.name,
-  jobTitle: SITE.role,
+  name: 'Mohammad Amin Bozorgani',
+  alternateName: 'محمد امین بزرگانی',
+  jobTitle: 'Full Stack Engineer & SEO Expert',
   description: SITE.description,
   url: SITE.domain,
-  image: `${SITE.domain}/images/amin-bozorgani-portrait.webp`,
+  image: [
+    `${SITE.domain}/images/mohammad-amin-bozorgani-portrait.webp`,
+    `${SITE.domain}/images/mohammad-amin-bozorgani-profile-1.webp`,
+    `${SITE.domain}/images/mohammad-amin-bozorgani-workspace.webp`
+  ],
   email: SITE.email,
   sameAs: [
     SITE.domain,
@@ -225,6 +230,10 @@ export const personSchema = {
     SITE.linkedin,
     `https://twitter.com/${SITE.twitter.replace('@', '')}`
   ],
+  worksFor: {
+    '@type': 'Organization',
+    name: 'Freelance / Consultant'
+  },
   knowsAbout: [
     'Full-Stack JavaScript Development',
     'Next.js',

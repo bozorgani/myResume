@@ -31,9 +31,9 @@ function FooterComponent() {
           </div>
         </div>
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-3 border-t pt-6 text-xs text-gray-600 dark:text-gray-400">
-          <p>© {year} تمامی حقوق محفوظ است.</p>
+          <p>© {year} Mohammad Amin Bozorgani (محمد امین بزرگانی). تمامی حقوق محفوظ است.</p>
           <p>
-            ساخته‌شده با <span aria-label="قلب" role="img">❤️</span> و Next.js
+            Developed by <strong>Mohammad Amin Bozorgani</strong> (Full Stack Engineer) with Next.js & ❤️
           </p>
         </div>
       </div>
