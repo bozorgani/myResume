@@ -204,12 +204,24 @@ export default async function BlogPostPage({ params }: { params: Params }) {
     : `/blog/${params.slug.join('/')}`;
   
   // Normalize both URLs for comparison (remove trailing slashes, handle encoding)
-  const normalizeUrl = (url: string) => url.replace(/\/$/, '').toLowerCase();
+  const normalizeUrl = (url: string) => {
+    try {
+      return decodeURIComponent(url).replace(/\/$/, '').toLowerCase();
+    } catch {
+      return url.replace(/\/$/, '').toLowerCase();
+    }
+  };
+  
   const requestedNormalized = normalizeUrl(requestedPath);
   const correctNormalized = normalizeUrl(postUrl);
   
   // If URLs don't match, redirect to correct URL (301 permanent redirect)
   if (requestedNormalized !== correctNormalized) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Redirect Triggered]');
+      console.log('Requested:', requestedNormalized);
+      console.log('Correct:', correctNormalized);
+    }
     redirect(postUrl);
   }
 
