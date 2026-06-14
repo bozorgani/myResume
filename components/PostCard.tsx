@@ -132,7 +132,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
           className="mt-0 sm:mt-1 text-base sm:text-lg md:text-xl font-semibold line-clamp-2 leading-snug"
           whileHover={{ x: 4 }}
         >
-          <Link href={getPostUrl(post) as any} className="hover:underline text-gray-900 dark:text-gray-100">{post.title}</Link>
+          <Link href={getPostUrl(post) as any} className="hover:underline text-gray-900 dark:text-gray-100 focus:outline-none before:absolute before:inset-0 before:z-10">{post.title}</Link>
         </motion.h3>
         <p className="mt-2 sm:mt-3 text-sm sm:text-base line-clamp-3 text-gray-700 dark:text-gray-300 flex-grow">{post.description}</p>
       </div>
@@ -150,6 +150,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
                   key={cat.slug}
                   whileHover={{ scale: 1.05, y: -2 }}
                   transition={{ duration: 0.2 }}
+                  className="relative z-20"
                 >
                   <Link 
                     href={`/blog?category=${cat.slug}`}
@@ -165,7 +166,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
         </div>
       )}
       {(!post.categories || post.categories.length === 0) && post.category && (
-        <div className="hidden md:block mt-3 sm:mt-4">
+        <div className="hidden md:block mt-3 sm:mt-4 relative z-20">
           <motion.div whileHover={{ scale: 1.05, y: -2 }}>
             <Link 
               href={`/blog?category=${post.category.slug}`}
