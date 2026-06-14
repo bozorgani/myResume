@@ -136,8 +136,8 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
         </motion.h3>
         <p className="mt-2 sm:mt-3 text-sm sm:text-base line-clamp-3 text-gray-700 dark:text-gray-300 relative z-10 pointer-events-none">{post.description}</p>
       </div>
-      <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-        <time dateTime={new Date(post.date).toISOString()} className="whitespace-nowrap">{new Date(post.date).toLocaleDateString('fa-IR')}</time>
+      <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400 relative z-20">
+        <time dateTime={new Date(post.date).toISOString()} className="whitespace-nowrap" suppressHydrationWarning>{new Date(post.date).toLocaleDateString('fa-IR')}</time>
         <span>•</span>
         {post.readingTime ? <span className="whitespace-nowrap">{post.readingTime} دقیقه مطالعه</span> : <span className="whitespace-nowrap">مطالعه سریع</span>}
       </div>
