@@ -72,7 +72,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
   return (
     <motion.article 
       ref={ref}
-      className="group rounded-lg sm:rounded-xl border bg-white p-3 sm:p-4 md:p-5 shadow-sm transition hover:shadow-xl dark:bg-gray-900 dark:border-gray-800 h-full flex flex-col relative" 
+      className="group rounded-lg sm:rounded-xl border bg-white p-3 sm:p-4 md:p-5 shadow-sm transition hover:shadow-xl dark:bg-gray-900 dark:border-gray-800 h-full flex flex-col relative overflow-hidden" 
       aria-labelledby={`${post.slug}-title`}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -126,15 +126,15 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
           />
         </motion.div>
       )}
-      <div className="relative z-10" style={{ transform: 'translateZ(10px)' }}>
+      <div className="relative z-10 flex-grow" style={{ transform: 'translateZ(10px)' }}>
         <motion.h3 
           id={`${post.slug}-title`} 
           className="mt-0 sm:mt-1 text-base sm:text-lg md:text-xl font-semibold line-clamp-2 leading-snug"
           whileHover={{ x: 4 }}
         >
-          <Link href={getPostUrl(post) as any} className="hover:underline text-gray-900 dark:text-gray-100 focus:outline-none before:absolute before:-inset-4 before:z-10 before:cursor-pointer">{post.title}</Link>
+          <Link href={getPostUrl(post) as any} className="hover:underline text-gray-900 dark:text-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded-md outline-none before:absolute before:inset-0 before:z-0">{post.title}</Link>
         </motion.h3>
-        <p className="mt-2 sm:mt-3 text-sm sm:text-base line-clamp-3 text-gray-700 dark:text-gray-300 flex-grow">{post.description}</p>
+        <p className="mt-2 sm:mt-3 text-sm sm:text-base line-clamp-3 text-gray-700 dark:text-gray-300 relative z-10 pointer-events-none">{post.description}</p>
       </div>
       <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
         <time dateTime={new Date(post.date).toISOString()} className="whitespace-nowrap">{new Date(post.date).toLocaleDateString('fa-IR')}</time>
