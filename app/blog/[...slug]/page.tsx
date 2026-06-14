@@ -104,10 +104,16 @@ function extractHeadings(html: string): { id: string; text: string; level: 2 | 3
   while ((m = regex.exec(html))) {
     const level = Number(m[1]) as 2 | 3;
     const text = m[2].replace(/<[^>]+>/g, '').trim();
-    const id = text
+    let id = text
       .toLowerCase()
       .replace(/[^\w\u0600-\u06FF\s-]/g, '')
       .replace(/\s+/g, '-');
+      
+    // Ensure ID doesn't start with a number (invalid CSS selector)
+    if (/^\d/.test(id)) {
+      id = `heading-${id}`;
+    }
+    
     out.push({ id, text, level });
   }
   return out;
@@ -116,10 +122,16 @@ function extractHeadings(html: string): { id: string; text: string; level: 2 | 3
 function addIdsToHeadings(html: string): string {
   return html.replace(/<h([23])(?![^>]*id=)([^>]*)>([\s\S]*?)<\/h\1>/gi, (_s, lvl, attrs, inner) => {
     const text = String(inner).replace(/<[^>]+>/g, '').trim();
-    const id = text
+    let id = text
       .toLowerCase()
       .replace(/[^\w\u0600-\u06FF\s-]/g, '')
       .replace(/\s+/g, '-');
+    
+    // Ensure ID doesn't start with a number (invalid CSS selector)
+    if (/^\d/.test(id)) {
+      id = `heading-${id}`;
+    }
+    
     return `<h${lvl} id="${id}" ${attrs}>${inner}</h${lvl}>`;
   });
 }

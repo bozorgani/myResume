@@ -24,10 +24,16 @@ export function TableOfContentsHighlight() {
             });
             
             // Add active class to current
-            const activeLink = document.querySelector(`nav a[href="#${id}"]`);
-            if (activeLink) {
-              activeLink.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-900', 'dark:hover:text-gray-200');
-              activeLink.classList.add('text-blue-600', 'dark:text-blue-400', 'font-bold', 'translate-x-1');
+            try {
+              // CSS.escape handles IDs that start with numbers or contain special characters
+              const safeId = CSS.escape(id);
+              const activeLink = document.querySelector(`nav a[href="#${safeId}"]`);
+              if (activeLink) {
+                activeLink.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-900', 'dark:hover:text-gray-200');
+                activeLink.classList.add('text-blue-600', 'dark:text-blue-400', 'font-bold', 'translate-x-1');
+              }
+            } catch (e) {
+              // Ignore invalid selector errors
             }
           }
         }
