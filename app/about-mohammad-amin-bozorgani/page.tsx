@@ -76,12 +76,12 @@ export default function AboutMePage() {
   } as const;
 
   return (
-    <article className="min-h-screen bg-[#0a0a0a] text-gray-200">
+    <article dir="ltr" className="min-h-screen bg-[#0a0a0a] text-gray-200 text-left font-sans">
       <Schema json={personSchema} />
       <Schema json={breadcrumbSchema} />
       
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Breadcrumbs items={[{ name: 'صفحه اصلی', href: '/' }, { name: 'Mohammad Amin Bozorgani' }]} />
+        <Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Mohammad Amin Bozorgani' }]} />
         
         {/* Premium Hero Section */}
         <section className="mt-12 mb-24 flex flex-col md:flex-row items-center gap-12">
