@@ -11,6 +11,28 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    slug: 'befrosh-ecommerce',
+    title: 'بفروش | پلتفرم فروشگاه‌ساز آنلاین',
+    oneLiner: 'طراحی و توسعه کامل پلتفرم فروشگاه‌ساز befrosh.ir با تمرکز بر تجربه کاربری و سئوی فنی.',
+    description:
+      'طراحی و توسعه کامل وب‌سایت befrosh.ir، یک پلتفرم فروشگاه‌ساز آنلاین مدرن. این پروژه شامل طراحی رابط کاربری حرفه‌ای، پیاده‌سازی سیستم مدیریت فروشگاه، بهینه‌سازی سرعت و عملکرد، و پیاده‌سازی بهترین شیوه‌های سئو فنی است. استفاده از تکنولوژی‌های مدرن Next.js، TypeScript و TailwindCSS برای ایجاد تجربه کاربری روان و واکنش‌گرا. تمرکز ویژه بر Core Web Vitals، Schema.org markup برای محصولات، و بهینه‌سازی نرخ تبدیل.',
+    tech: ['Next.js', 'TypeScript', 'TailwindCSS', 'React', 'SEO', 'Performance Optimization'],
+    image: '/images/befrosh-cover.jpg',
+    liveUrl: 'https://befrosh.ir',
+    repoUrl: 'https://github.com/bozorgani/befrosh'
+  },
+  {
+    slug: 'nardeban',
+    title: 'نردبان | پلتفرم آموزشی و مشاوره',
+    oneLiner: 'طراحی و توسعه کامل وب‌سایت nardeban.ir با تمرکز بر تجربه کاربری، سئوی فنی و سیستم رزرو خدمات.',
+    description:
+      'طراحی و توسعه کامل پلتفرم آموزشی nardeban.ir. این پروژه شامل طراحی رابط کاربری مدرن و حرفه‌ای، سیستم رزرو و نوبت‌دهی خدمات مشاوره و آموزشی، بهینه‌سازی سرعت و عملکرد، و پیاده‌سازی بهترین شیوه‌های سئو فنی است. استفاده از تکنولوژی‌های Next.js، TypeScript و TailwindCSS برای ایجاد تجربه کاربری روان و واکنش‌گرا. تمرکز ویژه بر Core Web Vitals، Schema.org markup برای خدمات، و بهینه‌سازی نرخ تبدیل.',
+    tech: ['Next.js', 'TypeScript', 'TailwindCSS', 'React', 'SEO', 'Performance Optimization'],
+    image: '/images/nardeban-cover.jpg',
+    liveUrl: 'https://nardeban.ir',
+    repoUrl: 'https://github.com/bozorgani/nardeban'
+  },
+  {
     slug: 'e-commerce-platform',
     title: 'پلتفرم تجارت الکترونیک با Next.js و Node.js',
     oneLiner: 'سیستم مدیریت فروشگاه آنلاین مقیاس‌پذیر با قابلیت‌های پیشرفته سئو و بهینه‌سازی عملکرد.',
