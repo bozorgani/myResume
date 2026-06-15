@@ -81,7 +81,7 @@ export default function ResumePage() {
               <div className="absolute -inset-1.5 sm:-inset-2 md:-inset-3 lg:-inset-4 rounded-full bg-gradient-to-br from-blue-500/30 via-purple-500/30 to-pink-500/30 blur-xl opacity-75"></div>
               <div className="relative h-32 w-32 sm:h-36 sm:w-36 md:h-44 md:w-44 lg:h-48 lg:w-48 xl:h-56 xl:w-56 2xl:h-64 2xl:w-64 overflow-hidden rounded-full ring-2 sm:ring-4 md:ring-[6px] lg:ring-8 ring-brand/30 dark:ring-brand/40 shadow-2xl border-2 sm:border-4 md:border-[6px] lg:border-8 border-white dark:border-gray-800">
                 <Image 
-                  src="/images/amin-bozorgani-portrait-512.webp" 
+                  src="/images/profile.webp" 
                   alt={`${SITE.name} - ${SITE.role}`}
                   width={640} 
                   height={640} 
