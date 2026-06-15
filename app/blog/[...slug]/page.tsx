@@ -359,7 +359,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
               <div className="relative w-full flex items-center justify-center py-4 sm:py-6" style={{ minHeight: '300px' }}>
                 <Image
                   src={post.image}
-                  alt={`کاور ${post.title}`}
+                  alt={`کاور مقاله ${post.title} | نوشته محمد امین بزرگانی (Mohammad Amin Bozorgani) - توسعه‌دهنده فول استک`}
                   width={1200}
                   height={675}
                   sizes="(min-width: 1024px) 1200px, 100vw"

@@ -428,12 +428,22 @@ function renderContentToHtml(content: any): string {
         }
         case 'image': {
           const src = buildMediaUrl(node.attrs?.src) || '';
-          const alt = node.attrs?.alt || '';
+          let alt = node.attrs?.alt || '';
+          
+          // Image SEO Enhancement: Inject author name into alt text for better Image Search ranking
+          if (!alt) {
+            alt = 'تصویر مربوط به مقاله توسعه وب - محمد امین بزرگانی (Mohammad Amin Bozorgani)';
+          } else if (!alt.includes('بزرگانی') && !alt.includes('Bozorgani')) {
+            if (alt.length < 70) {
+              alt = `${alt} - محمد امین بزرگانی (Mohammad Amin Bozorgani)`;
+            }
+          }
+          
           // Add loading="lazy" and decoding="async" for better performance
           // Also add width/height attributes if available for CLS prevention
           const width = node.attrs?.width ? ` width="${node.attrs.width}"` : '';
           const height = node.attrs?.height ? ` height="${node.attrs.height}"` : '';
-          return src ? `<img src="${src}" alt="${alt || ''}"${width}${height} loading="lazy" decoding="async" />` : '';
+          return src ? `<img src="${src}" alt="${alt}"${width}${height} loading="lazy" decoding="async" />` : '';
         }
         default:
           return children;

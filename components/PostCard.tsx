@@ -118,7 +118,7 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
         >
           <Image 
             src={post.image} 
-            alt={`تصویر کاور ${post.title}`} 
+            alt={`تصویر کاور مقاله ${post.title} - محمد امین بزرگانی (Mohammad Amin Bozorgani)`} 
             width={800} 
             height={450} 
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" 
