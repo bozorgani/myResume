@@ -36,14 +36,16 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     });
   }
   // Use SEO fields from CMS if available, otherwise use defaults
-  const metaTitle = post.seo?.metaTitle || `${post.title} | ${SITE.name}`;
+  const metaTitle = post.seo?.metaTitle || `${post.title} | Mohammad Amin Bozorgani`;
   const metaDescription = post.seo?.metaDescription || post.description || 
-    `مقاله ${post.title} از بلاگ ${SITE.name} درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
+    `مقاله ${post.title} از وبلاگ Mohammad Amin Bozorgani (محمد امین بزرگانی) درباره توسعه وب، سئو فنی و برنامه‌نویسی.`;
   
   // Extract keywords from SEO field or categories and tags
   const keywords = post.seo?.keywords && post.seo.keywords.length > 0
-    ? post.seo.keywords
+    ? ['Mohammad Amin Bozorgani', 'محمد امین بزرگانی', ...post.seo.keywords]
     : [
+        'Mohammad Amin Bozorgani',
+        'محمد امین بزرگانی',
         ...(post.categories?.map(c => c.name) || []),
         ...(post.tags?.map(t => t.name) || []),
         post.category?.name,

@@ -131,22 +131,26 @@ export async function generateMetadata({
   
   // Build descriptive title and description based on filters
   // This improves SEO and helps Google understand the page content
-  let pageTitle = `بلاگ | ${SITE.name}`;
-  let pageDescription = `مجموعه مقالات تخصصی ${SITE.name} درباره توسعه Full-Stack با Next.js و React، بهینه‌سازی عملکرد وب‌سایت‌ها، بهبود Core Web Vitals، و بهترین شیوه‌های سئو فنی. تجربیات عملی، راهنماهای گام‌به‌گام، و نکات پیشرفته در زمینه توسعه وب.`;
+  let pageTitle = `Blog by Mohammad Amin Bozorgani | بلاگ محمد امین بزرگانی`;
+  let pageDescription = `مجموعه مقالات تخصصی Mohammad Amin Bozorgani (محمد امین بزرگانی) درباره توسعه Full-Stack با Next.js و React، بهینه‌سازی عملکرد وب‌سایت‌ها، بهبود Core Web Vitals، و بهترین شیوه‌های سئو فنی.`;
   
   if (hasTag && tagName) {
-    pageTitle = `مقالات با برچسب ${tagName} | بلاگ ${SITE.name}`;
-    pageDescription = `مقالات و مطالب تخصصی با برچسب "${tagName}" از بلاگ ${SITE.name}. مجموعه مقالات تخصصی درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
+    pageTitle = `مقالات با برچسب ${tagName} | بلاگ Mohammad Amin Bozorgani`;
+    pageDescription = `مقالات و مطالب تخصصی با برچسب "${tagName}" از بلاگ Mohammad Amin Bozorgani (محمد امین بزرگانی). مجموعه مقالات تخصصی درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
   } else if (hasCategory && categoryName) {
-    pageTitle = `مقالات دسته‌بندی ${categoryName} | بلاگ ${SITE.name}`;
-    pageDescription = `مقالات و مطالب تخصصی دسته‌بندی "${categoryName}" از بلاگ ${SITE.name}. مجموعه مقالات تخصصی درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
+    pageTitle = `مقالات دسته‌بندی ${categoryName} | بلاگ Mohammad Amin Bozorgani`;
+    pageDescription = `مقالات و مطالب تخصصی دسته‌بندی "${categoryName}" از بلاگ Mohammad Amin Bozorgani (محمد امین بزرگانی). مجموعه مقالات تخصصی درباره توسعه Full-Stack، بهینه‌سازی عملکرد و سئو فنی.`;
   } else if (currentPage > 1) {
-    pageTitle = `بلاگ | ${SITE.name} - صفحه ${currentPage}`;
-    pageDescription = `صفحه ${currentPage} از بلاگ ${SITE.name}. مجموعه مقالات تخصصی درباره توسعه Full-Stack با Next.js و React.`;
+    pageTitle = `Blog by Mohammad Amin Bozorgani - صفحه ${currentPage}`;
+    pageDescription = `صفحه ${currentPage} از بلاگ Mohammad Amin Bozorgani (محمد امین بزرگانی). مجموعه مقالات تخصصی درباره توسعه Full-Stack با Next.js و React.`;
   }
   
   // Build keywords array with category/tag specific keywords
   const baseKeywords = [
+    'Mohammad Amin Bozorgani',
+    'محمد امین بزرگانی',
+    'وبلاگ محمد امین بزرگانی',
+    'امین بزرگانی',
     'مقالات توسعه وب',
     'بلاگ Next.js',
     'مقالات React',
