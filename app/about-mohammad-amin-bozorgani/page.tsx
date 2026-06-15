@@ -176,7 +176,7 @@ export default function AboutMePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {/* Gallery Placeholders - requires actual images to be uploaded to public/images/ */}
             {[
-              { id: 1, name: 'mohammad-amin-bozorgani-profile-2.webp', alt: 'محمد امین بزرگانی برنامه نویس فول استک - Mohammad Amin Bozorgani' },
+              { id: 1, name: 'mohammad-amin-bozorgani-profile-1.webp', alt: 'محمد امین بزرگانی برنامه نویس فول استک - Mohammad Amin Bozorgani' },
               { id: 2, name: 'mohammad-amin-bozorgani-workspace.webp', alt: 'Mohammad Amin Bozorgani coding setup and workspace' },
               { id: 3, name: 'mohammad-amin-bozorgani-programming.webp', alt: 'Mohammad Amin Bozorgani developing Next.js application' },
               { id: 4, name: 'profile.webp', alt: 'محمد امین بزرگانی متخصص سئو تکنیکال' },

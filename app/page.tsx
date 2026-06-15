@@ -86,11 +86,11 @@ export default function HomePage() {
       {/* Hero Section - Modern Design with Animations */}
       <HeroSection />
 
-      {/* Featured Developer Section (SEO & Entity Recognition) */}
-      <FeaturedDeveloper />
-
       {/* About Section */}
       <AboutSection />
+
+      {/* Featured Developer Section (SEO & Entity Recognition) */}
+      <FeaturedDeveloper />
 
       {/* Skills Section */}
       <SkillsSection />
