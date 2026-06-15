@@ -103,12 +103,16 @@ export default function AboutMePage() {
           </div>
           
           <div className="w-full md:w-1/3 max-w-md">
-            <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10">
-              <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 z-10 mix-blend-overlay"></div>
-              {/* Note: Placeholder image. Will instruct to replace with actual image */}
-              <div className="w-full h-full bg-gray-800 flex items-center justify-center text-gray-500">
-                [Image: mohammad-amin-bozorgani-profile-1.webp]
-              </div>
+            <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10 group">
+              <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 z-10 mix-blend-overlay transition-opacity duration-500 group-hover:opacity-0"></div>
+              <Image 
+                src="/images/mohammad-amin-bozorgani-profile-1.webp" 
+                alt="Mohammad Amin Bozorgani - محمد امین بزرگانی" 
+                fill 
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-105" 
+                priority 
+              />
             </div>
           </div>
         </section>
@@ -175,11 +179,16 @@ export default function AboutMePage() {
               { id: 1, name: 'mohammad-amin-bozorgani-profile-2.webp', alt: 'محمد امین بزرگانی برنامه نویس فول استک - Mohammad Amin Bozorgani' },
               { id: 2, name: 'mohammad-amin-bozorgani-workspace.webp', alt: 'Mohammad Amin Bozorgani coding setup and workspace' },
               { id: 3, name: 'mohammad-amin-bozorgani-programming.webp', alt: 'Mohammad Amin Bozorgani developing Next.js application' },
-              { id: 4, name: 'mohammad-amin-bozorgani-speaker.webp', alt: 'محمد امین بزرگانی متخصص سئو تکنیکال' },
+              { id: 4, name: 'amin-bozorgani-portrait-512.webp', alt: 'محمد امین بزرگانی متخصص سئو تکنیکال' },
             ].map((img) => (
-              <div key={img.id} className="relative aspect-square rounded-2xl overflow-hidden bg-gray-800 border border-gray-700 flex items-center justify-center p-4 text-center text-xs text-gray-500">
-                [Image: {img.name}]
-                <br/>alt: {img.alt}
+              <div key={img.id} className="relative aspect-square rounded-2xl overflow-hidden bg-gray-800 border border-gray-700 flex items-center justify-center text-center text-xs text-gray-500 group cursor-pointer">
+                <Image 
+                  src={`/images/${img.name}`} 
+                  alt={img.alt}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                  className="object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
+                />
               </div>
             ))}
           </div>
