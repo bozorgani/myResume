@@ -7,6 +7,8 @@ import { useRef, useState } from 'react';
 import type { Post } from '@/lib/posts';
 import { getPostUrl } from '@/lib/posts';
 
+import { ClientDate } from '@/components/ClientDate';
+
 export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
   const ref = useRef<HTMLElement>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -137,7 +139,9 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
         <p className="mt-2 sm:mt-3 text-sm sm:text-base line-clamp-3 text-gray-700 dark:text-gray-300 relative z-10 pointer-events-none">{post.description}</p>
       </div>
       <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400 relative z-20">
-        <time dateTime={new Date(post.date).toISOString()} className="whitespace-nowrap" suppressHydrationWarning>{new Date(post.date).toLocaleDateString('fa-IR')}</time>
+        <time dateTime={new Date(post.date).toISOString()} className="whitespace-nowrap">
+          <ClientDate dateString={post.date} />
+        </time>
         <span>•</span>
         {post.readingTime ? <span className="whitespace-nowrap">{post.readingTime} دقیقه مطالعه</span> : <span className="whitespace-nowrap">مطالعه سریع</span>}
       </div>

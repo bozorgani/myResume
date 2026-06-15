@@ -13,6 +13,7 @@ import { ReadingProgress } from '@/components/ReadingProgress';
 import { ShareButtons } from '@/components/ShareButtons';
 import { HeadingAnchors } from '@/components/HeadingAnchors';
 import { RelatedPosts } from '@/components/RelatedPosts';
+import { ClientDate } from '@/components/ClientDate';
 
 // بهینه‌سازی: استفاده از ISR برای بهتر شدن performance
 export const revalidate = 300; // 5 minutes
@@ -391,7 +392,9 @@ export default async function BlogPostPage({ params }: { params: Params }) {
                 className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 md:py-2.5 rounded-lg sm:rounded-xl bg-gray-100/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 font-medium backdrop-blur-sm hover:bg-gray-200/80 dark:hover:bg-gray-700/80 transition-colors"
               >
                 <span className="text-base sm:text-lg leading-none">📅</span>
-                <span className="whitespace-nowrap" suppressHydrationWarning>{new Date(post.date).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                <span className="whitespace-nowrap">
+                  <ClientDate dateString={post.date} options={{ year: 'numeric', month: 'long', day: 'numeric' }} />
+                </span>
               </time>
               {post.updatedAt && post.updatedAt !== post.date && (
                 <time 
@@ -400,7 +403,9 @@ export default async function BlogPostPage({ params }: { params: Params }) {
                   title="آخرین به‌روزرسانی"
                 >
                   <span className="text-base sm:text-lg leading-none">🔄</span>
-                  <span className="whitespace-nowrap" suppressHydrationWarning>{new Date(post.updatedAt).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                  <span className="whitespace-nowrap">
+                    <ClientDate dateString={post.updatedAt} options={{ year: 'numeric', month: 'long', day: 'numeric' }} />
+                  </span>
                 </time>
               )}
               {post.readingTime ? (
