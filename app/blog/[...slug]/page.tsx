@@ -262,20 +262,29 @@ export default async function BlogPostPage({ params }: { params: Params }) {
   // Use JSON-LD from CMS if available, otherwise generate default
   const articleSchema = post.seo?.jsonLd || {
     '@context': 'https://schema.org',
-    '@type': 'Article',
+    '@type': 'BlogPosting',
     headline: post.title,
     description: description,
     datePublished: post.date,
     dateModified: post.updatedAt || post.date,
     author: { 
       '@type': 'Person', 
-      name: SITE.name,
-      url: SITE.domain,
-      sameAs: [SITE.github, SITE.linkedin]
+      name: 'Mohammad Amin Bozorgani',
+      alternateName: 'محمد امین بزرگانی',
+      url: `${SITE.domain}/about-mohammad-amin-bozorgani`,
+      image: `${SITE.domain}/images/mohammad-amin-bozorgani-profile-1.webp`,
+      jobTitle: 'Full Stack Engineer & SEO Expert',
+      sameAs: [
+        SITE.domain,
+        SITE.github, 
+        SITE.linkedin,
+        `https://twitter.com/${SITE.twitter.replace('@', '')}`
+      ]
     },
     publisher: {
       '@type': 'Organization',
-      name: SITE.name,
+      name: 'Mohammad Amin Bozorgani',
+      url: SITE.domain,
       logo: {
         '@type': 'ImageObject',
         url: `${SITE.domain}/images/og-default.png`
@@ -286,7 +295,8 @@ export default async function BlogPostPage({ params }: { params: Params }) {
       '@type': 'WebPage',
       '@id': `${SITE.domain}${postUrl}`
     },
-    articleSection: post.categories?.[0]?.name || post.category?.name || 'توسعه وب',
+    articleBody: post.content.replace(/<[^>]+>/g, '').substring(0, 1500) + '...',
+    articleSection: post.categories?.[0]?.name || post.category?.name || 'Software Engineering',
     keywords: keywords.join(', '),
     wordCount: wordCount,
     inLanguage: 'fa-IR',
