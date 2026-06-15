@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export function FeaturedDeveloper() {
   return (
     <section className="mt-16 mb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 no-print">
@@ -6,9 +8,14 @@ export function FeaturedDeveloper() {
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/20 blur-3xl rounded-full -translate-x-1/2 translate-y-1/2"></div>
         
         <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-12">
-          <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-2xl overflow-hidden ring-4 ring-white/10 shadow-xl bg-gray-800 flex items-center justify-center text-xs text-gray-500 text-center">
-            {/* Replace with actual image */}
-            [Image: profile.webp]<br/>alt: محمد امین بزرگانی
+          <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 rounded-2xl overflow-hidden ring-4 ring-white/10 shadow-xl bg-gray-800 flex items-center justify-center text-xs text-gray-500 text-center relative group">
+            <Image 
+              src="/images/IMG_6651_1_-removebg-preview.png" 
+              alt="محمد امین بزرگانی متخصص فول استک - Mohammad Amin Bozorgani" 
+              fill 
+              sizes="(max-width: 768px) 128px, 192px"
+              className="object-cover transition-transform duration-500 group-hover:scale-110" 
+            />
           </div>
           
           <div className="flex-1 text-center md:text-right">
